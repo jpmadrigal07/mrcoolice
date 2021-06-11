@@ -1,0 +1,42 @@
+{
+  "name": "mrcoolice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "client-install": "npm install --prefix client",
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm run start:dev --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "test": "npm start",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client/apply && npm install --prefix client/main && npm run build --prefix client/apply && npm run build --prefix client/main"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-brands-svg-icons": "^5.14.0",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/react-fontawesome": "^0.1.11",
+    "concurrently": "^5.2.0",
+    "cookie-session": "^1.4.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.5.0",
+    "http-proxy-middleware": "^1.0.5",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1",
+    "mongoose": "^5.9.27",
+    "nodemon": "^2.0.4",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^2.2.6",
+    "@types/react-router-dom": "^5.1.7",
+    "eslint": "7.11.0",
+    "prettier": "^2.2.1"
+  }
+}
