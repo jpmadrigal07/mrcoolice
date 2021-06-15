@@ -3,8 +3,13 @@ const { Schema } = mongoose;
 
 // CREATE DB SCHEMA OF USERS
 const user = new Schema({
-    username: String,
+    username: {
+        type:String,
+        unique: true
+    },
     password: String,
+    firstName: String,
+    lastName: String,
     userType: {
         type: String,
         enum:[

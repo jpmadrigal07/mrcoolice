@@ -3,7 +3,7 @@ const ExpenseType = require('../typeDefs/Expense');
 const { GraphQLID, GraphQLList } = require('graphql')
 
 module.exports.getAllExpense = {
-    type: GraphQLList(StudentType),
+    type: GraphQLList(ExpenseType),
     resolve: () => {
         return Expense.find()
     }

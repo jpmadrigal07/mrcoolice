@@ -3,7 +3,11 @@ const { Schema } = mongoose;
 
 // CREATE DB SCHEMA OF USERS
 const customer = new Schema({
-    name: String,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    description: String,
     createdAt:{
         type:Date,
         default:Date.now
