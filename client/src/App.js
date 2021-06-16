@@ -1,6 +1,9 @@
 import './App.css';
 import { Navbar, Nav, Dropdown, Panel, Form, FormGroup, ControlLabel, FormControl, Input, ButtonToolbar, Button, Col, Row, SelectPicker } from 'rsuite';
 import 'rsuite/dist/styles/rsuite-default.css';
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import Login from "./pages/Login/Login"
+import Order from "./pages/Order/Order"
 
 function App() {
   const values = [
@@ -52,37 +55,32 @@ function App() {
       "role": "Master"
     }
   ]
+
+  const renderRoutes = () => {
+    return (
+      <>
+        <Route
+          path="/"
+          exact
+          render={() => <Login/>}
+        />
+        <Route
+          path="/login"
+          exact
+          render={() => <Login/>}
+        />
+        <Route
+          path="/order"
+          exact
+          render={() => <Order/>}
+        />
+      </>
+    )
+  }
+
   return (
     <>
-    <Navbar appearance="inverse">
-    <Navbar.Header>
-      <a href="#" className="navbar-brand logo">Mr. Cool Ice</a>
-    </Navbar.Header>
-    <Navbar.Body>
-      <Nav>
-        <Dropdown title="Order">
-          <Dropdown.Item>Add</Dropdown.Item>
-          <Dropdown.Item>List</Dropdown.Item>
-        </Dropdown>
-        <Dropdown title="Customer">
-          <Dropdown.Item>Add</Dropdown.Item>
-          <Dropdown.Item>List</Dropdown.Item>
-        </Dropdown>
-        <Dropdown title="Expenses">
-          <Dropdown.Item>Add</Dropdown.Item>
-          <Dropdown.Item>List</Dropdown.Item>
-        </Dropdown>
-        <Nav.Item>Reports</Nav.Item>
-      </Nav>
-      <Nav pullRight>
-        <Dropdown title="Admin">
-          <Dropdown.Item>Settings</Dropdown.Item>
-          <Dropdown.Item>Logout</Dropdown.Item>
-        </Dropdown>
-      </Nav>
-    </Navbar.Body>
-  </Navbar>
-  <Row gutter={16}>
+  {/* <Row gutter={16}>
     <Col style={{margin: '10px'}} md={6}>
     <Panel bordered>
   <Form>
@@ -111,7 +109,10 @@ function App() {
   </Form>
   </Panel>
     </Col>
-  </Row>
+  </Row> */}
+    <Router>
+      {renderRoutes()}
+    </Router>
   </>
   );
 }

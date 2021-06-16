@@ -1,0 +1,19 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+.login-bg {
+    background: #f4f4f4;
+    /* Full height */
+    height: 100vh; 
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.login-panel {
+    background-color: #ffffff;
+}

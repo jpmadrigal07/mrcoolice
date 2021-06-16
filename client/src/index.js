@@ -2,12 +2,28 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import {
+  QueryClient,
+  QueryClientProvider
+} from "react-query";
+import { composeWithDevTools } from "redux-devtools-extension";
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from "redux";
+import reducers from './reducers'
+import reduxThunk from "redux-thunk";
 import reportWebVitals from './reportWebVitals';
 
+const store = createStore( reducers, {}, composeWithDevTools(applyMiddleware(reduxThunk)));
+const queryClient = new QueryClient();
+
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <QueryClientProvider client={queryClient}>
+    <Provider store={store}>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </Provider>
+  </QueryClientProvider>,
   document.getElementById('root')
 );
 
