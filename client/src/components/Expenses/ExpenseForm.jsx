@@ -22,8 +22,8 @@ const ExpenseForm = (props) => {
         foundExpense
     } = props
     useEffect(() => {
-        setInputExpenseName(foundExpense.name)
-        setInputCost(foundExpense.cost)
+        setInputExpenseName(foundExpense?.name)
+        setInputCost(foundExpense?.cost)
     }, [])
     return (
         <div>
@@ -43,6 +43,7 @@ const ExpenseForm = (props) => {
                                 <ControlLabel>Cost</ControlLabel>
                                 <Input
                                     block
+                                    type="number"
                                     onChange={(e) => setInputCost(e)}
                                     defaultValue={isEditActive ? foundExpense?.cost : null}
                                 />

@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import AddCustomer from "../../components/Customer/AddCustomer";
 import CustomerList from "../../components/Customer/CustomerList";
 import Navigation from "../../components/Navigation/Navigation";
-import { Col, Nav } from "rsuite";
+import { Col, Nav, Row, Panel } from "rsuite";
 import { useQuery } from "react-query";
-import Cookies from "js-cookie";
 import axios from "axios";
-
 
 const Customer = () => {
   const [activeTab, setActiveTab] = useState("addCustomer");
@@ -56,17 +54,19 @@ const Customer = () => {
   return (
     <div className="login-bg">
       <Navigation currentPage={"customer"} />
-      <Col style={{ marginBottom: 15 }}>
-        <Nav
-          appearance="subtle"
-          activeKey={activeTab}
-          onSelect={(key) => setActiveTab(key)}
-        >
-          <Nav.Item eventKey="addCustomer">Add customer</Nav.Item>
-          <Nav.Item eventKey="customerList">Customer list</Nav.Item>
-        </Nav>
-      </Col>
-      {renderTabs()}
+      <Row>
+        <Col style={{ marginBottom: 15 }}>
+          <Nav
+            appearance="subtle"
+            activeKey={activeTab}
+            onSelect={(key) => setActiveTab(key)}
+          >
+            <Nav.Item eventKey="addCustomer">Add customer</Nav.Item>
+            <Nav.Item eventKey="customerList">Customer list</Nav.Item>
+          </Nav>
+        </Col>
+        <Panel>{renderTabs()}</Panel>
+      </Row>
     </div>
   );
 };

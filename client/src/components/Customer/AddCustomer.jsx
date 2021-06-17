@@ -50,7 +50,9 @@ const AddCustomer = (props) => {
         }
     }
     return (
-        <CustomerForm handleCreateCustomer={handleCreateCustomer} setInputCustomerDescription={setInputCustomerDescription} />
+        <>
+            <CustomerForm handleCreateCustomer={handleCreateCustomer} setInputCustomerDescription={setInputCustomerDescription} />
+        </>
     )
 }
 

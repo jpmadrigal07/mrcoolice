@@ -38,7 +38,7 @@ const CustomerList = (props) => {
             <HeaderCell>#</HeaderCell>
             <Cell dataKey="number" />
           </Column>
-          <Column width={200} fixed>
+          <Column width={200} >
             <HeaderCell>Customer description</HeaderCell>
             <Cell dataKey="description" />
           </Column>

@@ -5,6 +5,7 @@ import Order from './pages/Order/Order';
 import Customer from './pages/Customer/Customer';
 import './App.css';
 import Expenses from './pages/Expenses/Expenses';
+import Settings from './pages/Settings/Settings'
 
 function App() {
   const renderRoutes = () => {
@@ -34,6 +35,11 @@ function App() {
           path="/expenses"
           exact
           render={() => <Expenses/>}
+        />
+        <Route
+          path="/settings"
+          exact
+          render={() => <Settings/>}
         />
       </>
     )

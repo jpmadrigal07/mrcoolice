@@ -55,7 +55,7 @@ const Navigation = (props) => {
             </Nav>
             <Nav pullRight>
               <Dropdown title="Admin">
-                <Dropdown.Item>Settings</Dropdown.Item>
+                <Dropdown.Item active={currentPage === "settings"} onClick={() => history.push("/settings")}>Settings</Dropdown.Item>
                 <Dropdown.Item onClick={() => logOut()}>Logout</Dropdown.Item>
               </Dropdown>
             </Nav>

@@ -26,7 +26,6 @@ const AddExpense = (props) => {
         } else {
             triggerTopAlert(true, "Please complete all parameters", "warning")
         }
-        
     }
     return (
         <div>

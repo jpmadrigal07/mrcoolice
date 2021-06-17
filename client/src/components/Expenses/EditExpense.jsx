@@ -3,14 +3,16 @@ import ExpenseForm from './ExpenseForm'
 import axios from "axios";
 import { connect } from 'react-redux';
 import { useMutation } from 'react-query'
+import { triggerTopAlert } from '../../actions/topAlertActions';
 
 const EditExpense = (props) => {
-    const { 
-        isEditActive, 
-        setIsEditActive, 
-        expenseId, 
+    const {
+        isEditActive,
+        setIsEditActive,
+        expenseId,
         userId,
-        expenseList
+        expenseList,
+        triggerTopAlert
     } = props
     const [inputExpenseName, setInputExpenseName] = useState("")
     const [inputCost, setInputCost] = useState()
@@ -20,21 +22,23 @@ const EditExpense = (props) => {
         axios.post("http://localhost:5000/mrcoolice", { query })
     );
     const handleEditExpense = async () => {
-        editExpense.mutate(
-            `mutation{
+        if (inputExpenseName && inputCost)
+        {
+            editExpense.mutate(
+                `mutation{
                 updateExpense(_id: "${expenseId}",userId: "${userId}", name: "${inputExpenseName}", cost: ${inputCost}) 
                 {
                   name
                   cost
                 }
               }`
-        )
-        console.log(expenseId)
-        console.log(userId)
-        console.log(inputExpenseName)
-        console.log(inputCost)
+            )
+            triggerTopAlert(true, "Expense updated successfully", "success")
+        } else {
+            triggerTopAlert(true, "Please complete all parameters", "warning")
+        }
     }
-    
+
     return (
         <div>
             <ExpenseForm
@@ -46,11 +50,11 @@ const EditExpense = (props) => {
                 setInputCost={setInputCost}
                 handleEditExpense={handleEditExpense}
                 foundExpense={foundExpense}
-                inputExpenseName={inputExpenseName}
-                inputCost={inputCost}
             />
         </div>
     )
 }
 
-export default EditExpense
+const mapStateToProps = (global) => ({});
+
+export default connect(mapStateToProps, { triggerTopAlert })(EditExpense);

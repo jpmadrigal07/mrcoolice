@@ -57,7 +57,7 @@ const EditCustomer = (props) => {
                     }
                 }`
             )
-            triggerTopAlert(true, "Customer successfully updated", "success")
+            triggerTopAlert(true, "Customer updated successfully", "success")
         } else {
             triggerTopAlert(true, "Please add customer description", "warning")
         }
