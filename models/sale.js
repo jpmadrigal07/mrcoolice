@@ -11,13 +11,9 @@ const sale = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Customer",
     },
+    iceType: String,
     weight: Number,
-    scaleType: {
-        type: String,
-        enum:[
-            'kg'
-        ]
-    },
+    scaleType: String,
     createdAt: {
         type:Date,
         default:Date.now

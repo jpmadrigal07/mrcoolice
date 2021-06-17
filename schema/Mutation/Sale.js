@@ -7,6 +7,7 @@ module.exports.createSale = {
   args: {
     userId: { type: GraphQLNonNull(GraphQLID) },
     customerId: { type: GraphQLNonNull(GraphQLID) },
+    iceType: { type: GraphQLNonNull(GraphQLString) },
     weight: { type: GraphQLNonNull(GraphQLInt) },
     scaleType: { type: GraphQLNonNull(GraphQLString) }
   },
@@ -15,6 +16,7 @@ module.exports.createSale = {
     return sale.save({
         userId: args.userId,
         customerId: args.customerId,
+        iceType: args.iceType,
         weight: args.weight,
         scaleType: args.scaleType
     });
@@ -27,13 +29,15 @@ module.exports.updateSale = {
     _id: { type: GraphQLID },
     userId: { type: GraphQLID },
     customerId: { type: GraphQLID },
+    iceType: { type: GraphQLString },
     weight: { type: GraphQLInt },
-    scaleType: { type: GraphQLInt }
+    scaleType: { type: GraphQLString }
   },
   resolve: (parent, args) => {
     const toUpdate = {}
     args.userId ? toUpdate.userId = args.userId : null
     args.customerId ? toUpdate.customerId = args.customerId : null
+    args.iceType ? toUpdate.iceType = args.iceType : null
     args.weight ? toUpdate.weight = args.weight : null
     args.scaleType ? toUpdate.scaleType = args.scaleType : null
     return Sale.findByIdAndUpdate(

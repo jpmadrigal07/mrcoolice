@@ -6,11 +6,11 @@ import { useQuery } from "react-query";
 import { graphqlUrl } from '../../services/constants';
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
-import { useHistory } from "react-router-dom"
+import { useHistory } from "react-router-dom";
 
 const Navigation = (props) => {
   const history = useHistory();
-  const { triggerTopAlert } = props;
+  const { triggerTopAlert, currentPage } = props;
 
   const verifyToken = useQuery("verifyToken", async () => {
     const token = getToken();
@@ -47,16 +47,9 @@ const Navigation = (props) => {
         <a href="#" className="navbar-brand logo">Mr. Cool Ice</a>
       </Navbar.Header>
       <Navbar.Body>
-
             <Nav>
-              <Dropdown title="Order">
-                <Dropdown.Item>Add</Dropdown.Item>
-                <Dropdown.Item>List</Dropdown.Item>
-              </Dropdown>
-              <Dropdown title="Customer">
-                <Dropdown.Item>Add</Dropdown.Item>
-                <Dropdown.Item>List</Dropdown.Item>
-              </Dropdown>
+              <Nav.Item active={currentPage === "order"} onClick={() => history.push("/order")}>Order</Nav.Item>
+              <Nav.Item active={currentPage === "customer"} onClick={() => history.push("/customer")}>Customer</Nav.Item>
               <Dropdown title="Expenses">
                 <Dropdown.Item>Add</Dropdown.Item>
                 <Dropdown.Item>List</Dropdown.Item>

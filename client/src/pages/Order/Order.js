@@ -1,102 +1,159 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
 import "./Order.css";
-import LoginForm from "../../components/Login/LoginForm"
-import Navigation from "../../components/Navigation/Navigation"
-import { Navbar, Nav, Dropdown, Panel, Form, FormGroup, ControlLabel, FormControl, Input, ButtonToolbar, Button, Col, Row, SelectPicker } from 'rsuite';
+import AddOrder from "../../components/Order/AddOrder";
+import Navigation from "../../components/Navigation/Navigation";
+import { Col, Nav, Row, Panel } from "rsuite";
+import { useQuery } from "react-query";
+import OrderList from "../../components/Order/OrderList";
+import axios from "axios";
 
 const Order = () => {
-    const values = [
-        {
-          "label": "MAM LOLITA",
-          "value": "MAM LOLITA",
-          "role": "Master"
-        },
-        {
-          "label": "KUYA OYET",
-          "value": "KUYA OYET",
-          "role": "Master"
-        },
-        {
-          "label": "SIR BANEK",
-          "value": "SIR BANEK",
-          "role": "Master"
-        }
-      ]
-      const values2 = [
-        {
-          "label": "30 kilogram (Tube)",
-          "value": "30 kilogram (Tube)",
-          "role": "Master"
-        },
-        {
-          "label": "50 kilogram (Tube)",
-          "value": "50 kilogram (Tube)",
-          "role": "Master"
-        },
-        {
-          "label": "2 kilogram (Tube)",
-          "value": "2 kilogram (Tube)",
-          "role": "Master"
-        },
-        {
-          "label": "5 kilogram (Tube)",
-          "value": "5 kilogram (Tube)",
-          "role": "Master"
-        },
-        {
-          "label": "30 kilogram (Crushed)",
-          "value": "30 kilogram (Crushed)",
-          "role": "Master"
-        },
-        {
-          "label": "4 kilogram (Crushed)",
-          "value": "4 kilogram (Crushed)",
-          "role": "Master"
-        }
-      ]
-    return (
-        <div className="login-bg">
-            <Navigation/>
-            <Row gutter={16}>
-    <Col style={{margin: '10px'}} md={6}>
-    <Panel bordered style={{backgroundColor: 'white'}}>
-  <Form>
-    <FormGroup>
-      <ControlLabel>Cashier</ControlLabel>
-      <h4>Trixie C. Aguila</h4>
-    </FormGroup>
-    <FormGroup>
-      <ControlLabel>Customer</ControlLabel>
-      <SelectPicker data={values} block/>
-    </FormGroup>
-    <FormGroup>
-      <ControlLabel>Ice Type</ControlLabel>
-      <SelectPicker data={values2} block/>
-    </FormGroup>
-    <FormGroup>
-      <ControlLabel>Weight</ControlLabel>
-      <SelectPicker data={values2} block/>
-    </FormGroup>
-    <FormGroup>
-      <ControlLabel>Weight (Custom)</ControlLabel>
-      <Input type="number" block />
-    </FormGroup>
-    <FormGroup>
-      <ControlLabel>Scale Type</ControlLabel>
-      <Input type="number" block />
-    </FormGroup>
-    <FormGroup>
-      <ButtonToolbar>
-        <Button appearance="primary">Create</Button>
-        <Button appearance="default">Reset</Button>
-      </ButtonToolbar>
-    </FormGroup>
-  </Form>
-  </Panel>
-    </Col>
-  </Row>
-        </div>
-    )
-}
+  const [activeTab, setActiveTab] = useState("addOrder");
+  const [orderList, setOrderList] = useState();
+  const [customerList, setCustomerList] = useState()
+  const iceTypeContent = [
+    {
+      label: "Tube",
+      value: "Tube",
+      role: "Master",
+    },
+    {
+      label: "Crushed",
+      value: "Crushed",
+      role: "Master",
+    },
+  ];
+  const weightContent = [
+    {
+      label: "2",
+      value: 2,
+    },
+    {
+      label: "4",
+      value: 4,
+    },
+    {
+      label: "5",
+      value: 5,
+    },
+    {
+      label: "30",
+      value: 30,
+    },
+    {
+      label: "50",
+      value: 50,
+    },
+  ];
 
-export default Order
+  const scaleContent = [
+    {
+      label: "kg",
+      value: "kg",
+    },
+    {
+      label: "g",
+      value: "g",
+    },
+  ];
+  const getOrderList = useQuery(
+    "OrderList",
+    async () => {
+      const query = `{
+        sales {
+          customerId {
+              _id
+              description
+            }
+          _id
+          iceType
+          weight
+          scaleType
+        }
+      }`;
+      return await axios.post("http://localhost:5000/mrcoolice", { query });
+    },
+    {
+      refetchInterval: 1000,
+    }
+  );
+  const getCustomerList = useQuery(
+    "CustomerList",
+    async () => {
+      const query = `{
+        customers {
+          _id
+          description
+        }
+      }`;
+      return await axios.post("http://localhost:5000/mrcoolice", { query });
+    },
+    {
+      refetchInterval: 1000,
+    }
+  );
+  useEffect(() => {
+    if (getCustomerList.isSuccess && getCustomerList.isFetched) {
+      if (
+        !getCustomerList.data.data?.errors &&
+        getCustomerList.data.data?.data?.customers
+      ) {
+        setCustomerList(getCustomerList.data.data?.data?.customers);
+      }
+    }
+    if (getOrderList.isSuccess) {
+      if (
+        !getOrderList.data.data?.errors &&
+        getOrderList.data.data?.data?.sales
+      ) {
+        setOrderList(getOrderList.data.data?.data?.sales);
+      }
+    }
+  }, [getOrderList.data, getOrderList.isSuccess, getCustomerList.data, getCustomerList.isSuccess]);
+  const renderTabs = () => {
+    if (activeTab === "addOrder") {
+      return (
+        <>
+          <AddOrder
+            iceTypeContent={iceTypeContent}
+            weightContent={weightContent}
+            scaleContent={scaleContent}
+            customerList={customerList}
+          />
+        </>
+      );
+    } else if (activeTab === "orderList") {
+      return (
+        <>
+          <OrderList 
+            iceTypeContent={iceTypeContent}
+            weightContent={weightContent}
+            scaleContent={scaleContent}
+            orderList={orderList} 
+            customerList={customerList} 
+          />
+        </>
+      );
+    }
+  };
+  return (
+    <div className="login-bg">
+      <Navigation currentPage={"order"} />
+      <Row>
+        <Col style={{ marginBottom: 15 }}>
+          <Nav
+            appearance="subtle"
+            activeKey={activeTab}
+            onSelect={(key) => setActiveTab(key)}
+          >
+            <Nav.Item eventKey="addOrder">Add order</Nav.Item>
+            <Nav.Item eventKey="orderList">Order list</Nav.Item>
+          </Nav>
+        </Col>
+      </Row>
+      <Panel bordered>{renderTabs()}</Panel>
+    </div>
+  );
+};
+
+export default Order;

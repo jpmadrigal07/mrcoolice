@@ -18,9 +18,10 @@ module.exports.verifyToken = {
         throw new Error('Token is invalid')
       }
       // Verify the token
-      const { username, exp } = jsonwebtoken.verify(token, keys.cookieKey);
+      const { username, exp, id } = jsonwebtoken.verify(token, keys.cookieKey);
       // Check if username exist in db
       const user = await User.findOne({ username });
+      // Get userId
       if (!user) {
         throw new Error("No user with that username");
       }
@@ -33,7 +34,8 @@ module.exports.verifyToken = {
         throw new Error("Token is expired");
       }
       // Return isVerified true if all 3 condition passed
-      return { isVerified: true };
+      return { isVerified: true,  userId: id };
+      
     } catch (error) {
       throw new Error(error.message);
     }
