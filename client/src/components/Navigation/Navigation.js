@@ -50,10 +50,7 @@ const Navigation = (props) => {
             <Nav>
               <Nav.Item active={currentPage === "order"} onClick={() => history.push("/order")}>Order</Nav.Item>
               <Nav.Item active={currentPage === "customer"} onClick={() => history.push("/customer")}>Customer</Nav.Item>
-              <Dropdown title="Expenses">
-                <Dropdown.Item>Add</Dropdown.Item>
-                <Dropdown.Item>List</Dropdown.Item>
-              </Dropdown>
+              <Nav.Item active={currentPage === "expenses"} onClick={() => history.push("/expenses")}>Expenses</Nav.Item>
               <Nav.Item>Reports</Nav.Item>
             </Nav>
             <Nav pullRight>

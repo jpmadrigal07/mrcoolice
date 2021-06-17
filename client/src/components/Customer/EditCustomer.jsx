@@ -44,12 +44,13 @@ const EditCustomer = (props) => {
             }
         }
     }, [getId.data, getId.isSuccess])
-    const createSales = useMutation((query) =>
+    
+    const editSales = useMutation((query) =>
         axios.post("http://localhost:5000/mrcoolice", { query })
     );
     const handleEditCustomer = async () => {
         if (inputCustomerDescription) {
-            createSales.mutate(
+            editSales.mutate(
                 `mutation{
                     updateCustomer(_id: "${customerId}", userId: "${userId}", description: "${inputCustomerDescription}") {
                         description
