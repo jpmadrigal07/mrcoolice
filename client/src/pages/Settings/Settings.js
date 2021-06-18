@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Navigation from "../../components/Navigation/Navigation";
 import { Col, Nav, Row, Panel } from "rsuite";
-import Cookies from "js-cookie";
 import { useQuery } from 'react-query'
 import axios from "axios";
 import UserList from "../../components/User/UserList";

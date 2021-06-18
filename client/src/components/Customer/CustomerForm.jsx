@@ -20,10 +20,9 @@ const CustomerForm = (props) => {
         setIsEditActive,
         foundCustomer
     } = props
-    const [customerDescription, setCustomerDescription] = useState(foundCustomer?.description)
     useEffect(() => {
-        setInputCustomerDescription(customerDescription)
-    }, [customerDescription])
+        setInputCustomerDescription(foundCustomer?.description)
+    }, [])
     return (
         <div className="login-bg">
             <Row gutter={16}>
@@ -34,7 +33,7 @@ const CustomerForm = (props) => {
                                 <ControlLabel>Customer description</ControlLabel>
                                 <Input
                                     block
-                                    onChange={(e) => setCustomerDescription(e)}
+                                    onChange={(e) => setInputCustomerDescription(e)}
                                     defaultValue={isEditActive ? foundCustomer?.description : null}
                                 />
                             </FormGroup>

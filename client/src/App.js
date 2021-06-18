@@ -6,6 +6,7 @@ import Customer from './pages/Customer/Customer';
 import './App.css';
 import Expenses from './pages/Expenses/Expenses';
 import Settings from './pages/Settings/Settings'
+import Receipt from './components/Receipt/Receipt';
 
 function App() {
   const renderRoutes = () => {
@@ -40,6 +41,11 @@ function App() {
           path="/settings"
           exact
           render={() => <Settings/>}
+        />
+        <Route
+          path="/reports"
+          exact
+          render={() => <Receipt/>}
         />
       </>
     )
