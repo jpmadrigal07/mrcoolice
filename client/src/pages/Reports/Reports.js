@@ -1,40 +1,47 @@
 import React, { useState, useEffect } from "react";
 import Navigation from "../../components/Navigation/Navigation";
-import { Col, Nav, Row, Panel } from "rsuite";
-import ExpenseList from "../../components/Expenses/ExpenseList";
-import Cookies from "js-cookie";
 import { useQuery } from "react-query";
 import axios from "axios";
-import AddExpense from "../../components/Expenses/AddExpense";
+import ExpensesReports from "../../components/Reports/ExpensesReports";
+import { Col, Nav, Row, Panel } from "rsuite";
+import moment from "moment";
+import SalesReports from "../../components/Reports/SalesReports";
 
-const Expenses = () => {
-  const [activeTab, setActiveTab] = useState("addExpense");
-  const [userId, setUserId] = useState("");
-  const [expenseList, setExpenseList] = useState();
-  const token = Cookies.get("sessionToken");
-  const getId = useQuery(
-    "getId",
+function Reports() {
+  const [expenseList, setExpenseList] = useState([]);
+  const [salesList, setSalesList] = useState([]);
+  const [activeTab, setActiveTab] = useState("salesList");
+  const getExpenseList = useQuery(
+    "ExpenseList",
     async () => {
       const query = `{
-            verifyToken(token: "${token}") {
-            userId
+            expenses {
+                _id
+                name
+                cost
+                createdAt
             }
-      }`;
+          }`;
       return await axios.post("http://localhost:5000/mrcoolice", { query });
     },
     {
       refetchInterval: 1000,
     }
   );
-
-  const getExpenseList = useQuery(
-    "ExpenseList",
+  const getSalesList = useQuery(
+    "SalesList",
     async () => {
       const query = `{
-        expenses {
-            _id
-            name
-            cost
+        sales {
+          customerId {
+              _id
+              description
+            }
+          _id
+          iceType
+          weight
+          scaleType
+          createdAt
         }
       }`;
       return await axios.post("http://localhost:5000/mrcoolice", { query });
@@ -43,13 +50,7 @@ const Expenses = () => {
       refetchInterval: 1000,
     }
   );
-
   useEffect(() => {
-    if (getId.isSuccess) {
-      if (!getId.data.data?.errors && getId.data.data?.data?.verifyToken) {
-        setUserId(getId.data.data?.data?.verifyToken?.userId);
-      }
-    }
     if (getExpenseList.isSuccess) {
       if (
         !getExpenseList.data.data?.errors &&
@@ -58,30 +59,39 @@ const Expenses = () => {
         setExpenseList(getExpenseList.data.data?.data?.expenses);
       }
     }
+    if (getSalesList.isSuccess) {
+      if (
+        !getSalesList.data.data?.errors &&
+        getSalesList.data.data?.data?.sales
+      ) {
+        setSalesList(getSalesList.data.data?.data?.sales);
+      }
+    }
   }, [
-    getId.data,
-    getId.isSuccess,
     getExpenseList.data,
     getExpenseList.isSuccess,
+    getSalesList.data,
+    getSalesList.isSuccess,
   ]);
   const renderTabs = () => {
-    if (activeTab === "addExpense") {
+    if (activeTab === "salesList") {
       return (
         <>
-          <AddExpense userId={userId} />
+          <SalesReports salesList={salesList} />
         </>
       );
     } else if (activeTab === "expenseList") {
       return (
         <>
-          <ExpenseList expenseList={expenseList} userId={userId} />
+          <ExpensesReports expenseList={expenseList} />
         </>
       );
     }
   };
   return (
     <div>
-      <Navigation currentPage={"expenses"} />
+      <Navigation currentPage={"reports"} />
+
       <Row>
         <Col style={{ marginBottom: 15 }}>
           <Nav
@@ -89,7 +99,7 @@ const Expenses = () => {
             activeKey={activeTab}
             onSelect={(key) => setActiveTab(key)}
           >
-            <Nav.Item eventKey="addExpense">Add expense</Nav.Item>
+            <Nav.Item eventKey="salesList">Sales list</Nav.Item>
             <Nav.Item eventKey="expenseList">Expense list</Nav.Item>
           </Nav>
         </Col>
@@ -97,6 +107,6 @@ const Expenses = () => {
       <Panel bordered>{renderTabs()}</Panel>
     </div>
   );
-};
+}
 
-export default Expenses;
+export default Reports;
