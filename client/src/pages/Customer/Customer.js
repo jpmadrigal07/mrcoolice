@@ -3,8 +3,6 @@ import AddCustomer from "../../components/Customer/AddCustomer";
 import CustomerList from "../../components/Customer/CustomerList";
 import Navigation from "../../components/Navigation/Navigation";
 import { Nav } from "rsuite";
-import axios from "axios";
-import { graphqlUrl } from "../../services/constants";
 import { useLocation } from "react-router-dom";
 
 const Customer = () => {

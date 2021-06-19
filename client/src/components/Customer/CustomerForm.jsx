@@ -7,7 +7,6 @@ import {
   Input,
   ButtonToolbar,
   Button,
-  Col,
   Row,
 } from "rsuite";
 import { graphqlUrl } from "../../services/constants";
@@ -157,7 +156,7 @@ const CustomerForm = (props) => {
                     onClick={() => setIsEditActive(false)}
                     disabled={updateCustomer.isLoading}
                   >
-                    Back
+                    Back to list
                   </Button>
                 </Row>
               ) : (

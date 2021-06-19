@@ -1,23 +1,65 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Table,
   Panel
 } from 'rsuite'
 import EditExpense from './EditExpense'
-import { useMutation } from 'react-query'
+import { useMutation, useQuery } from "react-query";
 import { triggerTopAlert } from '../../actions/topAlertActions';
 import axios from "axios";
 import { connect } from 'react-redux';
+import { graphqlUrl } from "../../services/constants";
 
 const ExpenseList = (props) => {
-  const { expenseList, userId, triggerTopAlert } = props
+  const { userId, triggerTopAlert } = props
   const [isEditActive, setIsEditActive] = useState(false)
   const [expenseId, setExpenseId] = useState("")
+  const [expenseList, setExpenseList] = useState([]);
   const { Column, HeaderCell, Cell } = Table
-  const deleteExpense = useMutation((query) =>
-    axios.post("http://localhost:5000/mrcoolice", { query })
+
+  const getExpenseList = useQuery(
+    "getExpenseList",
+    async () => {
+      const query = `{
+        expenses {
+            _id
+            name
+            cost
+        }
+      }`;
+      return await axios.post("http://localhost:5000/mrcoolice", { query });
+    }
   );
-  const handleRemove = (id) => {
+
+  useEffect(() => {
+    if (!isEditActive) {
+      getExpenseList.refetch();
+    }
+  }, [isEditActive]);
+
+  useEffect(() => {
+    if (getExpenseList.isSuccess) {
+      if (
+        !getExpenseList.data.data?.errors &&
+        getExpenseList.data.data?.data?.expenses
+      ) {
+        const expenses = getExpenseList.data.data?.data?.expenses;
+        const expensesWithNumber = expenses?.reverse().map((res, index) => {
+          return {
+            id: index + 1,
+            ...res,
+          };
+        });
+        setExpenseList(expensesWithNumber);
+      }
+    }
+  }, [getExpenseList.data]);
+
+  const deleteExpense = useMutation((query) =>
+    axios.post(graphqlUrl, { query })
+  );
+
+  const remove = (id) => {
     deleteExpense.mutate(
       `mutation{
         deleteExpense(_id: "${id}") {
@@ -25,9 +67,28 @@ const ExpenseList = (props) => {
             cost
         }
       }`
-    )
-    triggerTopAlert(true, "Expense successfully deleted", "success")
-  }
+    );
+  };
+
+  useEffect(() => {
+    if (deleteExpense.isSuccess) {
+      if (!deleteExpense.data?.data?.errors) {
+        getExpenseList.refetch();
+        deleteExpense.reset();
+        triggerTopAlert(true, "Successfully deleted", "success");
+      } else {
+        triggerTopAlert(
+          true,
+          deleteExpense.data?.data?.errors[0].message,
+          "danger"
+        );
+      }
+    }
+    if (deleteExpense.isError) {
+      triggerTopAlert(true, deleteExpense.error.message, "danger");
+    }
+  }, [deleteExpense]);
+  
   const renderExpense = () => {
     if (!isEditActive) {
       return (
@@ -38,7 +99,7 @@ const ExpenseList = (props) => {
         >
           <Column>
             <HeaderCell>#</HeaderCell>
-            <Cell dataKey="number" />
+            <Cell dataKey="id" />
           </Column>
           <Column flexGrow={100} minWidth={100} >
             <HeaderCell>Expense name</HeaderCell>
@@ -53,11 +114,14 @@ const ExpenseList = (props) => {
             <Cell>
               {(rowData) => {
                 return (
-                  <span>
-                    <a onClick={() => {setIsEditActive(!isEditActive); setExpenseId(rowData._id)}}>
+                  <span style={{ cursor: 'pointer' }}>
+                    <a onClick={() => {
+                      setIsEditActive(!isEditActive); 
+                      setExpenseId(rowData._id)
+                      }}>
                       Edit
-                    </a> |{'  '}
-                    <a onClick={() => handleRemove(rowData._id)}>
+                    </a> {'  '}|{'  '}
+                    <a onClick={() => remove(rowData._id)}>
                       Remove
                     </a>
                   </span>
