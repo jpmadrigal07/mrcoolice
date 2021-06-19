@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react'
 import {
     Table,
     DatePicker,
-    ControlLabel
+    ControlLabel,
+    Panel
 } from 'rsuite'
 function SalesReports(props) {
     const { salesList } = props
@@ -16,7 +17,7 @@ function SalesReports(props) {
     }, [selectedDate])
 
     return (
-        <div>
+        <Panel bordered style={{margin: 10}}> 
             <ControlLabel>Sort by Date</ControlLabel>
             <DatePicker
                 onChange={(e) => setSelectedDate(moment(e).startOf('day').unix() * 1000)}
@@ -24,7 +25,6 @@ function SalesReports(props) {
                 oneTap
             />
             <Table
-                height={400}
                 data={selectedDate ? sortedByDate : salesList}
             >
                 <Column width={70} align="center">
@@ -48,7 +48,7 @@ function SalesReports(props) {
                     <Cell dataKey="scaleType" />
                 </Column>
             </Table>
-        </div>
+        </Panel>
     )
 }
 

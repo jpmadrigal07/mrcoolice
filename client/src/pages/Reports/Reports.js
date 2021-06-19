@@ -92,19 +92,16 @@ function Reports() {
     <div>
       <Navigation currentPage={"reports"} />
 
-      <Row>
-        <Col style={{ marginBottom: 15 }}>
+
           <Nav
             appearance="subtle"
             activeKey={activeTab}
             onSelect={(key) => setActiveTab(key)}
           >
-            <Nav.Item eventKey="salesList">Sales list</Nav.Item>
-            <Nav.Item eventKey="expenseList">Expense list</Nav.Item>
+            <Nav.Item eventKey="salesList">Sales List</Nav.Item>
+            <Nav.Item eventKey="expenseList">Expense List</Nav.Item>
           </Nav>
-        </Col>
-      </Row>
-      <Panel bordered>{renderTabs()}</Panel>
+      {renderTabs()}
     </div>
   );
 }

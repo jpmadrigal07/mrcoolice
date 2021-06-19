@@ -82,19 +82,17 @@ const Expenses = () => {
   return (
     <div>
       <Navigation currentPage={"expenses"} />
-      <Row>
-        <Col style={{ marginBottom: 15 }}>
+
           <Nav
             appearance="subtle"
             activeKey={activeTab}
             onSelect={(key) => setActiveTab(key)}
           >
-            <Nav.Item eventKey="addExpense">Add expense</Nav.Item>
-            <Nav.Item eventKey="expenseList">Expense list</Nav.Item>
+            <Nav.Item eventKey="addExpense">Add Expense</Nav.Item>
+            <Nav.Item eventKey="expenseList">Expense List</Nav.Item>
           </Nav>
-        </Col>
-      </Row>
-      <Panel bordered>{renderTabs()}</Panel>
+
+      {renderTabs()}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import {
-  Table
+  Table,
+  Panel
 } from 'rsuite'
 import EditExpense from './EditExpense'
 import { useMutation } from 'react-query'
@@ -30,23 +31,24 @@ const ExpenseList = (props) => {
   const renderExpense = () => {
     if (!isEditActive) {
       return (
+        <Panel bordered style={{ margin: '10px' }}>
         <Table
           height={400}
           data={expenseList}
         >
-          <Column width={70} align="center" fixed>
+          <Column>
             <HeaderCell>#</HeaderCell>
             <Cell dataKey="number" />
           </Column>
-          <Column width={200} >
+          <Column flexGrow={100} minWidth={100} >
             <HeaderCell>Expense name</HeaderCell>
             <Cell dataKey="name" />
           </Column>
-          <Column width={200} >
+          <Column flexGrow={100} minWidth={100} >
             <HeaderCell>Cost</HeaderCell>
             <Cell dataKey="cost" />
           </Column>
-          <Column width={120} fixed="right">
+          <Column flexGrow={100} minWidth={100} fixed="right">
             <HeaderCell>Action</HeaderCell>
             <Cell>
               {(rowData) => {
@@ -64,6 +66,7 @@ const ExpenseList = (props) => {
             </Cell>
           </Column>
         </Table>
+        </Panel>
       )
     } else {
       return <EditExpense

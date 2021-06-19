@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import 'rsuite/dist/styles/rsuite-default.css';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import Login from "./pages/Login/Login"
@@ -5,10 +6,28 @@ import Order from './pages/Order/Order';
 import Customer from './pages/Customer/Customer';
 import './App.css';
 import Expenses from './pages/Expenses/Expenses';
-import Settings from './pages/Settings/Settings';
+import Staff from './pages/Staff/Staff';
 import Reports from './pages/Reports/Reports';
+import Receipt from './pages/Receipt/Receipt';
+import { Alert } from 'rsuite';
+import { connect } from "react-redux";
+import { triggerTopAlert } from './actions/topAlertActions';
 
-function App() {
+function App(props) {
+  const { alertMessage, alertType, alertShowAlert, triggerTopAlert } = props;
+
+  useEffect(() => {
+    if(alertShowAlert) {
+      if(alertType === "success") {
+        Alert.success(alertMessage, 3000, (() => triggerTopAlert(false, "", "")))
+      } else if(alertType === "warning") {
+        Alert.warning(alertMessage, 3000, (() => triggerTopAlert(false, "", "")))
+      } else if(alertType === "danger") {
+        Alert.error(alertMessage, 3000, (() => triggerTopAlert(false, "", "")))
+      }
+    }
+  }, [alertMessage, alertType, alertShowAlert])
+
   const renderRoutes = () => {
     return (
       <>
@@ -38,14 +57,19 @@ function App() {
           render={() => <Expenses/>}
         />
         <Route
-          path="/settings"
+          path="/staff"
           exact
-          render={() => <Settings/>}
+          render={() => <Staff/>}
         />
         <Route
           path="/reports"
           exact
           render={() => <Reports/>}
+        />
+        <Route
+          path="/receipt"
+          exact
+          render={() => <Receipt/>}
         />
       </>
     )
@@ -60,4 +84,10 @@ function App() {
   );
 }
 
-export default App;
+const mapStateToProps = (global) => ({
+  alertMessage: global.topAlert.message,
+  alertType: global.topAlert.type,
+  alertShowAlert: global.topAlert.showAlert
+});
+
+export default connect(mapStateToProps, { triggerTopAlert })(App);

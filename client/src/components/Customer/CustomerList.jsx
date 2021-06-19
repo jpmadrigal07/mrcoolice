@@ -1,81 +1,143 @@
-import React from 'react'
-import { useState, useEffect } from 'react'
-import {
-  Table
-} from 'rsuite'
-import { useMutation } from 'react-query'
-import { triggerTopAlert } from '../../actions/topAlertActions';
-import { connect } from 'react-redux';
+import React from "react";
+import { useState, useEffect } from "react";
+import { Table, Panel } from "rsuite";
+import { useMutation, useQuery } from "react-query";
+import { triggerTopAlert } from "../../actions/topAlertActions";
+import { connect } from "react-redux";
 import axios from "axios";
-import EditCustomer from './EditCustomer';
+import EditCustomer from "./EditCustomer";
+import { graphqlUrl } from "../../services/constants";
 
 const CustomerList = (props) => {
-  const { customerList, triggerTopAlert } = props
-  const { Column, HeaderCell, Cell } = Table
-  const [isEditActive, setIsEditActive] = useState(false)
-  const [customerId, setCustomerId] = useState("")
+  const { triggerTopAlert } = props;
+  const { Column, HeaderCell, Cell } = Table;
+  const [isEditActive, setIsEditActive] = useState(false);
+  const [customerId, setCustomerId] = useState("");
+  const [customerList, setCustomerList] = useState([]);
+
+  useEffect(() => {
+    if (!isEditActive) {
+      getCustomerList.refetch();
+    }
+  }, [isEditActive]);
+
+  const getCustomerList = useQuery("getCustomerList", async () => {
+    const query = `{
+        customers {
+            _id
+            description,
+        }
+      }`;
+    return await axios.post(graphqlUrl, { query });
+  });
+
+  useEffect(() => {
+    if (getCustomerList.isSuccess) {
+      if (
+        !getCustomerList.data.data?.errors &&
+        getCustomerList.data.data?.data?.customers
+      ) {
+        const customers = getCustomerList.data.data?.data?.customers;
+        const customerWithNumber = customers?.reverse().map((res, index) => {
+          return {
+            id: index + 1,
+            ...res,
+          };
+        });
+        setCustomerList(customerWithNumber);
+      }
+    }
+  }, [getCustomerList.data]);
+
   const deleteCustomer = useMutation((query) =>
-    axios.post("http://localhost:5000/mrcoolice", { query })
+    axios.post(graphqlUrl, { query })
   );
-  const handleRemove = (id) => {
+
+  const remove = (id) => {
     deleteCustomer.mutate(
       `mutation{
         deleteCustomer(_id: "${id}") {
             description
         }
       }`
-    )
-    triggerTopAlert(true, "Customer successfully deleted", "success")
-  }
+    );
+  };
+
+  useEffect(() => {
+    if (deleteCustomer.isSuccess) {
+      if (!deleteCustomer.data?.data?.errors) {
+        getCustomerList.refetch();
+        deleteCustomer.reset();
+        triggerTopAlert(true, "Successfully deleted", "success");
+      } else {
+        triggerTopAlert(
+          true,
+          deleteCustomer.data?.data?.errors[0].message,
+          "danger"
+        );
+      }
+    }
+    if (deleteCustomer.isError) {
+      triggerTopAlert(true, deleteCustomer.error.message, "danger");
+    }
+  }, [deleteCustomer]);
+
   const renderEdit = () => {
     if (!isEditActive) {
       return (
-        <Table
-          height={400}
-          data={customerList}
-        >
-          <Column width={70} align="center" fixed>
-            <HeaderCell>#</HeaderCell>
-            <Cell dataKey="number" />
-          </Column>
-          <Column width={200} >
-            <HeaderCell>Customer description</HeaderCell>
-            <Cell dataKey="description" />
-          </Column>
-          <Column width={120} fixed="right">
-            <HeaderCell>Action</HeaderCell>
-            <Cell>
-              {(rowData) => {
-                return (
-                  <span>
-                    <a onClick={() => {setIsEditActive(!isEditActive); setCustomerId(rowData._id)}}>
-                      Edit
-                    </a> |{'  '}
-                    <a onClick={() => handleRemove(rowData._id)}>
-                      Remove
-                    </a>
-                  </span>
-                );
-              }}
-            </Cell>
-          </Column>
-        </Table>
-      )
+        <Panel bordered style={{ margin: "10px" }}>
+          <Table height={400} data={customerList}>
+            <Column>
+              <HeaderCell>#</HeaderCell>
+              <Cell dataKey="id" />
+            </Column>
+            <Column flexGrow={100} minWidth={50}>
+              <HeaderCell>Customer Description</HeaderCell>
+              <Cell dataKey="description" />
+            </Column>
+            <Column flexGrow={100} minWidth={50} fixed="right">
+              <HeaderCell>Action</HeaderCell>
+              <Cell>
+                {(rowData) => {
+                  return (
+                    <span>
+                      <a
+                        onClick={() => {
+                          setIsEditActive(!isEditActive);
+                          setCustomerId(rowData._id);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        Edit
+                      </a>{" "}
+                      |{"  "}
+                      <a
+                        onClick={() => remove(rowData._id)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        Remove
+                      </a>
+                    </span>
+                  );
+                }}
+              </Cell>
+            </Column>
+          </Table>
+        </Panel>
+      );
     } else {
-      return <EditCustomer 
-        isEditActive={isEditActive} 
-        setIsEditActive={setIsEditActive}
-        customerId={customerId} 
-        customerList={customerList}
-      />
+      return (
+        <EditCustomer
+          isEditActive={isEditActive}
+          setIsEditActive={setIsEditActive}
+          customerId={customerId}
+          customerList={customerList}
+        />
+      );
     }
-  }
-  return (
-    <div>
-      {renderEdit()}
-    </div>
-  )
-}
+  };
+  return <div>{renderEdit()}</div>;
+};
 
 const mapStateToProps = (global) => ({});
 

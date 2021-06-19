@@ -28,7 +28,6 @@ const AddExpense = (props) => {
         }
     }
     return (
-        <div>
             <ExpenseForm 
                 setInputExpenseName={setInputExpenseName} 
                 setInputCost={setInputCost} 
@@ -36,7 +35,6 @@ const AddExpense = (props) => {
                 inputCost={inputCost}
                 handleCreateExpense={handleCreateExpense}
             />
-        </div>
     )
 }
 

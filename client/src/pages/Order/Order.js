@@ -113,18 +113,15 @@ const Order = () => {
   const renderTabs = () => {
     if (activeTab === "addOrder") {
       return (
-        <>
           <AddOrder
             iceTypeContent={iceTypeContent}
             weightContent={weightContent}
             scaleContent={scaleContent}
             customerList={customerList}
           />
-        </>
       );
     } else if (activeTab === "orderList") {
       return (
-        <>
           <OrderList 
             iceTypeContent={iceTypeContent}
             weightContent={weightContent}
@@ -132,27 +129,24 @@ const Order = () => {
             orderList={orderList} 
             customerList={customerList} 
           />
-        </>
       );
     }
   };
   return (
-    <div className="login-bg">
+    <>
       <Navigation currentPage={"order"} />
-      <Row>
-        <Col style={{ marginBottom: 15 }}>
+
           <Nav
             appearance="subtle"
             activeKey={activeTab}
             onSelect={(key) => setActiveTab(key)}
           >
-            <Nav.Item eventKey="addOrder">Add order</Nav.Item>
-            <Nav.Item eventKey="orderList">Order list</Nav.Item>
+            <Nav.Item eventKey="addOrder">Add Order</Nav.Item>
+            <Nav.Item eventKey="orderList">Order List</Nav.Item>
           </Nav>
-        </Col>
-      </Row>
-      <Panel bordered>{renderTabs()}</Panel>
-    </div>
+
+      {renderTabs()}
+    </>
   );
 };
 

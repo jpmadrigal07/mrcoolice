@@ -2,72 +2,41 @@ import React, { useState, useEffect } from "react";
 import AddCustomer from "../../components/Customer/AddCustomer";
 import CustomerList from "../../components/Customer/CustomerList";
 import Navigation from "../../components/Navigation/Navigation";
-import { Col, Nav, Row, Panel } from "rsuite";
-import { useQuery } from "react-query";
+import { Nav } from "rsuite";
 import axios from "axios";
+import { graphqlUrl } from "../../services/constants";
+import { useLocation } from "react-router-dom";
 
 const Customer = () => {
-  const [activeTab, setActiveTab] = useState("addCustomer");
-  const [customerList, setCustomerList] = useState();
+  const { search } = useLocation();
+  const currentTab = search.replace("?tab=", "")
+  const [activeTab, setActiveTab] = useState(currentTab !== "" ? currentTab : "customerList");
 
-  const getCustomerList = useQuery(
-    "OrderList",
-    async () => {
-      const query = `{
-        customers {
-            _id
-            description
-        }
-      }`;
-      return await axios.post("http://localhost:5000/mrcoolice", { query });
-    },
-    {
-      refetchInterval: 1000,
-    }
-  );
-  useEffect(() => {
-    if (getCustomerList.isSuccess) {
-      if (
-        !getCustomerList.data.data?.errors &&
-        getCustomerList.data.data?.data?.customers
-      ) {
-        setCustomerList(getCustomerList.data.data?.data?.customers);
-      }
-    }
-  }, [getCustomerList.data, getCustomerList.isSuccess]);
-
-  const renderTabs = () => {
+  const renderTabContent = () => {
     if (activeTab === "addCustomer") {
       return (
-        <>
-          <AddCustomer />
-        </>
+        <AddCustomer />
       );
     } else if (activeTab === "customerList") {
       return (
-        <>
-          <CustomerList customerList={customerList} />
-        </>
+        <CustomerList />
       );
     }
   };
+
   return (
-    <div className="login-bg">
+    <>
       <Navigation currentPage={"customer"} />
-      <Row>
-        <Col style={{ marginBottom: 15 }}>
-          <Nav
-            appearance="subtle"
-            activeKey={activeTab}
-            onSelect={(key) => setActiveTab(key)}
-          >
-            <Nav.Item eventKey="addCustomer">Add customer</Nav.Item>
-            <Nav.Item eventKey="customerList">Customer list</Nav.Item>
-          </Nav>
-        </Col>
-        <Panel>{renderTabs()}</Panel>
-      </Row>
-    </div>
+      <Nav
+        appearance="subtle"
+        activeKey={activeTab}
+        onSelect={(key) => setActiveTab(key)}
+      >
+        <Nav.Item eventKey="customerList">Customer List</Nav.Item>
+        <Nav.Item eventKey="addCustomer">Add Customer</Nav.Item>
+      </Nav>
+      {renderTabContent()}
+    </>
   );
 };
 

@@ -1,51 +1,41 @@
 import React from 'react'
 import { useState } from 'react'
 import Navigation from '../../components/Navigation/Navigation'
+import './Receipt.css'
 
 function Receipt(props) {
-    const {} = props
+    const { receiptNumber, dateCreated, customerDescription, staffName, orderData } = props
     const [order, setOrder] = useState([])
-    const dateNow = Date.now();
-    console.log(dateNow)
     return (
         <div>
-        <Navigation currentPage={"reports"} />
-            <div style="text-align: center;">
-                <h1>MR. COOL ICE</h1>
-                <h3 style="margin-top: -20px; font-weight: normal;">
-                    Victoria Woods
-                    <br />
-                    Brgy. San Francisco, Victoria Laguna
-                    <br />
-                    Tel: (0997) 1162923 ● (0947) 8129639
-                </h3>
-            </div>
-            <div style="display: inline-block;">
-                <h2>DELIVERY RECEIPT</h2>
-                <h3 style="font-weight: normal;">SOLD TO:_____________</h3>
-                <h3 style="font-weight: normal;">Vehicle no.:___________</h3>
-            </div>
-            <div style="float: right;">
-                <h2 style="font-weight: normal;">Order number</h2>
-                <h3 style="font-weight: normal;">Date:__________</h3>
-                <h3 style="font-weight: normal;">Time:__________</h3>
-            </div>
-            <div style="text-align: center; padding-bottom: 40vh; border-top: 0.5px solid gray; border-bottom: 0.5px solid gray;">
-                <table style="border-collapse: collapse;">
-                    <th>Qty.</th>
-                    <th style="padding-left: 36.5vw; padding-right: 36.5vw;">Articles</th>
-                    <th>Total kgs.</th>
-                </table>
-            </div>
-            <div style="float: right;">
-                <h4 style="font-weight: normal; text-align: center;">Received the above merchandise
-                    <br />in good order and condition</h4>
-            </div>
-            <div style="display: inline-block;">
-                <br />
-                <br />
-                <h3 style="font-weight: normal;">Issued by:_____________</h3>
-                <h3 style="font-weight: normal;">Checked by:____________________________</h3>
+        <Navigation currentPage={""} />
+            <div id="receipt">
+                <div>
+                    <p style={{fontWeight: '800', fontSize: '18px', textAlign: 'center'}}>MR. COOL ICE</p>
+                    <p style={{fontWeight: '300', fontSize: '8px', textAlign: 'center'}}>
+                        Address: Victoria Woods, Brgy. San Francisco, Victoria Laguna ● Telephone: (0997) 1162923, (0947) 8129639
+                    </p>
+                    <hr id="lineDivider"/>
+                    <p style={{fontSize: '10px', lineHeight: '13px'}}><span style={{fontWeight: '700'}}>RCPT#:</span> 1223345<br/><span style={{fontWeight: '700'}}>DATE:</span> 11/07/1994 09:25 PM<br/><span style={{fontWeight: '700'}}>CUST:</span> KUYA BOYET<br/><span style={{fontWeight: '700'}}>STAFF:</span> TRIXIE C. AGUILA</p>
+                    <br/>
+                </div>
+                    <table style={{width: '100%', fontSize: '8px'}}>
+                        <tr>
+                            <td style={{width: '70%'}}>500 kg Ice</td>
+                            <td style={{width: '30%', textAlign: 'right', fontWeight: '600'}}>P312,343.00</td>
+                        </tr>
+                    </table>
+                    <hr id="lineTotal"/>
+                    <table style={{width: '100%', fontSize: '8px'}}>
+                        <tr>
+                            <td style={{width: '70%'}}>Total</td>
+                            <td style={{width: '30%', textAlign: 'right', fontWeight: '600'}}>P500.00</td>
+                        </tr>
+                    </table>
+                    <hr id="lineDivider"/>
+                    <p style={{fontSize: '8px', lineHeight: '10px', fontWeight: '400'}}>THIS IS AN OFFICIAL RECEIPT AND THIS SHALL BE VALID FOR FIVE(5) YEARS FROM THE DATE OF PERMIT TO USE.</p>
+                    <br/>
+                    <p style={{fontSize: '8px', lineHeight: '10px', fontWeight: '400'}}>----</p>
             </div>
         </div>
     )

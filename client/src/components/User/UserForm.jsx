@@ -30,10 +30,9 @@ const UserForm = (props) => {
         setInputLastName(foundUser?.lastName)
     }, [])
     return (
-        <div>
-            <Row gutter={16}>
-                <Col style={{ margin: '10px' }} md={6}>
-                    <Panel bordered style={{ backgroundColor: 'white' }}>
+        <>
+
+                    <Panel bordered style={{ margin: '10px' }}>
                         <Form onSubmit={isEditActive ? () => handleEditUser() : () => handleCreateUser()}>
                             <FormGroup>
                                 <ControlLabel>Username</ControlLabel>
@@ -92,9 +91,7 @@ const UserForm = (props) => {
                             </FormGroup>
                         </Form>
                     </Panel>
-                </Col>
-            </Row>
-        </div>
+        </>
     )
 }
 

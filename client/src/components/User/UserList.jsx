@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import {
-  Table
+  Table,
+  Panel
 } from 'rsuite'
 import { useMutation } from 'react-query'
 import { triggerTopAlert } from '../../actions/topAlertActions';
@@ -36,31 +37,31 @@ const UserList = (props) => {
   const renderAccounts = () => {
     if (!isEditActive) {
       return (
+        <Panel bordered style={{margin: 10}}>
         <Table
-          height={400}
           data={userList}
         >
-          <Column width={70} align="center">
+          <Column>
             <HeaderCell>#</HeaderCell>
             <Cell dataKey="number" />
           </Column>
-          <Column width={200}>
+          <Column flexGrow={100} minWidth={200}>
             <HeaderCell>Username</HeaderCell>
             <Cell dataKey="username" />
           </Column>
-          <Column width={200}>
+          <Column flexGrow={100} minWidth={200}>
             <HeaderCell>User Type</HeaderCell>
             <Cell dataKey="userType" />
           </Column>
-          <Column width={200}>
+          <Column flexGrow={100} minWidth={200}>
             <HeaderCell>First name</HeaderCell>
             <Cell dataKey="firstName" />
           </Column>
-          <Column width={200}>
+          <Column flexGrow={100} minWidth={200}>
             <HeaderCell>Last name</HeaderCell>
             <Cell dataKey="lastName" />
           </Column>
-          <Column width={120} fixed="right">
+          <Column flexGrow={100} minWidth={120} fixed="right">
             <HeaderCell>Action</HeaderCell>
             <Cell>
               {(rowData) => {
@@ -78,6 +79,7 @@ const UserList = (props) => {
             </Cell>
           </Column>
         </Table>
+        </Panel>
       )
     } else {
       return <EditUser 

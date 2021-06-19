@@ -26,13 +26,11 @@ const ExpenseForm = (props) => {
         setInputCost(foundExpense?.cost)
     }, [])
     return (
-        <div>
-            <Row gutter={16}>
-                <Col style={{ margin: '10px' }} md={6}>
-                    <Panel bordered style={{ backgroundColor: 'white' }}>
+        <>
+                    <Panel bordered style={{ margin: '10px' }}>
                         <Form onSubmit={isEditActive ? () => handleEditExpense() : () => handleCreateExpense()}>
                             <FormGroup>
-                                <ControlLabel>Expense name</ControlLabel>
+                                <ControlLabel>Expense Name</ControlLabel>
                                 <Input
                                     block
                                     onChange={(e) => setInputExpenseName(e)}
@@ -63,9 +61,8 @@ const ExpenseForm = (props) => {
                             </FormGroup>
                         </Form>
                     </Panel>
-                </Col>
-            </Row>
-        </div>
+
+        </>
     )
 }
 

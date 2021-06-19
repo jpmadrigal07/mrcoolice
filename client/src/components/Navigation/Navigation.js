@@ -52,10 +52,10 @@ const Navigation = (props) => {
               <Nav.Item active={currentPage === "customer"} onClick={() => history.push("/customer")}>Customer</Nav.Item>
               <Nav.Item active={currentPage === "expenses"} onClick={() => history.push("/expenses")}>Expenses</Nav.Item>
               <Nav.Item active={currentPage === "reports"} onClick={() => history.push("/reports")}>Reports</Nav.Item>
+              <Nav.Item active={currentPage === "staff"} onClick={() => history.push("/staff")}>Staff</Nav.Item>
             </Nav>
             <Nav pullRight>
               <Dropdown title="Admin">
-                <Dropdown.Item active={currentPage === "settings"} onClick={() => history.push("/settings")}>Settings</Dropdown.Item>
                 <Dropdown.Item onClick={() => logOut()}>Logout</Dropdown.Item>
               </Dropdown>
             </Nav>

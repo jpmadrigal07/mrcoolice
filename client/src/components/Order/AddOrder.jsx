@@ -99,10 +99,9 @@ const AddOrder = (props) => {
   ))
   
   return (
-    <div className="login-bg">
-      <Row gutter={16}>
-        <Col style={{ margin: '10px' }} md={6}>
-          <Panel bordered style={{ backgroundColor: 'white' }}>
+    <>
+
+          <Panel bordered style={{ margin: 10 }}>
             <Form onSubmit={() => handleCreateOrder()}>
               <FormGroup>
                 <ControlLabel>Cashier</ControlLabel>
@@ -193,9 +192,8 @@ const AddOrder = (props) => {
               </FormGroup>
             </Form>
           </Panel>
-        </Col>
-      </Row>
-    </div>
+
+    </>
   )
 }
 

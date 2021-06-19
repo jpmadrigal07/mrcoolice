@@ -1,7 +1,10 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import {
-  Table
+  Table,
+  Panel,
+  Row,
+  Col
 } from 'rsuite'
 import { useMutation } from 'react-query'
 import { triggerTopAlert } from '../../actions/topAlertActions';
@@ -38,27 +41,29 @@ const OrderList = (props) => {
   const renderEdit = () => {
     if (!isEditActive) {
       return (
+
+        <Panel bordered style={{ margin: '10px' }}>
         <Table
           height={400}
           data={orderList}
         >
-          <Column width={70} align="center" fixed>
+          <Column>
             <HeaderCell>#</HeaderCell>
             <Cell dataKey="number" />
           </Column>
-          <Column width={200} fixed>
+          <Column>
             <HeaderCell>Customer</HeaderCell>
             <Cell dataKey="customerId.description" />
           </Column>
-          <Column width={200} fixed>
+          <Column>
             <HeaderCell>Ice Type</HeaderCell>
             <Cell dataKey="iceType" />
           </Column>
-          <Column width={200}>
+          <Column>
             <HeaderCell>Weight</HeaderCell>
             <Cell dataKey="weight" />
           </Column>
-          <Column width={200}>
+          <Column>
             <HeaderCell>Scale Type</HeaderCell>
             <Cell dataKey="scaleType" />
           </Column>
@@ -80,6 +85,8 @@ const OrderList = (props) => {
             </Cell>
           </Column>
         </Table>
+        </Panel>
+
       )
     } else {
       return <EditOrder 

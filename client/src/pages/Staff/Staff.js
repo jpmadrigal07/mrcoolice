@@ -6,7 +6,7 @@ import axios from "axios";
 import UserList from "../../components/User/UserList";
 import AddUser from "../../components/User/AddUser";
 
-const Settings = () => {
+const Staff = () => {
     const [activeTab, setActiveTab] = useState("addUser");
     const [userList, setUserList] = useState()
     const staffUserType = "Staff";
@@ -55,22 +55,20 @@ const Settings = () => {
       };
   return (
     <div>
-      <Navigation currentPage={"settings"} />
-      <Row>
-        <Col style={{ marginBottom: 15 }}>
+      <Navigation currentPage={"staff"} />
+
           <Nav
             appearance="subtle"
             activeKey={activeTab}
             onSelect={(key) => setActiveTab(key)}
           >
-            <Nav.Item eventKey="addUser">Register account</Nav.Item>
-            <Nav.Item eventKey="userList">Account list</Nav.Item>
+            <Nav.Item eventKey="addUser">Create Staff</Nav.Item>
+            <Nav.Item eventKey="userList">Staff List</Nav.Item>
           </Nav>
-        </Col>
-      </Row>
-      <Panel bordered>{renderTabs()}</Panel>
+
+      {renderTabs()}
     </div>
   );
 };
 
-export default Settings;
+export default Staff;
