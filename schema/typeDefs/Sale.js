@@ -20,6 +20,7 @@ const SaleType = new GraphQLObjectType({
                 return await Customer.findOne({_id: sale.customerId});
             }
         },
+        receiptNumber: { type: GraphQLInt },
         iceType: { type: GraphQLString },
         weight: { type: GraphQLInt },
         scaleType: { type: GraphQLString },

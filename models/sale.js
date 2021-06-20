@@ -11,6 +11,7 @@ const sale = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Customer",
     },
+    receiptNumber: Number,
     iceType: String,
     weight: Number,
     scaleType: String,

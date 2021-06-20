@@ -10,6 +10,7 @@ const { getAllSale, getSale } = require('./Query/Sale');
 const { getAllCustomer, getCustomer } = require('./Query/Customer');
 const { getAllExpense, getExpense } = require('./Query/Expense');
 const { verifyToken } = require('./Query/Authentication');
+const { updateCode } = require('./Query/UpdateCode');
 
 // Mutation Functions
 const { login } = require('./Mutation/Authentication');
@@ -25,7 +26,8 @@ const Query = new GraphQLObjectType({
         customers: getAllCustomer, customer: getCustomer,
         expenses: getAllExpense, expense: getExpense,
         sales: getAllSale, sale: getSale,
-        verifyToken
+        verifyToken,
+        updateCode
     }
 });
 

@@ -24,6 +24,14 @@ function Receipt(props) {
                             <td style={{width: '70%'}}>500 kg Ice</td>
                             <td style={{width: '30%', textAlign: 'right', fontWeight: '600'}}>P312,343.00</td>
                         </tr>
+                        <tr>
+                            <td style={{width: '70%'}}>500 kg Ice</td>
+                            <td style={{width: '30%', textAlign: 'right', fontWeight: '600'}}>P312,343.00</td>
+                        </tr>
+                        <tr>
+                            <td style={{width: '70%'}}>500 kg Ice</td>
+                            <td style={{width: '30%', textAlign: 'right', fontWeight: '600'}}>P312,343.00</td>
+                        </tr>
                     </table>
                     <hr id="lineTotal"/>
                     <table style={{width: '100%', fontSize: '8px'}}>

@@ -122,7 +122,7 @@ const CustomerForm = (props) => {
           setAutheticatedUserId(getAutheticatedUserId.data.data?.data?.verifyToken?.userId);
         }
     }
-    if(updateCustomer.isError) {
+    if(getAutheticatedUserId.isError) {
         triggerTopAlert(true, updateCustomer.error.message, "warning");
     }
   }, [getAutheticatedUserId]);

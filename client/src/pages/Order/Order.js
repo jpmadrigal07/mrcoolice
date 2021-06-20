@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Order.css";
-import AddOrder from "../../components/Order/AddOrder";
+import AddOrder2 from "../../components/Order/AddOrder2";
 import Navigation from "../../components/Navigation/Navigation";
 import { Col, Nav, Row, Panel } from "rsuite";
 import { useQuery } from "react-query";
@@ -113,7 +113,7 @@ const Order = () => {
   const renderTabs = () => {
     if (activeTab === "addOrder") {
       return (
-          <AddOrder
+          <AddOrder2
             iceTypeContent={iceTypeContent}
             weightContent={weightContent}
             scaleContent={scaleContent}

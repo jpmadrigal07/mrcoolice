@@ -5,7 +5,8 @@ const VerifyTokenType = new GraphQLObjectType({
     fields: () => ({
         token: { type: GraphQLString },
         isVerified: { type: GraphQLBoolean },
-        userId: { type: GraphQLID }
+        userId: { type: GraphQLID },
+        updateExecuted: { type: GraphQLBoolean },
     })
 });
 
