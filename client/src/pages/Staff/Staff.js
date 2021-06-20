@@ -1,70 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Navigation from "../../components/Navigation/Navigation";
-import { Col, Nav, Row, Panel } from "rsuite";
-import { useQuery } from 'react-query'
-import axios from "axios";
-import UserList from "../../components/User/UserList";
-import AddUser from "../../components/User/AddUser";
+import { Nav } from "rsuite";
+import UserList from "../../components/User/StaffList";
+import AddUser from "../../components/User/AddStaff";
+import { useLocation } from "react-router-dom";
 
 const Staff = () => {
-    const [activeTab, setActiveTab] = useState("addUser");
-    const [userList, setUserList] = useState()
-    const staffUserType = "Staff";
-    const getUserList = useQuery(
-      "UserList",
-      async () => {
-        const query = `{
-          users {
-            _id
-            username
-            password
-            userType
-            firstName
-            lastName
-          }
-        }`;
-        return await axios.post("http://localhost:5000/mrcoolice", { query });
-      },
-      {
-        refetchInterval: 1000,
-      }
-    );
-    
-    useEffect(() => {
-      if (getUserList.isSuccess) {
-        if (!getUserList.data.data?.errors && getUserList.data.data?.data?.users) {
-          setUserList(getUserList.data.data?.data?.users);
-        }
-      }
-    }, [getUserList.data, getUserList.isSuccess])
+  const { search } = useLocation();
+  const currentTab = search.replace("?tab=", "");
+  const [activeTab, setActiveTab] = useState(
+    currentTab !== "" ? currentTab : "staffList"
+  );
 
-    const renderTabs = () => {
-        if (activeTab === "addUser") {
-          return (
-            <>
-                <AddUser staffUserType={staffUserType} />
-            </>
-          );
-        } else if (activeTab === "userList") {
-          return (
-            <>
-              <UserList userList={userList} staffUserType={staffUserType} />
-            </>
-          );
-        }
-      };
+  const renderTabs = () => {
+    if (activeTab === "addStaff") {
+      return (
+        <>
+          <AddUser />
+        </>
+      );
+    } else if (activeTab === "staffList") {
+      return (
+        <>
+          <UserList />
+        </>
+      );
+    }
+  };
   return (
     <div>
       <Navigation currentPage={"staff"} />
 
-          <Nav
-            appearance="subtle"
-            activeKey={activeTab}
-            onSelect={(key) => setActiveTab(key)}
-          >
-            <Nav.Item eventKey="addUser">Create Staff</Nav.Item>
-            <Nav.Item eventKey="userList">Staff List</Nav.Item>
-          </Nav>
+      <Nav
+        appearance="subtle"
+        activeKey={activeTab}
+        onSelect={(key) => setActiveTab(key)}
+      >
+        <Nav.Item eventKey="staffList">Staff List</Nav.Item>
+        <Nav.Item eventKey="addStaff">Create Staff</Nav.Item>
+      </Nav>
 
       {renderTabs()}
     </div>

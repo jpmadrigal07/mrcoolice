@@ -1,60 +1,47 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ExpenseForm from './ExpenseForm'
 import axios from "axios";
-import { connect } from 'react-redux';
-import { useMutation } from 'react-query'
-import { triggerTopAlert } from '../../actions/topAlertActions';
+import { useQuery } from 'react-query'
+import { graphqlUrl } from "../../services/constants";
 
 const EditExpense = (props) => {
     const {
         isEditActive,
         setIsEditActive,
-        expenseId,
-        userId,
-        expenseList,
-        triggerTopAlert
+        expenseId
     } = props
-    const [inputExpenseName, setInputExpenseName] = useState("")
-    const [inputCost, setInputCost] = useState()
-    const foundExpense = expenseList?.find((expense) => expense._id === expenseId)
+    const [expense, setExpense] = useState({});
 
-    const editExpense = useMutation((query) =>
-        axios.post("http://localhost:5000/mrcoolice", { query })
-    );
-    const handleEditExpense = async () => {
-        if (inputExpenseName && inputCost)
-        {
-            editExpense.mutate(
-                `mutation{
-                updateExpense(_id: "${expenseId}",userId: "${userId}", name: "${inputExpenseName}", cost: ${inputCost}) 
-                {
-                  name
-                  cost
-                }
-              }`
-            )
-            triggerTopAlert(true, "Expense updated successfully", "success")
-        } else {
-            triggerTopAlert(true, "Please complete all parameters", "warning")
+    const getToUpdateExpense = useQuery("getToUpdateExpense", async () => {
+        const query = `{
+            expense(_id: "${expenseId}") {
+                _id
+                name
+                cost
+            }
+          }`;
+        return await axios.post(graphqlUrl, { query });
+    });
+
+    useEffect(() => {
+        if (getToUpdateExpense.isSuccess) {
+            if (
+                !getToUpdateExpense.data.data?.errors &&
+                getToUpdateExpense.data.data?.data?.expense
+            ) {
+                setExpense(getToUpdateExpense.data.data?.data?.expense);
+            }
         }
-    }
-
+    }, [getToUpdateExpense]);
     return (
         <div>
             <ExpenseForm
                 isEditActive={isEditActive}
                 setIsEditActive={setIsEditActive}
-                expenseId={expenseId}
-                userId={userId}
-                setInputExpenseName={setInputExpenseName}
-                setInputCost={setInputCost}
-                handleEditExpense={handleEditExpense}
-                foundExpense={foundExpense}
+                toUpdateExpense={expense}
             />
         </div>
     )
 }
 
-const mapStateToProps = (global) => ({});
-
-export default connect(mapStateToProps, { triggerTopAlert })(EditExpense);
+export default EditExpense;

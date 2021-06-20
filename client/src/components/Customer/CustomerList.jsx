@@ -100,20 +100,18 @@ const CustomerList = (props) => {
               <Cell>
                 {(rowData) => {
                   return (
-                    <span>
+                    <span style={{ cursor: "pointer" }}>
                       <a
                         onClick={() => {
                           setIsEditActive(!isEditActive);
                           setCustomerId(rowData._id);
                         }}
-                        style={{ cursor: "pointer" }}
                       >
                         Edit
                       </a>{" "}
                       |{"  "}
                       <a
                         onClick={() => remove(rowData._id)}
-                        style={{ cursor: "pointer" }}
                       >
                         Remove
                       </a>
