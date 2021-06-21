@@ -1,12 +1,12 @@
-import React from 'react'
-import CustomerForm from './CustomerForm';
+import React from "react";
+import CustomerForm from "./CustomerForm";
 
 const AddCustomer = () => {
-    return (
-        <>
-            <CustomerForm />
-        </>
-    )
-}
+  return (
+    <>
+      <CustomerForm />
+    </>
+  );
+};
 
 export default AddCustomer;

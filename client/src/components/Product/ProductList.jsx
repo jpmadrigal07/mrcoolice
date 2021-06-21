@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Table, Panel } from "rsuite";
-import EditExpense from "./EditExpense";
+import EditProduct from "./EditProduct";
 import { useMutation, useQuery } from "react-query";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import axios from "axios";
 import { connect } from "react-redux";
 import { graphqlUrl } from "../../services/constants";
 
-const ExpenseList = (props) => {
+const ProductList = (props) => {
   const { userId, triggerTopAlert } = props;
   const [isEditActive, setIsEditActive] = useState(false);
-  const [expenseId, setExpenseId] = useState("");
-  const [expenseList, setExpenseList] = useState([]);
+  const [expenseId, setProductId] = useState("");
+  const [expenseList, setProductList] = useState([]);
   const { Column, HeaderCell, Cell } = Table;
 
-  const getExpenseList = useQuery("getExpenseList", async () => {
+  const getProductList = useQuery("getProductList", async () => {
     const query = `{
         expenses {
             _id
@@ -27,36 +27,36 @@ const ExpenseList = (props) => {
 
   useEffect(() => {
     if (!isEditActive) {
-      getExpenseList.refetch();
+      getProductList.refetch();
     }
   }, [isEditActive]);
 
   useEffect(() => {
-    if (getExpenseList.isSuccess) {
+    if (getProductList.isSuccess) {
       if (
-        !getExpenseList.data.data?.errors &&
-        getExpenseList.data.data?.data?.expenses
+        !getProductList.data.data?.errors &&
+        getProductList.data.data?.data?.expenses
       ) {
-        const expenses = getExpenseList.data.data?.data?.expenses;
+        const expenses = getProductList.data.data?.data?.expenses;
         const expensesWithNumber = expenses?.reverse().map((res, index) => {
           return {
             id: index + 1,
             ...res,
           };
         });
-        setExpenseList(expensesWithNumber);
+        setProductList(expensesWithNumber);
       }
     }
-  }, [getExpenseList.data]);
+  }, [getProductList.data]);
 
-  const deleteExpense = useMutation((query) =>
+  const deleteProduct = useMutation((query) =>
     axios.post(graphqlUrl, { query })
   );
 
   const remove = (id) => {
-    deleteExpense.mutate(
+    deleteProduct.mutate(
       `mutation{
-        deleteExpense(_id: "${id}") {
+        deleteProduct(_id: "${id}") {
             name
             cost
         }
@@ -65,25 +65,25 @@ const ExpenseList = (props) => {
   };
 
   useEffect(() => {
-    if (deleteExpense.isSuccess) {
-      if (!deleteExpense.data?.data?.errors) {
-        getExpenseList.refetch();
-        deleteExpense.reset();
+    if (deleteProduct.isSuccess) {
+      if (!deleteProduct.data?.data?.errors) {
+        getProductList.refetch();
+        deleteProduct.reset();
         triggerTopAlert(true, "Successfully deleted", "success");
       } else {
         triggerTopAlert(
           true,
-          deleteExpense.data?.data?.errors[0].message,
+          deleteProduct.data?.data?.errors[0].message,
           "danger"
         );
       }
     }
-    if (deleteExpense.isError) {
-      triggerTopAlert(true, deleteExpense.error.message, "danger");
+    if (deleteProduct.isError) {
+      triggerTopAlert(true, deleteProduct.error.message, "danger");
     }
-  }, [deleteExpense]);
+  }, [deleteProduct]);
 
-  const renderExpense = () => {
+  const renderProduct = () => {
     if (!isEditActive) {
       return (
         <Panel bordered style={{ margin: "10px" }}>
@@ -93,7 +93,7 @@ const ExpenseList = (props) => {
               <Cell dataKey="id" />
             </Column>
             <Column flexGrow={100} minWidth={100}>
-              <HeaderCell>Expense name</HeaderCell>
+              <HeaderCell>Product name</HeaderCell>
               <Cell dataKey="name" />
             </Column>
             <Column flexGrow={100} minWidth={100}>
@@ -109,7 +109,7 @@ const ExpenseList = (props) => {
                       <a
                         onClick={() => {
                           setIsEditActive(!isEditActive);
-                          setExpenseId(rowData._id);
+                          setProductId(rowData._id);
                         }}
                       >
                         Edit
@@ -126,7 +126,7 @@ const ExpenseList = (props) => {
       );
     } else {
       return (
-        <EditExpense
+        <EditProduct
           isEditActive={isEditActive}
           setIsEditActive={setIsEditActive}
           expenseId={expenseId}
@@ -136,9 +136,9 @@ const ExpenseList = (props) => {
       );
     }
   };
-  return <div>{renderExpense()}</div>;
+  return <div>{renderProduct()}</div>;
 };
 
 const mapStateToProps = (global) => ({});
 
-export default connect(mapStateToProps, { triggerTopAlert })(ExpenseList);
+export default connect(mapStateToProps, { triggerTopAlert })(ProductList);

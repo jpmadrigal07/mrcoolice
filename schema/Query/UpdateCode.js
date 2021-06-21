@@ -3,7 +3,7 @@ const jsonwebtoken = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const { GraphQLString } = require("graphql");
 const VerifyTokenType = require("../typeDefs/VerifyToken");
-const childProcess = require('child_process');
+const childProcess = require("child_process");
 
 module.exports.updateCode = {
   type: VerifyTokenType,
@@ -11,12 +11,11 @@ module.exports.updateCode = {
     token: { type: GraphQLString },
   },
   resolve: async (parent, args) => {
-
     try {
       // Check if token is defined
       const { token } = args;
       if (!token) {
-        throw new Error('Token is invalid')
+        throw new Error("Token is invalid");
       }
       // Verify the token
       const { username, exp, id } = jsonwebtoken.verify(token, keys.cookieKey);
@@ -35,12 +34,11 @@ module.exports.updateCode = {
         throw new Error("Token is expired");
       }
       // Return isVerified true if all 3 condition passed
-      childProcess.exec('update_code.bat', function(error, stdout, stderr) {
-            console.log(stdout);
+      childProcess.exec("update_code.bat", function (error, stdout, stderr) {
+        console.log(stdout);
       });
 
       return { updateExecuted: true };
-      
     } catch (error) {
       throw new Error(error.message);
     }

@@ -2,12 +2,13 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 // CREATE DB SCHEMA OF USERS
-const customer = new Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+const product = new Schema({
+  weight: Number,
+  scaleType: {
+    type: String,
+    enum: ["kg", "g"],
   },
-  description: String,
+  cost: Number,
   createdAt: {
     type: Date,
     default: Date.now,
@@ -16,4 +17,4 @@ const customer = new Schema({
   deletedAt: Date,
 });
 
-module.exports = mongoose.model("Customer", customer);
+module.exports = mongoose.model("Product", product);

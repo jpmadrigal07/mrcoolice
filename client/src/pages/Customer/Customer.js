@@ -7,18 +7,16 @@ import { useLocation } from "react-router-dom";
 
 const Customer = () => {
   const { search } = useLocation();
-  const currentTab = search.replace("?tab=", "")
-  const [activeTab, setActiveTab] = useState(currentTab !== "" ? currentTab : "customerList");
+  const currentTab = search.replace("?tab=", "");
+  const [activeTab, setActiveTab] = useState(
+    currentTab !== "" ? currentTab : "customerList"
+  );
 
   const renderTabContent = () => {
     if (activeTab === "addCustomer") {
-      return (
-        <AddCustomer />
-      );
+      return <AddCustomer />;
     } else if (activeTab === "customerList") {
-      return (
-        <CustomerList />
-      );
+      return <CustomerList />;
     }
   };
 

@@ -11,7 +11,7 @@ const Expenses = () => {
   const [activeTab, setActiveTab] = useState(
     currentTab !== "" ? currentTab : "expenseList"
   );
-  
+
   const renderTabs = () => {
     if (activeTab === "addExpense") {
       return (

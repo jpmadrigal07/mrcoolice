@@ -131,12 +131,13 @@ const AddOrder2 = (props) => {
         !createSales.data.data?.errors &&
         createSales.data.data?.data?.createSale
       ) {
-        const receiptNumber = createSales.data.data?.data?.createSale?.receiptNumber
-        setSelectedCustomerId(null)
+        const receiptNumber =
+          createSales.data.data?.data?.createSale?.receiptNumber;
+        setSelectedCustomerId(null);
         const toUpdate = [];
         setOrder(toUpdate);
         createSales.reset();
-        window.open(`/receipt?receiptNumber=${receiptNumber}`, "_blank")
+        window.open(`/receipt?receiptNumber=${receiptNumber}`, "_blank");
         triggerTopAlert(true, "Success creating orders", "success");
       } else {
         triggerTopAlert(true, "Server error", "warning");
@@ -148,19 +149,21 @@ const AddOrder2 = (props) => {
   }, [createSales.data]);
 
   const submit = () => {
-    if(selectedCustomerId) {
+    if (selectedCustomerId) {
       const receiptNumber = Math.floor(Math.random() * 90000) + 10000;
-      const toInsert = order.map((res) => {
-        if(res.weight) {
-          return {
-            ...res,
-            customerId: selectedCustomerId,
-            userId: autheticatedUserId,
-            receiptNumber,
-          };
-        }
-      }).filter((res2) => res2);
-      if(toInsert.length > 0) {
+      const toInsert = order
+        .map((res) => {
+          if (res.weight) {
+            return {
+              ...res,
+              customerId: selectedCustomerId,
+              userId: autheticatedUserId,
+              receiptNumber,
+            };
+          }
+        })
+        .filter((res2) => res2);
+      if (toInsert.length > 0) {
         toInsert.map((res) => {
           createSales.mutate(`mutation {
               createSale(customerId: "${res.customerId}", userId: "${res.userId}", receiptNumber: ${res.receiptNumber}, iceType: "${res.iceType}", weight: ${res.weight}, scaleType: "${res.scaleType}") {
@@ -263,10 +266,7 @@ const AddOrder2 = (props) => {
                 </FormGroup>
                 <FormGroup>
                   <ControlLabel>Weight</ControlLabel>
-                  <Input
-                    block
-                    onChange={(e) => updateWeight(e, i)}
-                  />
+                  <Input block onChange={(e) => updateWeight(e, i)} />
                 </FormGroup>
                 <FormGroup>
                   <ControlLabel>Scale Type</ControlLabel>

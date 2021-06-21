@@ -1,25 +1,21 @@
-import React, { useState, useEffect } from 'react'
-import {
-  Table,
-  Panel
-} from 'rsuite'
-import { useQuery, useMutation } from 'react-query'
-import { triggerTopAlert } from '../../actions/topAlertActions';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { Table, Panel } from "rsuite";
+import { useQuery, useMutation } from "react-query";
+import { triggerTopAlert } from "../../actions/topAlertActions";
+import { connect } from "react-redux";
 import axios from "axios";
-import EditUser from './EditStaff';
+import EditUser from "./EditStaff";
+import { graphqlUrl } from "../../services/constants";
 
 const UserList = (props) => {
-  const { triggerTopAlert } = props
-  const [isEditActive, setIsEditActive] = useState(false)
-  const [staffId, setStaffId] = useState("")
+  const { triggerTopAlert } = props;
+  const [isEditActive, setIsEditActive] = useState(false);
+  const [staffId, setStaffId] = useState("");
   const [staffList, setStaffList] = useState([]);
-  const { Column, HeaderCell, Cell } = Table
+  const { Column, HeaderCell, Cell } = Table;
 
-  const getStaffList = useQuery(
-    "UserList",
-    async () => {
-      const query = `{
+  const getStaffList = useQuery("UserList", async () => {
+    const query = `{
         users {
           _id
           username
@@ -29,9 +25,8 @@ const UserList = (props) => {
           lastName
         }
       }`;
-      return await axios.post("http://localhost:5000/mrcoolice", { query });
-    }
-  );
+    return await axios.post(graphqlUrl, { query });
+  });
 
   useEffect(() => {
     if (!isEditActive) {
@@ -58,7 +53,7 @@ const UserList = (props) => {
   }, [getStaffList.data]);
 
   const deleteStaff = useMutation((query) =>
-    axios.post("http://localhost:5000/mrcoolice", { query })
+    axios.post(graphqlUrl, { query })
   );
 
   const remove = (id) => {
@@ -72,8 +67,8 @@ const UserList = (props) => {
           lastName
         }
       }`
-    )
-  }
+    );
+  };
 
   useEffect(() => {
     if (deleteStaff.isSuccess) {
@@ -98,10 +93,7 @@ const UserList = (props) => {
     if (!isEditActive) {
       return (
         <Panel bordered style={{ margin: 10 }}>
-          <Table
-            height={300}
-            data={staffList}
-          >
+          <Table height={300} data={staffList}>
             <Column>
               <HeaderCell>#</HeaderCell>
               <Cell dataKey="id" />
@@ -128,12 +120,16 @@ const UserList = (props) => {
                 {(rowData) => {
                   return (
                     <span>
-                      <a onClick={() => { setIsEditActive(!isEditActive); setStaffId(rowData._id) }}>
+                      <a
+                        onClick={() => {
+                          setIsEditActive(!isEditActive);
+                          setStaffId(rowData._id);
+                        }}
+                      >
                         Edit
-                      </a> |{'  '}
-                      <a onClick={() => remove(rowData._id)}>
-                        Remove
-                      </a>
+                      </a>{" "}
+                      |{"  "}
+                      <a onClick={() => remove(rowData._id)}>Remove</a>
                     </span>
                   );
                 }}
@@ -141,22 +137,20 @@ const UserList = (props) => {
             </Column>
           </Table>
         </Panel>
-      )
+      );
     } else {
-      return <EditUser
-        setIsEditActive={setIsEditActive}
-        isEditActive={isEditActive}
-        staffId={staffId}
-        staffList={staffList}
-      />
+      return (
+        <EditUser
+          setIsEditActive={setIsEditActive}
+          isEditActive={isEditActive}
+          staffId={staffId}
+          staffList={staffList}
+        />
+      );
     }
-  }
-  return (
-    <div>
-      {renderStaffs()}
-    </div>
-  )
-}
+  };
+  return <div>{renderStaffs()}</div>;
+};
 
 const mapStateToProps = (global) => ({});
 

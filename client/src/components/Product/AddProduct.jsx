@@ -1,8 +1,8 @@
 import React from "react";
-import ExpenseForm from "./ExpenseForm";
+import ProductForm from "./ProductForm";
 
 const AddExpense = () => {
-  return <ExpenseForm />;
+  return <ProductForm />;
 };
 
 export default AddExpense;

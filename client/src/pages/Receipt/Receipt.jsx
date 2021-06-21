@@ -1,10 +1,8 @@
-import React from 'react'
-import ReceiptNew from '../../components/Receipt/Receipt'
+import React from "react";
+import ReceiptNew from "../../components/Receipt/Receipt";
 
 const Receipt = () => {
-    return (
-        <ReceiptNew/>
-    )
-}
+  return <ReceiptNew />;
+};
 
-export default Receipt
+export default Receipt;

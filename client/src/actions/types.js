@@ -1,1 +1,1 @@
-export const TOP_ALERT = 'TOP_ALERT';
+export const TOP_ALERT = "TOP_ALERT";

@@ -1,1 +1,1 @@
-export const graphqlUrl = '/mrcoolice';
+export const graphqlUrl = "/mrcoolice";

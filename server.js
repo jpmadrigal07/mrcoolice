@@ -1,12 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const path = require('path');
+const path = require("path");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
 const keys = require("./config/keys");
-const ExpressGraphQL = require('express-graphql').graphqlHTTP
+const ExpressGraphQL = require("express-graphql").graphqlHTTP;
 const app = express();
-const schema = require('./schema/schemas')
+const schema = require("./schema/schemas");
 
 // Connect to Mongo
 mongoose
@@ -29,10 +29,13 @@ app.use(
 );
 
 // Use Routes
-app.use("/mrcoolice", ExpressGraphQL({
-  schema:schema,
-  graphiql:true
-}))
+app.use(
+  "/mrcoolice",
+  ExpressGraphQL({
+    schema: schema,
+    graphiql: true,
+  })
+);
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {

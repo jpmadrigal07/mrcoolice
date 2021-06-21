@@ -1,7 +1,6 @@
-  
-import { combineReducers } from 'redux';
-import topAlertReducers from './topAlertReducers';
+import { combineReducers } from "redux";
+import topAlertReducers from "./topAlertReducers";
 
 export default combineReducers({
-    topAlert: topAlertReducers
+  topAlert: topAlertReducers,
 });

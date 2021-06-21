@@ -1,10 +1,8 @@
-import React from 'react'
-import UserForm from './StaffForm'
+import React from "react";
+import UserForm from "./StaffForm";
 
 const AddStaff = () => {
-    return (
-        <UserForm />
-    )
-}
+  return <UserForm />;
+};
 
-export default AddStaff
+export default AddStaff;

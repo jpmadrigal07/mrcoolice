@@ -6,11 +6,12 @@ import { Col, Nav, Row, Panel } from "rsuite";
 import { useQuery } from "react-query";
 import OrderList from "../../components/Order/OrderList";
 import axios from "axios";
+import { graphqlUrl } from "../../services/constants";
 
 const Order = () => {
   const [activeTab, setActiveTab] = useState("addOrder");
   const [orderList, setOrderList] = useState();
-  const [customerList, setCustomerList] = useState()
+  const [customerList, setCustomerList] = useState();
   const iceTypeContent = [
     {
       label: "Tube",
@@ -71,7 +72,7 @@ const Order = () => {
           scaleType
         }
       }`;
-      return await axios.post("http://localhost:5000/mrcoolice", { query });
+      return await axios.post(graphqlUrl, { query });
     },
     {
       refetchInterval: 1000,
@@ -86,7 +87,7 @@ const Order = () => {
           description
         }
       }`;
-      return await axios.post("http://localhost:5000/mrcoolice", { query });
+      return await axios.post(graphqlUrl, { query });
     },
     {
       refetchInterval: 1000,
@@ -109,26 +110,31 @@ const Order = () => {
         setOrderList(getOrderList.data.data?.data?.sales);
       }
     }
-  }, [getOrderList.data, getOrderList.isSuccess, getCustomerList.data, getCustomerList.isSuccess]);
+  }, [
+    getOrderList.data,
+    getOrderList.isSuccess,
+    getCustomerList.data,
+    getCustomerList.isSuccess,
+  ]);
   const renderTabs = () => {
     if (activeTab === "addOrder") {
       return (
-          <AddOrder2
-            iceTypeContent={iceTypeContent}
-            weightContent={weightContent}
-            scaleContent={scaleContent}
-            customerList={customerList}
-          />
+        <AddOrder2
+          iceTypeContent={iceTypeContent}
+          weightContent={weightContent}
+          scaleContent={scaleContent}
+          customerList={customerList}
+        />
       );
     } else if (activeTab === "orderList") {
       return (
-          <OrderList 
-            iceTypeContent={iceTypeContent}
-            weightContent={weightContent}
-            scaleContent={scaleContent}
-            orderList={orderList} 
-            customerList={customerList} 
-          />
+        <OrderList
+          iceTypeContent={iceTypeContent}
+          weightContent={weightContent}
+          scaleContent={scaleContent}
+          orderList={orderList}
+          customerList={customerList}
+        />
       );
     }
   };
@@ -136,14 +142,14 @@ const Order = () => {
     <>
       <Navigation currentPage={"order"} />
 
-          <Nav
-            appearance="subtle"
-            activeKey={activeTab}
-            onSelect={(key) => setActiveTab(key)}
-          >
-            <Nav.Item eventKey="addOrder">Add Order</Nav.Item>
-            <Nav.Item eventKey="orderList">Order List</Nav.Item>
-          </Nav>
+      <Nav
+        appearance="subtle"
+        activeKey={activeTab}
+        onSelect={(key) => setActiveTab(key)}
+      >
+        <Nav.Item eventKey="addOrder">Add Order</Nav.Item>
+        <Nav.Item eventKey="orderList">Order List</Nav.Item>
+      </Nav>
 
       {renderTabs()}
     </>

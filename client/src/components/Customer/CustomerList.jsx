@@ -110,11 +110,7 @@ const CustomerList = (props) => {
                         Edit
                       </a>{" "}
                       |{"  "}
-                      <a
-                        onClick={() => remove(rowData._id)}
-                      >
-                        Remove
-                      </a>
+                      <a onClick={() => remove(rowData._id)}>Remove</a>
                     </span>
                   );
                 }}

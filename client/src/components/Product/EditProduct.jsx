@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ExpenseForm from "./ExpenseForm";
+import ExpenseForm from "./ProductForm";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { graphqlUrl } from "../../services/constants";

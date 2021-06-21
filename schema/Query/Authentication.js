@@ -10,15 +10,17 @@ module.exports.verifyToken = {
     token: { type: GraphQLString },
   },
   resolve: async (parent, args) => {
-
     try {
       // Check if token is defined
       const { token } = args;
       if (!token) {
-        throw new Error('Token is invalid')
+        throw new Error("Token is invalid");
       }
       // Verify the token
-      const { username, exp, id } = jsonwebtoken.verify(token, keys.cookieKey);
+      const { username, exp, id, role } = jsonwebtoken.verify(
+        token,
+        keys.cookieKey
+      );
       // Check if username exist in db
       const user = await User.findOne({ username });
       // Get userId
@@ -34,8 +36,7 @@ module.exports.verifyToken = {
         throw new Error("Token is expired");
       }
       // Return isVerified true if all 3 condition passed
-      return { isVerified: true,  userId: id };
-      
+      return { isVerified: true, userId: id, userType: role };
     } catch (error) {
       throw new Error(error.message);
     }

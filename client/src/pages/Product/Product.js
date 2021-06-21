@@ -1,43 +1,43 @@
 import React, { useState } from "react";
 import Navigation from "../../components/Navigation/Navigation";
 import { Nav } from "rsuite";
-import UserList from "../../components/User/StaffList";
-import AddUser from "../../components/User/AddStaff";
+import ProductList from "../../components/Product/ProductList";
+import AddProduct from "../../components/Product/AddProduct";
 import { useLocation } from "react-router-dom";
 
-const Staff = () => {
+const Product = () => {
   const { search } = useLocation();
   const currentTab = search.replace("?tab=", "");
   const [activeTab, setActiveTab] = useState(
-    currentTab !== "" ? currentTab : "staffList"
+    currentTab !== "" ? currentTab : "productList"
   );
 
   const renderTabs = () => {
-    if (activeTab === "addStaff") {
+    if (activeTab === "addProduct") {
       return (
         <>
-          <AddUser />
+          <AddProduct />
         </>
       );
-    } else if (activeTab === "staffList") {
+    } else if (activeTab === "productList") {
       return (
         <>
-          <UserList />
+          <ProductList />
         </>
       );
     }
   };
   return (
     <div>
-      <Navigation currentPage={"staff"} />
+      <Navigation currentPage={"product"} />
 
       <Nav
         appearance="subtle"
         activeKey={activeTab}
         onSelect={(key) => setActiveTab(key)}
       >
-        <Nav.Item eventKey="staffList">Staff List</Nav.Item>
-        <Nav.Item eventKey="addStaff">Create Staff</Nav.Item>
+        <Nav.Item eventKey="productList">Product List</Nav.Item>
+        <Nav.Item eventKey="addProduct">Add Product</Nav.Item>
       </Nav>
 
       {renderTabs()}
@@ -45,4 +45,4 @@ const Staff = () => {
   );
 };
 
-export default Staff;
+export default Product;

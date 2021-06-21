@@ -6,14 +6,10 @@ import CustomerForm from "./CustomerForm";
 import { graphqlUrl } from "../../services/constants";
 
 const EditCustomer = (props) => {
-  const {
-    isEditActive,
-    setIsEditActive,
-    customerId,
-  } = props;
+  const { isEditActive, setIsEditActive, customerId } = props;
 
   const [customer, setCustomer] = useState({});
-  
+
   const getToUpdateCustomer = useQuery("getToUpdateCustomer", async () => {
     const query = `{
             customer(_id: "${customerId}") {
@@ -38,7 +34,11 @@ const EditCustomer = (props) => {
   return (
     <>
       {!getToUpdateCustomer.isLoading ? (
-        <CustomerForm isEditActive={isEditActive} setIsEditActive={setIsEditActive} toUpdateCustomer={customer}  />
+        <CustomerForm
+          isEditActive={isEditActive}
+          setIsEditActive={setIsEditActive}
+          toUpdateCustomer={customer}
+        />
       ) : (
         <Loader inverse />
       )}

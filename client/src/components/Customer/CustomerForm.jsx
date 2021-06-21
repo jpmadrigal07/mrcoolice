@@ -18,7 +18,8 @@ import { triggerTopAlert } from "../../actions/topAlertActions";
 
 const CustomerForm = (props) => {
   // local and global props
-  const { isEditActive, setIsEditActive, toUpdateCustomer, triggerTopAlert } = props;
+  const { isEditActive, setIsEditActive, toUpdateCustomer, triggerTopAlert } =
+    props;
 
   // constant values
   const token = Cookies.get("sessionToken");
@@ -76,53 +77,66 @@ const CustomerForm = (props) => {
 
   // side effects
   useEffect(() => {
-    if(isEditActive && toUpdateCustomer) {
-        setCustomerDescription(toUpdateCustomer?.description)
+    if (isEditActive && toUpdateCustomer) {
+      setCustomerDescription(toUpdateCustomer?.description);
     }
   }, [toUpdateCustomer]);
 
   useEffect(() => {
-    if(isEditActive) {
-        if(updateCustomer.isSuccess) {
-            if (!updateCustomer.data?.data?.errors) {
-                updateCustomer.reset();
-                setIsEditActive(false);
-                triggerTopAlert(true, "Successfully updated", "success");
-            } else {
-              triggerTopAlert(true, updateCustomer.data?.data?.errors[0].message, "danger");
-            }
+    if (isEditActive) {
+      if (updateCustomer.isSuccess) {
+        if (!updateCustomer.data?.data?.errors) {
+          updateCustomer.reset();
+          setIsEditActive(false);
+          triggerTopAlert(true, "Successfully updated", "success");
+        } else {
+          triggerTopAlert(
+            true,
+            updateCustomer.data?.data?.errors[0].message,
+            "danger"
+          );
         }
-        if(updateCustomer.isError) {
-            triggerTopAlert(true, updateCustomer.error.message, "danger");
-        }
+      }
+      if (updateCustomer.isError) {
+        triggerTopAlert(true, updateCustomer.error.message, "danger");
+      }
     }
   }, [updateCustomer]);
 
   useEffect(() => {
-    if(!isEditActive) {
-        if(createCustomer.isSuccess) {
-            if (!createCustomer.data?.data?.errors) {
-                setCustomerDescription("");
-                createCustomer.reset();
-                triggerTopAlert(true, "Successfully added", "success");
-            } else {
-              triggerTopAlert(true, createCustomer.data?.data?.errors[0].message, "danger");
-            }
+    if (!isEditActive) {
+      if (createCustomer.isSuccess) {
+        if (!createCustomer.data?.data?.errors) {
+          setCustomerDescription("");
+          createCustomer.reset();
+          triggerTopAlert(true, "Successfully added", "success");
+        } else {
+          triggerTopAlert(
+            true,
+            createCustomer.data?.data?.errors[0].message,
+            "danger"
+          );
         }
-        if(createCustomer.isError) {
-            triggerTopAlert(true, createCustomer.error.message, "danger");
-        }
+      }
+      if (createCustomer.isError) {
+        triggerTopAlert(true, createCustomer.error.message, "danger");
+      }
     }
   }, [createCustomer]);
 
   useEffect(() => {
     if (getAutheticatedUserId.isSuccess) {
-        if (!getAutheticatedUserId.data.data?.errors && getAutheticatedUserId.data.data?.data?.verifyToken) {
-          setAutheticatedUserId(getAutheticatedUserId.data.data?.data?.verifyToken?.userId);
-        }
+      if (
+        !getAutheticatedUserId.data.data?.errors &&
+        getAutheticatedUserId.data.data?.data?.verifyToken
+      ) {
+        setAutheticatedUserId(
+          getAutheticatedUserId.data.data?.data?.verifyToken?.userId
+        );
+      }
     }
-    if(getAutheticatedUserId.isError) {
-        triggerTopAlert(true, updateCustomer.error.message, "warning");
+    if (getAutheticatedUserId.isError) {
+      triggerTopAlert(true, updateCustomer.error.message, "warning");
     }
   }, [getAutheticatedUserId]);
 
@@ -160,7 +174,11 @@ const CustomerForm = (props) => {
                   </Button>
                 </Row>
               ) : (
-                <Button appearance="primary" type="submit" disabled={createCustomer.isLoading}>
+                <Button
+                  appearance="primary"
+                  type="submit"
+                  disabled={createCustomer.isLoading}
+                >
                   Add
                 </Button>
               )}
