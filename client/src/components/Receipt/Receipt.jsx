@@ -114,7 +114,7 @@ function Receipt(props) {
         <table style={{ width: "100%", fontSize: "8px" }}>
           {orders.map((_, i) => {
             return (<tr>
-              <td style={{ width: "70%" }}>{_.value} ice</td>
+              <td style={{ width: "70%", fontSize: 15 }}>{_.value} ice</td>
               <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
                 P{_.cost.toLocaleString()}
               </td>
