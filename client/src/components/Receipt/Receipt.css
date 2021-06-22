@@ -1,0 +1,36 @@
+#receipt {
+  page-break-after: always;
+  color: black !important;
+}
+@media print {
+  .rs-navbar {
+    display: none !important;
+  }
+  #receipt {
+    margin-top: 0mm !important;
+    margin-bottom: 3mm !important;
+    margin-left: 4mm !important;
+    margin-right: 4mm !important;
+  }
+}
+#lineDivider {
+  display: block;
+  height: 0.5px;
+  background: transparent;
+  width: 100%;
+  border: none;
+  border-top: solid 0.5px #000;
+  margin-bottom: 8px !important;
+  margin-top: 8px !important;
+}
+
+#lineTotal {
+  display: block;
+  height: 0.5px;
+  background: transparent;
+  width: 100%;
+  border: none;
+  border-top: dashed 0.5px #000;
+  margin-bottom: 8px !important;
+  margin-top: 8px !important;
+}

@@ -1,54 +1,138 @@
-import React from 'react'
-import { useState } from 'react'
-import Navigation from '../../components/Navigation/Navigation'
+import React from "react";
+import { useEffect, useState } from "react";
+import Navigation from "../../components/Navigation/Navigation";
+import "./Receipt.css";
+import axios from "axios";
+import { useQuery } from "react-query";
+import { graphqlUrl } from "../../services/constants";
+import { triggerTopAlert } from "../../actions/topAlertActions";
+import { connect } from "react-redux";
+import moment from "moment";
 
 function Receipt(props) {
-    const {} = props
-    const [order, setOrder] = useState([])
-    const dateNow = Date.now();
-    console.log(dateNow)
-    return (
+  const { triggerTopAlert } = props;
+  const [cust, setCust] = useState("---");
+  const [staff, setStaff] = useState("---");
+  const [orders, setOrders] = useState([]);
+  const [totalSales, setTotalSales] = useState(0);
+  const receiptNumber = 27920;
+  const getOrders = useQuery("getOrders", async () => {
+    const query = `{
+      salesByReceiptNumber(receiptNumber: ${receiptNumber}) {
+                userId {
+                    firstName,
+                    lastName
+                },
+                customerId {
+                    description
+                },
+                productId {
+                  _id,
+                  iceType,
+                  weight,
+                  scaleType,
+                  cost
+                }
+                createdAt
+            }
+        }`;
+    return await axios.post(graphqlUrl, { query });
+  });
+  useEffect(() => {
+    if (getOrders.isSuccess) {
+      if (getOrders.data.data?.errors) {
+        triggerTopAlert(true, "Unknown error occured", "danger");
+      } else {
+        const orders = getOrders.data.data?.data?.salesByReceiptNumber;
+        if (orders.length > 0) {
+          const firstValue = orders[0];
+          setCust(firstValue.customerId.description);
+          setStaff(
+            `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
+          );
+
+          const newOrders = orders.map((res) => {
+            return {
+              value: `${res.productId.weight} ${res.productId.scaleType} ${res.productId.iceType}`,
+              cost: res.productId.cost
+            };
+          });
+
+          const total = orders.map((res) => {
+            return res.productId.cost
+          }).reduce(function(a, b) { return a + b; }, 0);
+
+          setTotalSales(total)
+          setOrders(newOrders)
+        }
+      }
+    }
+    if (getOrders.isError) {
+      triggerTopAlert(true, "Unknown error occured", "danger");
+    }
+  }, [getOrders.data]);
+  return (
+    <div>
+      <Navigation currentPage={""} />
+      <div id="receipt">
         <div>
-        <Navigation currentPage={"reports"} />
-            <div style="text-align: center;">
-                <h1>MR. COOL ICE</h1>
-                <h3 style="margin-top: -20px; font-weight: normal;">
-                    Victoria Woods
-                    <br />
-                    Brgy. San Francisco, Victoria Laguna
-                    <br />
-                    Tel: (0997) 1162923 ● (0947) 8129639
-                </h3>
-            </div>
-            <div style="display: inline-block;">
-                <h2>DELIVERY RECEIPT</h2>
-                <h3 style="font-weight: normal;">SOLD TO:_____________</h3>
-                <h3 style="font-weight: normal;">Vehicle no.:___________</h3>
-            </div>
-            <div style="float: right;">
-                <h2 style="font-weight: normal;">Order number</h2>
-                <h3 style="font-weight: normal;">Date:__________</h3>
-                <h3 style="font-weight: normal;">Time:__________</h3>
-            </div>
-            <div style="text-align: center; padding-bottom: 40vh; border-top: 0.5px solid gray; border-bottom: 0.5px solid gray;">
-                <table style="border-collapse: collapse;">
-                    <th>Qty.</th>
-                    <th style="padding-left: 36.5vw; padding-right: 36.5vw;">Articles</th>
-                    <th>Total kgs.</th>
-                </table>
-            </div>
-            <div style="float: right;">
-                <h4 style="font-weight: normal; text-align: center;">Received the above merchandise
-                    <br />in good order and condition</h4>
-            </div>
-            <div style="display: inline-block;">
-                <br />
-                <br />
-                <h3 style="font-weight: normal;">Issued by:_____________</h3>
-                <h3 style="font-weight: normal;">Checked by:____________________________</h3>
-            </div>
+          <p
+            style={{ fontWeight: "800", fontSize: "18px", textAlign: "center" }}
+          >
+            MR. COOL ICE
+          </p>
+          <p
+            style={{ fontWeight: "300", fontSize: "8px", textAlign: "center" }}
+          >
+            Address: Victoria Woods, Brgy. San Francisco, Victoria Laguna ●
+            Telephone: (0997) 1162923, (0947) 8129639
+          </p>
+          <hr id="lineDivider" />
+          <p style={{ fontSize: "10px", lineHeight: "13px" }}>
+            <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
+            <br />
+            <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
+            {moment().format("MM/DD/YYYY hh:mm A")}
+            <br />
+            <span style={{ fontWeight: "700" }}>CUST:</span> {cust}
+            <br />
+            <span style={{ fontWeight: "700" }}>STAFF:</span> {staff}
+          </p>
+          <br />
         </div>
-    )
+        <table style={{ width: "100%", fontSize: "8px" }}>
+          {orders.map((_, i) => {
+            return (<tr>
+              <td style={{ width: "70%" }}>{_.value} ice</td>
+              <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
+                P{_.cost.toLocaleString()}
+              </td>
+            </tr>)
+          })}
+        </table>
+        <hr id="lineTotal" />
+        <table style={{ width: "100%", fontSize: "8px" }}>
+          <tr>
+            <td style={{ width: "70%" }}>Total</td>
+            <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
+              P{totalSales.toLocaleString()}
+            </td>
+          </tr>
+        </table>
+        <hr id="lineDivider" />
+        <p style={{ fontSize: "8px", lineHeight: "10px", fontWeight: "400" }}>
+          THIS IS AN OFFICIAL RECEIPT AND THIS SHALL BE VALID FOR FIVE(5) YEARS
+          FROM THE DATE OF PERMIT TO USE.
+        </p>
+        <br />
+        <p style={{ fontSize: "8px", lineHeight: "10px", fontWeight: "400" }}>
+          ----
+        </p>
+      </div>
+    </div>
+  );
 }
 
-export default Receipt
+const mapStateToProps = (global) => ({});
+
+export default connect(mapStateToProps, { triggerTopAlert })(Receipt);

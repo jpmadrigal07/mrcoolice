@@ -1,22 +1,59 @@
-import React, { useState } from 'react'
-import {
-  Table
-} from 'rsuite'
-import EditExpense from './EditExpense'
-import { useMutation } from 'react-query'
-import { triggerTopAlert } from '../../actions/topAlertActions';
+import React, { useState, useEffect } from "react";
+import { Table, Panel } from "rsuite";
+import EditExpense from "./EditExpense";
+import { useMutation, useQuery } from "react-query";
+import { triggerTopAlert } from "../../actions/topAlertActions";
 import axios from "axios";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
+import { graphqlUrl } from "../../services/constants";
 
 const ExpenseList = (props) => {
-  const { expenseList, userId, triggerTopAlert } = props
-  const [isEditActive, setIsEditActive] = useState(false)
-  const [expenseId, setExpenseId] = useState("")
-  const { Column, HeaderCell, Cell } = Table
+  const { userId, triggerTopAlert } = props;
+  const [isEditActive, setIsEditActive] = useState(false);
+  const [expenseId, setExpenseId] = useState("");
+  const [expenseList, setExpenseList] = useState([]);
+  const { Column, HeaderCell, Cell } = Table;
+
+  const getExpenseList = useQuery("getExpenseList", async () => {
+    const query = `{
+        expenses {
+            _id
+            name
+            cost
+        }
+      }`;
+    return await axios.post(graphqlUrl, { query });
+  });
+
+  useEffect(() => {
+    if (!isEditActive) {
+      getExpenseList.refetch();
+    }
+  }, [isEditActive]);
+
+  useEffect(() => {
+    if (getExpenseList.isSuccess) {
+      if (
+        !getExpenseList.data.data?.errors &&
+        getExpenseList.data.data?.data?.expenses
+      ) {
+        const expenses = getExpenseList.data.data?.data?.expenses;
+        const expensesWithNumber = expenses?.reverse().map((res, index) => {
+          return {
+            id: index + 1,
+            ...res,
+          };
+        });
+        setExpenseList(expensesWithNumber);
+      }
+    }
+  }, [getExpenseList.data]);
+
   const deleteExpense = useMutation((query) =>
-    axios.post("http://localhost:5000/mrcoolice", { query })
+    axios.post(graphqlUrl, { query })
   );
-  const handleRemove = (id) => {
+
+  const remove = (id) => {
     deleteExpense.mutate(
       `mutation{
         deleteExpense(_id: "${id}") {
@@ -24,63 +61,83 @@ const ExpenseList = (props) => {
             cost
         }
       }`
-    )
-    triggerTopAlert(true, "Expense successfully deleted", "success")
-  }
+    );
+  };
+
+  useEffect(() => {
+    if (deleteExpense.isSuccess) {
+      if (!deleteExpense.data?.data?.errors) {
+        getExpenseList.refetch();
+        deleteExpense.reset();
+        triggerTopAlert(true, "Successfully deleted", "success");
+      } else {
+        triggerTopAlert(
+          true,
+          deleteExpense.data?.data?.errors[0].message,
+          "danger"
+        );
+      }
+    }
+    if (deleteExpense.isError) {
+      triggerTopAlert(true, deleteExpense.error.message, "danger");
+    }
+  }, [deleteExpense]);
+
   const renderExpense = () => {
     if (!isEditActive) {
       return (
-        <Table
-          height={400}
-          data={expenseList}
-        >
-          <Column width={70} align="center" fixed>
-            <HeaderCell>#</HeaderCell>
-            <Cell dataKey="number" />
-          </Column>
-          <Column width={200} >
-            <HeaderCell>Expense name</HeaderCell>
-            <Cell dataKey="name" />
-          </Column>
-          <Column width={200} >
-            <HeaderCell>Cost</HeaderCell>
-            <Cell dataKey="cost" />
-          </Column>
-          <Column width={120} fixed="right">
-            <HeaderCell>Action</HeaderCell>
-            <Cell>
-              {(rowData) => {
-                return (
-                  <span>
-                    <a onClick={() => {setIsEditActive(!isEditActive); setExpenseId(rowData._id)}}>
-                      Edit
-                    </a> |{'  '}
-                    <a onClick={() => handleRemove(rowData._id)}>
-                      Remove
-                    </a>
-                  </span>
-                );
-              }}
-            </Cell>
-          </Column>
-        </Table>
-      )
+        <Panel bordered style={{ margin: "10px" }}>
+          <Table height={400} data={expenseList}>
+            <Column>
+              <HeaderCell>#</HeaderCell>
+              <Cell dataKey="id" />
+            </Column>
+            <Column flexGrow={100} minWidth={100}>
+              <HeaderCell>Expense name</HeaderCell>
+              <Cell dataKey="name" />
+            </Column>
+            <Column flexGrow={100} minWidth={100}>
+              <HeaderCell>Cost (Pesos)</HeaderCell>
+              <Cell dataKey="cost" />
+            </Column>
+            <Column flexGrow={100} minWidth={100} fixed="right">
+              <HeaderCell>Action</HeaderCell>
+              <Cell>
+                {(rowData) => {
+                  return (
+                    <span style={{ cursor: "pointer" }}>
+                      <a
+                        onClick={() => {
+                          setIsEditActive(!isEditActive);
+                          setExpenseId(rowData._id);
+                        }}
+                      >
+                        Edit
+                      </a>{" "}
+                      {"  "}|{"  "}
+                      <a onClick={() => remove(rowData._id)}>Remove</a>
+                    </span>
+                  );
+                }}
+              </Cell>
+            </Column>
+          </Table>
+        </Panel>
+      );
     } else {
-      return <EditExpense
-        isEditActive={isEditActive}
-        setIsEditActive={setIsEditActive}
-        expenseId={expenseId}
-        userId={userId}
-        expenseList={expenseList}
-      />
+      return (
+        <EditExpense
+          isEditActive={isEditActive}
+          setIsEditActive={setIsEditActive}
+          expenseId={expenseId}
+          userId={userId}
+          expenseList={expenseList}
+        />
+      );
     }
-  }
-  return (
-    <div>
-      {renderExpense()}
-    </div>
-  )
-}
+  };
+  return <div>{renderExpense()}</div>;
+};
 
 const mapStateToProps = (global) => ({});
 

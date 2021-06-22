@@ -1,12 +1,12 @@
 const CustomerType = require("../typeDefs/Customer");
-const Customer = require('../../models/customer');
+const Customer = require("../../models/customer");
 const { GraphQLID, GraphQLNonNull, GraphQLString } = require("graphql");
 
 module.exports.createCustomer = {
   type: CustomerType,
   args: {
     userId: { type: GraphQLNonNull(GraphQLID) },
-    description: { type: GraphQLNonNull(GraphQLString) }
+    description: { type: GraphQLNonNull(GraphQLString) },
   },
   resolve: (parent, args) => {
     const customer = Customer(args);
@@ -22,16 +22,13 @@ module.exports.updateCustomer = {
   args: {
     _id: { type: GraphQLID },
     userId: { type: GraphQLID },
-    description: { type: GraphQLString }
+    description: { type: GraphQLString },
   },
   resolve: (parent, args) => {
-    const toUpdate = {}
-    args.userId ? toUpdate.userId = args.userId : null
-    args.description ? toUpdate.description = args.description : null
-    return Customer.findByIdAndUpdate(
-      { _id: args._id },
-      { $set: toUpdate }
-    );
+    const toUpdate = {};
+    args.userId ? (toUpdate.userId = args.userId) : null;
+    args.description ? (toUpdate.description = args.description) : null;
+    return Customer.findByIdAndUpdate({ _id: args._id }, { $set: toUpdate });
   },
 };
 

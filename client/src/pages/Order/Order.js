@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "./Order.css";
-import AddOrder from "../../components/Order/AddOrder";
+import AddOrder2 from "../../components/Order/AddOrder2";
 import Navigation from "../../components/Navigation/Navigation";
 import { Col, Nav, Row, Panel } from "rsuite";
 import { useQuery } from "react-query";
 import OrderList from "../../components/Order/OrderList";
 import axios from "axios";
+import { graphqlUrl } from "../../services/constants";
 
 const Order = () => {
   const [activeTab, setActiveTab] = useState("addOrder");
   const [orderList, setOrderList] = useState();
-  const [customerList, setCustomerList] = useState()
+  const [customerList, setCustomerList] = useState();
   const iceTypeContent = [
     {
       label: "Tube",
@@ -64,17 +65,19 @@ const Order = () => {
           customerId {
               _id
               description
-            }
-          _id
-          iceType
-          weight
-          scaleType
+            },
+          _id,
+          productId {
+            _id,
+            iceType,
+            weight,
+            scaleType,
+            cost
+          },
+          receiptNumber
         }
       }`;
-      return await axios.post("http://localhost:5000/mrcoolice", { query });
-    },
-    {
-      refetchInterval: 1000,
+      return await axios.post(graphqlUrl, { query });
     }
   );
   const getCustomerList = useQuery(
@@ -86,10 +89,7 @@ const Order = () => {
           description
         }
       }`;
-      return await axios.post("http://localhost:5000/mrcoolice", { query });
-    },
-    {
-      refetchInterval: 1000,
+      return await axios.post(graphqlUrl, { query });
     }
   );
   useEffect(() => {
@@ -109,50 +109,49 @@ const Order = () => {
         setOrderList(getOrderList.data.data?.data?.sales);
       }
     }
-  }, [getOrderList.data, getOrderList.isSuccess, getCustomerList.data, getCustomerList.isSuccess]);
+  }, [
+    getOrderList.data,
+    getOrderList.isSuccess,
+    getCustomerList.data,
+    getCustomerList.isSuccess,
+  ]);
   const renderTabs = () => {
     if (activeTab === "addOrder") {
       return (
-        <>
-          <AddOrder
-            iceTypeContent={iceTypeContent}
-            weightContent={weightContent}
-            scaleContent={scaleContent}
-            customerList={customerList}
-          />
-        </>
+        <AddOrder2
+          iceTypeContent={iceTypeContent}
+          weightContent={weightContent}
+          scaleContent={scaleContent}
+          customerList={customerList}
+        />
       );
     } else if (activeTab === "orderList") {
       return (
-        <>
-          <OrderList 
-            iceTypeContent={iceTypeContent}
-            weightContent={weightContent}
-            scaleContent={scaleContent}
-            orderList={orderList} 
-            customerList={customerList} 
-          />
-        </>
+        <OrderList
+          iceTypeContent={iceTypeContent}
+          weightContent={weightContent}
+          scaleContent={scaleContent}
+          orderList={orderList}
+          customerList={customerList}
+        />
       );
     }
   };
   return (
-    <div className="login-bg">
+    <>
       <Navigation currentPage={"order"} />
-      <Row>
-        <Col style={{ marginBottom: 15 }}>
-          <Nav
-            appearance="subtle"
-            activeKey={activeTab}
-            onSelect={(key) => setActiveTab(key)}
-          >
-            <Nav.Item eventKey="addOrder">Add order</Nav.Item>
-            <Nav.Item eventKey="orderList">Order list</Nav.Item>
-          </Nav>
-        </Col>
-      </Row>
-      <Panel bordered>{renderTabs()}</Panel>
-    </div>
+
+      <Nav
+        appearance="subtle"
+        activeKey={activeTab}
+        onSelect={(key) => setActiveTab(key)}
+      >
+        <Nav.Item eventKey="addOrder">Add Order</Nav.Item>
+        <Nav.Item eventKey="orderList">Order List</Nav.Item>
+      </Nav>
+
+      {renderTabs()}
+    </>
   );
 };
 
