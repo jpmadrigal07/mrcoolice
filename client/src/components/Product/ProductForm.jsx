@@ -8,6 +8,7 @@ import {
   ButtonToolbar,
   Button,
   Row,
+  SelectPicker,
 } from "rsuite";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
@@ -17,35 +18,26 @@ import { connect } from "react-redux";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 
 const ExpenseForm = (props) => {
-  const { isEditActive, setIsEditActive, toUpdateExpense, triggerTopAlert } =
-    props;
-  const token = Cookies.get("sessionToken");
-  const [autheticatedUserId, setAutheticatedUserId] = useState(null);
-  const [expenseName, setExpenseName] = useState(null);
-  const [expenseCost, setExpenseCost] = useState(null);
+  const { isEditActive, setIsEditActive, toUpdateProduct, triggerTopAlert } = props;
+  const [iceType, setIceType] = useState("tube");
+  const [weight, setWeight] = useState(null);
+  const [scaleType, setScaleType] = useState("kg");
+  const [cost, setCost] = useState(null);
 
-  const getAutheticatedUserId = useQuery("getAutheticatedUserId", async () => {
-    const query = `{
-                verifyToken(token: "${token}") {
-                    userId
-                }
-          }`;
-    return await axios.post(graphqlUrl, { query });
-  });
-
-  const createExpense = useMutation((query) =>
+  const createProduct = useMutation((query) =>
     axios.post(graphqlUrl, { query })
   );
 
-  const updateExpense = useMutation((query) =>
+  const updateProduct = useMutation((query) =>
     axios.post(graphqlUrl, { query })
   );
+
   const create = () => {
-    if (expenseName && expenseCost) {
-      createExpense.mutate(
+    if (iceType && weight > 0 && scaleType && cost > 0) {
+      createProduct.mutate(
         `mutation{
-                    createExpense(userId: "${autheticatedUserId}", name: "${expenseName}", cost: ${expenseCost}){
-                        name
+          createProduct(iceType: "${iceType}", weight: ${weight}, scaleType: "${scaleType}", cost: ${cost}){
+                        iceType
                         cost
                     }
                 }`
@@ -56,12 +48,12 @@ const ExpenseForm = (props) => {
   };
 
   const update = async () => {
-    if (expenseName && expenseCost) {
-      updateExpense.mutate(
+    if (iceType && weight > 0 && scaleType && cost > 0) {
+      updateProduct.mutate(
         `mutation{
-                updateExpense(_id: "${toUpdateExpense._id}", userId: "${autheticatedUserId}", name: "${expenseName}", cost: ${expenseCost}) 
+                updateProduct(_id: "${toUpdateProduct._id}", iceType: "${iceType}", weight: ${weight}, scaleType: "${scaleType}", cost: ${cost}) 
                 {
-                  name
+                  iceType
                   cost
                 }
               }`
@@ -72,91 +64,112 @@ const ExpenseForm = (props) => {
   };
 
   useEffect(() => {
-    if (isEditActive && toUpdateExpense) {
-      setExpenseName(toUpdateExpense?.name);
-      setExpenseCost(toUpdateExpense?.cost);
+    if (isEditActive && toUpdateProduct) {
+      setIceType(toUpdateProduct?.iceType);
+      setWeight(toUpdateProduct?.weight);
+      setScaleType(toUpdateProduct?.scaleType);
+      setCost(toUpdateProduct?.cost);
     }
-  }, [toUpdateExpense]);
+  }, [toUpdateProduct]);
 
   useEffect(() => {
     if (isEditActive) {
-      if (updateExpense.isSuccess) {
-        if (!updateExpense.data?.data?.errors) {
-          updateExpense.reset();
+      if (updateProduct.isSuccess) {
+        if (!updateProduct.data?.data?.errors) {
+          updateProduct.reset();
           setIsEditActive(false);
           triggerTopAlert(true, "Successfully updated", "success");
         } else {
           triggerTopAlert(
             true,
-            updateExpense.data?.data?.errors[0].message,
+            updateProduct.data?.data?.errors[0].message,
             "danger"
           );
         }
       }
-      if (updateExpense.isError) {
-        triggerTopAlert(true, updateExpense.error.message, "danger");
+      if (updateProduct.isError) {
+        triggerTopAlert(true, updateProduct.error.message, "danger");
       }
     }
-  }, [updateExpense]);
+  }, [updateProduct]);
 
   useEffect(() => {
     if (!isEditActive) {
-      if (createExpense.isSuccess) {
-        if (!createExpense.data?.data?.errors) {
-          setExpenseCost("");
-          setExpenseName("");
-          createExpense.reset();
+      if (createProduct.isSuccess) {
+        if (!createProduct.data?.data?.errors) {
+          setIceType("tube");
+          setWeight("");
+          setScaleType("kg");
+          setCost("");
+          createProduct.reset();
           triggerTopAlert(true, "Successfully added", "success");
         } else {
           triggerTopAlert(
             true,
-            createExpense.data?.data?.errors[0].message,
+            createProduct.data?.data?.errors[0].message,
             "danger"
           );
         }
       }
-      if (createExpense.isError) {
-        triggerTopAlert(true, createExpense.error.message, "danger");
+      if (createProduct.isError) {
+        triggerTopAlert(true, createProduct.error.message, "danger");
       }
     }
-  }, [createExpense]);
+  }, [createProduct]);
 
-  useEffect(() => {
-    if (getAutheticatedUserId.isSuccess) {
-      if (
-        !getAutheticatedUserId.data.data?.errors &&
-        getAutheticatedUserId.data.data?.data?.verifyToken
-      ) {
-        setAutheticatedUserId(
-          getAutheticatedUserId.data.data?.data?.verifyToken?.userId
-        );
-      }
-    }
-    if (updateExpense.isError) {
-      triggerTopAlert(true, updateExpense.error.message, "warning");
-    }
-  }, [getAutheticatedUserId]);
+  const iceTypes = [
+    {
+      label: "Tube",
+      value: "tube",
+    },
+    {
+      label: "Crushed",
+      value: "crushed",
+    },
+  ];
+
+  const scaleTypes = [
+    {
+      label: "Kilogram",
+      value: "kg",
+    },
+    {
+      label: "Grams",
+      value: "g",
+    },
+  ];
 
   return (
     <>
       <Panel bordered style={{ margin: "10px" }}>
         <Form onSubmit={isEditActive ? () => update() : () => create()}>
           <FormGroup>
-            <ControlLabel>Expense Name</ControlLabel>
-            <Input
+            <ControlLabel>Ice Type</ControlLabel>
+            <SelectPicker
+              defaultValue={"tube"}
+              value={iceType}
+              data={iceTypes}
               block
-              onChange={(e) => setExpenseName(e)}
-              value={expenseName}
+              onChange={(e) => setIceType(e)}
             />
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Cost</ControlLabel>
-            <Input
+            <ControlLabel>Weight</ControlLabel>
+            <Input type="number" block value={weight} onChange={(e) => setWeight(e)} />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Scale Type</ControlLabel>
+            <SelectPicker
+              defaultValue={"kg"}
+              data={scaleTypes}
+              value={scaleType}
               block
-              type="number"
-              onChange={(e) => setExpenseCost(e)}
-              value={expenseCost}
+              onChange={(e) => setScaleType(e)}
             />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Cost (Pesos)</ControlLabel>
+            <Input type="number" block value={cost} onChange={(e) => setCost(e)} />
           </FormGroup>
           <FormGroup>
             <ButtonToolbar>
@@ -166,12 +179,14 @@ const ExpenseForm = (props) => {
                     appearance="primary"
                     type="submit"
                     style={{ marginRight: 10 }}
+                    disabled={updateProduct.isLoading}
                   >
                     Update
                   </Button>
                   <Button
                     appearance="default"
                     onClick={() => setIsEditActive(!isEditActive)}
+                    disabled={updateProduct.isLoading}
                   >
                     Back to list
                   </Button>
@@ -180,7 +195,7 @@ const ExpenseForm = (props) => {
                 <Button
                   appearance="primary"
                   type="submit"
-                  disabled={createExpense.isLoading}
+                  disabled={createProduct.isLoading}
                 >
                   Add
                 </Button>

@@ -10,15 +10,17 @@ import { graphqlUrl } from "../../services/constants";
 const ProductList = (props) => {
   const { userId, triggerTopAlert } = props;
   const [isEditActive, setIsEditActive] = useState(false);
-  const [expenseId, setProductId] = useState("");
-  const [expenseList, setProductList] = useState([]);
+  const [productId, setProductId] = useState("");
+  const [productList, setProductList] = useState([]);
   const { Column, HeaderCell, Cell } = Table;
 
   const getProductList = useQuery("getProductList", async () => {
     const query = `{
-        expenses {
+        products {
             _id
-            name
+            iceType,
+            weight,
+            scaleType,
             cost
         }
       }`;
@@ -35,16 +37,16 @@ const ProductList = (props) => {
     if (getProductList.isSuccess) {
       if (
         !getProductList.data.data?.errors &&
-        getProductList.data.data?.data?.expenses
+        getProductList.data.data?.data?.products
       ) {
-        const expenses = getProductList.data.data?.data?.expenses;
-        const expensesWithNumber = expenses?.reverse().map((res, index) => {
+        const product = getProductList.data.data?.data?.products;
+        const productWithNumber = product?.reverse().map((res, index) => {
           return {
             id: index + 1,
             ...res,
           };
         });
-        setProductList(expensesWithNumber);
+        setProductList(productWithNumber);
       }
     }
   }, [getProductList.data]);
@@ -57,7 +59,7 @@ const ProductList = (props) => {
     deleteProduct.mutate(
       `mutation{
         deleteProduct(_id: "${id}") {
-            name
+            weight
             cost
         }
       }`
@@ -87,17 +89,25 @@ const ProductList = (props) => {
     if (!isEditActive) {
       return (
         <Panel bordered style={{ margin: "10px" }}>
-          <Table height={400} data={expenseList}>
+          <Table height={400} data={productList}>
             <Column>
               <HeaderCell>#</HeaderCell>
               <Cell dataKey="id" />
             </Column>
             <Column flexGrow={100} minWidth={100}>
-              <HeaderCell>Product name</HeaderCell>
-              <Cell dataKey="name" />
+              <HeaderCell>Ice Type</HeaderCell>
+              <Cell dataKey="iceType" />
             </Column>
             <Column flexGrow={100} minWidth={100}>
-              <HeaderCell>Cost</HeaderCell>
+              <HeaderCell>Weight</HeaderCell>
+              <Cell dataKey="weight" />
+            </Column>
+            <Column flexGrow={100} minWidth={100}>
+              <HeaderCell>Scale Type</HeaderCell>
+              <Cell dataKey="scaleType" />
+            </Column>
+            <Column flexGrow={100} minWidth={100}>
+              <HeaderCell>Cost (Pesos)</HeaderCell>
               <Cell dataKey="cost" />
             </Column>
             <Column flexGrow={100} minWidth={100} fixed="right">
@@ -129,9 +139,9 @@ const ProductList = (props) => {
         <EditProduct
           isEditActive={isEditActive}
           setIsEditActive={setIsEditActive}
-          expenseId={expenseId}
+          productId={productId}
           userId={userId}
-          expenseList={expenseList}
+          productList={productList}
         />
       );
     }

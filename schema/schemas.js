@@ -3,7 +3,7 @@ const { GraphQLSchema, GraphQLObjectType } = require("graphql");
 
 // Query Functions
 const { getAllUser, getUser } = require("./Query/User");
-const { getAllSale, getSale } = require("./Query/Sale");
+const { getAllSale, getSale, getAllSaleByReceiptNumber } = require("./Query/Sale");
 const { getAllCustomer, getCustomer } = require("./Query/Customer");
 const { getAllExpense, getExpense } = require("./Query/Expense");
 const { verifyToken } = require("./Query/Authentication");
@@ -40,6 +40,7 @@ const Query = new GraphQLObjectType({
     expenses: getAllExpense,
     expense: getExpense,
     sales: getAllSale,
+    salesByReceiptNumber: getAllSaleByReceiptNumber,
     sale: getSale,
     products: getAllProduct,
     product: getProduct,

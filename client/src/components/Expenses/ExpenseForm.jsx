@@ -150,7 +150,7 @@ const ExpenseForm = (props) => {
             />
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Cost</ControlLabel>
+            <ControlLabel>Cost (Pesos)</ControlLabel>
             <Input
               block
               type="number"

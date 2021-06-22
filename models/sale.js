@@ -12,9 +12,10 @@ const sale = new Schema({
     ref: "Customer",
   },
   receiptNumber: Number,
-  iceType: String,
-  weight: Number,
-  scaleType: String,
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Customer",
+  },
   createdAt: {
     type: Date,
     default: Date.now,

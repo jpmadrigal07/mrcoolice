@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
-import ExpenseForm from "./ProductForm";
+import ProductForm from "./ProductForm";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { graphqlUrl } from "../../services/constants";
 
-const EditExpense = (props) => {
-  const { isEditActive, setIsEditActive, expenseId } = props;
-  const [expense, setExpense] = useState({});
+const EditProduct = (props) => {
+  const { isEditActive, setIsEditActive, productId } = props;
+  const [product, setProduct] = useState({});
 
-  const getToUpdateExpense = useQuery("getToUpdateExpense", async () => {
+  const getToUpdateProduct = useQuery("getToUpdateProduct", async () => {
     const query = `{
-            expense(_id: "${expenseId}") {
-                _id
-                name
+            product(_id: "${productId}") {
+                _id,
+                iceType,
+                weight,
+                scaleType,
                 cost
             }
           }`;
@@ -20,24 +22,24 @@ const EditExpense = (props) => {
   });
 
   useEffect(() => {
-    if (getToUpdateExpense.isSuccess) {
+    if (getToUpdateProduct.isSuccess) {
       if (
-        !getToUpdateExpense.data.data?.errors &&
-        getToUpdateExpense.data.data?.data?.expense
+        !getToUpdateProduct.data.data?.errors &&
+        getToUpdateProduct.data.data?.data?.product
       ) {
-        setExpense(getToUpdateExpense.data.data?.data?.expense);
+        setProduct(getToUpdateProduct.data.data?.data?.product);
       }
     }
-  }, [getToUpdateExpense]);
+  }, [getToUpdateProduct]);
   return (
     <div>
-      <ExpenseForm
+      <ProductForm
         isEditActive={isEditActive}
         setIsEditActive={setIsEditActive}
-        toUpdateExpense={expense}
+        toUpdateProduct={product}
       />
     </div>
   );
 };
 
-export default EditExpense;
+export default EditProduct;

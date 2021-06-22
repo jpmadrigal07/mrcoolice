@@ -3,6 +3,10 @@ const { Schema } = mongoose;
 
 // CREATE DB SCHEMA OF USERS
 const product = new Schema({
+  iceType: {
+    type: String,
+    enum: ["tube", "crushed"],
+  },
   weight: Number,
   scaleType: {
     type: String,

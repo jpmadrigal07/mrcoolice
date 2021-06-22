@@ -65,17 +65,19 @@ const Order = () => {
           customerId {
               _id
               description
-            }
-          _id
-          iceType
-          weight
-          scaleType
+            },
+          _id,
+          productId {
+            _id,
+            iceType,
+            weight,
+            scaleType,
+            cost
+          },
+          receiptNumber
         }
       }`;
       return await axios.post(graphqlUrl, { query });
-    },
-    {
-      refetchInterval: 1000,
     }
   );
   const getCustomerList = useQuery(
@@ -88,9 +90,6 @@ const Order = () => {
         }
       }`;
       return await axios.post(graphqlUrl, { query });
-    },
-    {
-      refetchInterval: 1000,
     }
   );
   useEffect(() => {

@@ -9,9 +9,12 @@ function ReportsList() {
   const { Column, HeaderCell, Cell } = Table;
   const [expenseList, setExpenseList] = useState([]);
   const [salesList, setSalesList] = useState([]);
-  const [selectedDate, setSelectedDate] = useState();
+  const [selectedDate, setSelectedDate] = useState(null);
   const [expenseFilteredByDate, setExpenseFilteredByDate] = useState([]);
   const [salesFilteredByDate, setSalesFilteredByDate] = useState([]);
+
+  const [totalSales, setTotalSales] = useState(0);
+  const [totalExpenses, setTotalExpenses] = useState(0);
 
   const getExpenseList = useQuery("getExpenseList", async () => {
     const query = `{
@@ -31,11 +34,9 @@ function ReportsList() {
               customerId {
                   _id
                   description
-                }
-              _id
-              iceType
-              weight
-              scaleType
+                },
+              _id,
+              productId,
               createdAt
             }
           }`;
@@ -58,6 +59,9 @@ function ReportsList() {
         setExpenseList(expensesWithNumber);
       }
     }
+  }, [getExpenseList.data]);
+
+  useEffect(() => {
     if (getSalesList.isSuccess) {
       if (
         !getSalesList.data.data?.errors &&
@@ -73,7 +77,7 @@ function ReportsList() {
         setSalesList(salesWithNumber);
       }
     }
-  }, [getExpenseList.data, getSalesList.data]);
+  }, [getSalesList.data]);
 
   useEffect(() => {
     setExpenseFilteredByDate(
@@ -83,6 +87,7 @@ function ReportsList() {
           selectedDate
       )
     );
+    
     setSalesFilteredByDate(
       salesList.filter(
         (sales) =>
@@ -90,9 +95,22 @@ function ReportsList() {
           selectedDate
       )
     );
-    console.log("sales", salesFilteredByDate);
-    console.log("expenses", expenseFilteredByDate);
+
   }, [selectedDate]);
+
+  useEffect(() => {
+    const total = salesFilteredByDate?.reverse().map((res) => {
+      return res.productId.cost;
+    }).reduce(function(a, b) { return a + b; }, 0);
+    setTotalSales(total);
+  }, [salesFilteredByDate])
+
+  useEffect(() => {
+    const total = expenseFilteredByDate?.reverse().map((res) => {
+      return res.cost;
+    }).reduce(function(a, b) { return a + b; }, 0);
+    setTotalExpenses(total);
+  }, [expenseFilteredByDate])
 
   return (
     <>
@@ -105,30 +123,11 @@ function ReportsList() {
           style={{ marginLeft: 10, width: 150 }}
           oneTap
         />
-        <h5 style={{ marginTop: 20 }}>Expense Report</h5>
+                <h5 style={{ marginTop: 20 }}>Sales Report</h5>
+                <p style={{marginTop: 20}}>Total Sales: <strong>P {totalSales}</strong></p>
         <Table
           style={{ marginTop: 20 }}
-          data={selectedDate ? expenseFilteredByDate : expenseList}
-          height={300}
-        >
-          <Column>
-            <HeaderCell>#</HeaderCell>
-            <Cell dataKey="id" />
-          </Column>
-          <Column flexGrow={100} minWidth={100}>
-            <HeaderCell>Expense Name</HeaderCell>
-            <Cell dataKey="name" />
-          </Column>
-          <Column flexGrow={100} minWidth={100}>
-            <HeaderCell>Cost</HeaderCell>
-            <Cell dataKey="cost" />
-          </Column>
-        </Table>
-        <hr />
-        <h5 style={{ marginTop: 20 }}>Sales Report</h5>
-        <Table
-          style={{ marginTop: 20 }}
-          data={selectedDate ? salesFilteredByDate : salesList}
+          data={salesFilteredByDate}
           height={300}
         >
           <Column>
@@ -141,15 +140,40 @@ function ReportsList() {
           </Column>
           <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Ice Type</HeaderCell>
-            <Cell dataKey="iceType" />
+            <Cell dataKey="productId.iceType" />
           </Column>
           <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Weight</HeaderCell>
-            <Cell dataKey="weight" />
+            <Cell dataKey="productId.weight" />
           </Column>
           <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Scale Type</HeaderCell>
-            <Cell dataKey="scaleType" />
+            <Cell dataKey="productId.scaleType" />
+          </Column>
+          <Column flexGrow={100} minWidth={100}>
+            <HeaderCell>Cost</HeaderCell>
+            <Cell dataKey="productId.cost" />
+          </Column>
+        </Table>
+        <hr/>
+        <h5 style={{ marginTop: 20 }}>Expense Report</h5>
+        <p style={{marginTop: 20}}>Total Expense: <strong>P {totalExpenses}</strong></p>
+        <Table
+          style={{ marginTop: 20 }}
+          data={expenseFilteredByDate}
+          height={300}
+        >
+          <Column>
+            <HeaderCell>#</HeaderCell>
+            <Cell dataKey="id" />
+          </Column>
+          <Column flexGrow={100} minWidth={100}>
+            <HeaderCell>Expense Name</HeaderCell>
+            <Cell dataKey="name" />
+          </Column>
+          <Column flexGrow={100} minWidth={100}>
+            <HeaderCell>Cost (Pesos)</HeaderCell>
+            <Cell dataKey="cost" />
           </Column>
         </Table>
       </Panel>

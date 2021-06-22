@@ -48,7 +48,6 @@ const EditOrder = (props) => {
   const createSales = useMutation((query) =>
     axios.post(graphqlUrl, { query })
   );
-  console.log(iceTypeContent, weightContent, scaleContent);
   const getId = useQuery(
     "getId",
     async () => {
@@ -58,9 +57,6 @@ const EditOrder = (props) => {
             }
       }`;
       return await axios.post(graphqlUrl, { query });
-    },
-    {
-      refetchInterval: 1000,
     }
   );
 

@@ -14,10 +14,11 @@ function Receipt(props) {
   const [cust, setCust] = useState("---");
   const [staff, setStaff] = useState("---");
   const [orders, setOrders] = useState([]);
-  const receiptNumber = 72754;
+  const [totalSales, setTotalSales] = useState(0);
+  const receiptNumber = 27920;
   const getOrders = useQuery("getOrders", async () => {
     const query = `{
-            sales(receiptNumber: ${receiptNumber}) {
+      salesByReceiptNumber(receiptNumber: ${receiptNumber}) {
                 userId {
                     firstName,
                     lastName
@@ -25,9 +26,13 @@ function Receipt(props) {
                 customerId {
                     description
                 },
-                iceType,
-                weight,
-                scaleType,
+                productId {
+                  _id,
+                  iceType,
+                  weight,
+                  scaleType,
+                  cost
+                }
                 createdAt
             }
         }`;
@@ -38,20 +43,27 @@ function Receipt(props) {
       if (getOrders.data.data?.errors) {
         triggerTopAlert(true, "Unknown error occured", "danger");
       } else {
-        const orders = getOrders.data.data?.data?.sales;
+        const orders = getOrders.data.data?.data?.salesByReceiptNumber;
         if (orders.length > 0) {
           const firstValue = orders[0];
           setCust(firstValue.customerId.description);
           setStaff(
-            `${firstValue.userId.firstname} ${firstValue.userId.lastName}`
+            `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
           );
 
           const newOrders = orders.map((res) => {
-            // const costPerKilo = res.scaleType === "kg" ?
             return {
-              values: `${res.weight} ${res.scaleType} ${res.iceType}`,
+              value: `${res.productId.weight} ${res.productId.scaleType} ${res.productId.iceType}`,
+              cost: res.productId.cost
             };
           });
+
+          const total = orders.map((res) => {
+            return res.productId.cost
+          }).reduce(function(a, b) { return a + b; }, 0);
+
+          setTotalSales(total)
+          setOrders(newOrders)
         }
       }
     }
@@ -89,31 +101,21 @@ function Receipt(props) {
           <br />
         </div>
         <table style={{ width: "100%", fontSize: "8px" }}>
-          <tr>
-            <td style={{ width: "70%" }}>500 kg Ice</td>
-            <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-              P312,343.00
-            </td>
-          </tr>
-          <tr>
-            <td style={{ width: "70%" }}>500 kg Ice</td>
-            <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-              P312,343.00
-            </td>
-          </tr>
-          <tr>
-            <td style={{ width: "70%" }}>500 kg Ice</td>
-            <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-              P312,343.00
-            </td>
-          </tr>
+          {orders.map((_, i) => {
+            return (<tr>
+              <td style={{ width: "70%" }}>{_.value} ice</td>
+              <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
+                P{_.cost.toLocaleString()}
+              </td>
+            </tr>)
+          })}
         </table>
         <hr id="lineTotal" />
         <table style={{ width: "100%", fontSize: "8px" }}>
           <tr>
             <td style={{ width: "70%" }}>Total</td>
             <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-              P500.00
+              P{totalSales.toLocaleString()}
             </td>
           </tr>
         </table>

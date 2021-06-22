@@ -4,6 +4,13 @@ const { GraphQLID, GraphQLList, GraphQLInt } = require("graphql");
 
 module.exports.getAllSale = {
   type: GraphQLList(SalesType),
+  resolve: (parent) => {
+    return Sales.find();
+  },
+};
+
+module.exports.getAllSaleByReceiptNumber = {
+  type: GraphQLList(SalesType),
   args: {
     receiptNumber: { type: GraphQLInt },
   },

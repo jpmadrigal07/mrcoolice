@@ -6,8 +6,10 @@ const {
 } = require("graphql");
 const UserType = require("./User");
 const CustomerType = require("./Customer");
+const ProductType = require("./Product");
 const User = require("../../models/user");
 const Customer = require("../../models/customer");
+const Product = require("../../models/product");
 
 const SaleType = new GraphQLObjectType({
   name: "Sale",
@@ -26,9 +28,12 @@ const SaleType = new GraphQLObjectType({
       },
     },
     receiptNumber: { type: GraphQLInt },
-    iceType: { type: GraphQLString },
-    weight: { type: GraphQLInt },
-    scaleType: { type: GraphQLString },
+    productId: {
+      type: ProductType,
+      resolve: async (sale) => {
+        return await Product.findOne({ _id: sale.productId });
+      },
+    },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
     deletedAt: { type: GraphQLString },

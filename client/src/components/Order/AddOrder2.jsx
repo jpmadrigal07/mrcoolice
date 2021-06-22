@@ -6,16 +6,10 @@ import {
   Form,
   FormGroup,
   ControlLabel,
-  Input,
   ButtonToolbar,
   Button,
-  Col,
-  Row,
   SelectPicker,
-  InputPicker,
-  Whisper,
-  Icon,
-  Tooltip,
+  Loader
 } from "rsuite";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
@@ -30,10 +24,11 @@ const AddOrder2 = (props) => {
     useState(null);
   const [customers, setCustomers] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [products, setProducts] = useState([]);
   const token = Cookies.get("sessionToken");
 
   useEffect(() => {
-    addNewOrder();
+    addNewProduct();
   }, []);
 
   const createSales = useMutation((query) => axios.post(graphqlUrl, { query }));
@@ -57,9 +52,8 @@ const AddOrder2 = (props) => {
             }
       }`;
       return await axios.post(graphqlUrl, { query });
-    },
-    {
-      enabled: false,
+    },  {
+      enabled: false
     }
   );
 
@@ -68,6 +62,19 @@ const AddOrder2 = (props) => {
         customers {
           _id
           description
+        }
+      }`;
+    return await axios.post(graphqlUrl, { query });
+  });
+
+  const getProducts = useQuery("getProducts", async () => {
+    const query = `{
+        products {
+          _id
+          iceType,
+          weight,
+          scaleType,
+          cost
         }
       }`;
     return await axios.post(graphqlUrl, { query });
@@ -82,13 +89,18 @@ const AddOrder2 = (props) => {
         setAutheticatedUserId(
           getAutheticatedUserId.data.data?.data?.verifyToken?.userId
         );
-        getAutheticatedUserData.refetch();
       }
     }
     if (getAutheticatedUserId.isError) {
       triggerTopAlert(true, getAutheticatedUserId.error.message, "warning");
     }
   }, [getAutheticatedUserId.data]);
+
+  useEffect(() => {
+    if(autheticatedUserId) {
+      getAutheticatedUserData.refetch()
+    }
+  }, [autheticatedUserId])
 
   useEffect(() => {
     if (getAutheticatedUserData.isSuccess) {
@@ -105,7 +117,7 @@ const AddOrder2 = (props) => {
     if (getAutheticatedUserData.isError) {
       triggerTopAlert(true, getAutheticatedUserData.error.message, "warning");
     }
-  }, [getAutheticatedUserData.data]);
+  }, [getAutheticatedUserData.data, getAutheticatedUserData.isLoading]);
 
   useEffect(() => {
     if (getCustomers.isSuccess) {
@@ -126,6 +138,24 @@ const AddOrder2 = (props) => {
   }, [getCustomers.data]);
 
   useEffect(() => {
+    if (getProducts.isSuccess) {
+      if (
+        !getProducts.data.data?.errors &&
+        getProducts.data.data?.data?.products
+      ) {
+        const foundProducts = getProducts.data.data?.data?.products;
+        const newProducts = foundProducts.map((res) => {
+          return {
+            value: res._id,
+            label: `${res.weight} ${res.scaleType} ${res.iceType} ice`,
+          };
+        });
+        setProducts(newProducts);
+      }
+    }
+  }, [getProducts.data]);
+
+  useEffect(() => {
     if (createSales.isSuccess) {
       if (
         !createSales.data.data?.errors &&
@@ -144,7 +174,7 @@ const AddOrder2 = (props) => {
       }
     }
     if (createSales.isError) {
-      triggerTopAlert(true, getAutheticatedUserData.error.message, "warning");
+      triggerTopAlert(true, createSales.error.message, "warning");
     }
   }, [createSales.data]);
 
@@ -153,7 +183,7 @@ const AddOrder2 = (props) => {
       const receiptNumber = Math.floor(Math.random() * 90000) + 10000;
       const toInsert = order
         .map((res) => {
-          if (res.weight) {
+          if (res.productId) {
             return {
               ...res,
               customerId: selectedCustomerId,
@@ -166,7 +196,7 @@ const AddOrder2 = (props) => {
       if (toInsert.length > 0) {
         toInsert.map((res) => {
           createSales.mutate(`mutation {
-              createSale(customerId: "${res.customerId}", userId: "${res.userId}", receiptNumber: ${res.receiptNumber}, iceType: "${res.iceType}", weight: ${res.weight}, scaleType: "${res.scaleType}") {
+              createSale(customerId: "${res.customerId}", userId: "${res.userId}", receiptNumber: ${res.receiptNumber}, productId: "${res.productId}") {
                 receiptNumber
             }
           }
@@ -180,55 +210,16 @@ const AddOrder2 = (props) => {
     }
   };
 
-  const addNewOrder = () => {
+  const addNewProduct = () => {
     const toUpdate = order;
-    toUpdate.push({
-      iceType: "tube",
-      weight: null,
-      scaleType: "kg",
-    });
-    setOrder(toUpdate);
+    setOrder([...toUpdate, {productId: ""}]);
   };
 
-  const updateIceType = (value, index) => {
+  const updateProduct = (value, index) => {
     const toUpdate = order;
-    toUpdate[index].iceType = value;
+    toUpdate[index].productId = value;
     setOrder(toUpdate);
   };
-
-  const updateWeight = (value, index) => {
-    const toUpdate = order;
-    toUpdate[index].weight = value;
-    setOrder(toUpdate);
-  };
-
-  const updateScaleType = (value, index) => {
-    const toUpdate = order;
-    toUpdate[index].scaleType = value;
-    setOrder(toUpdate);
-  };
-
-  const iceTypes = [
-    {
-      label: "Tube",
-      value: "tube",
-    },
-    {
-      label: "Crushed",
-      value: "crushed",
-    },
-  ];
-
-  const scaleTypes = [
-    {
-      label: "Kilogram",
-      value: "kg",
-    },
-    {
-      label: "Grams",
-      value: "g",
-    },
-  ];
 
   return (
     <>
@@ -236,7 +227,7 @@ const AddOrder2 = (props) => {
         <Form onSubmit={() => submit()}>
           <FormGroup>
             <ControlLabel>Cashier</ControlLabel>
-            <h4>{autheticatedUserFullName}</h4>
+            <h4>{!getAutheticatedUserData.isLoading ? autheticatedUserFullName : <Loader/>}</h4>
           </FormGroup>
           <FormGroup>
             <ControlLabel>Customer</ControlLabel>
@@ -254,39 +245,24 @@ const AddOrder2 = (props) => {
           {order.map((res, i) => {
             return (
               <>
-                <h5 style={{ marginBottom: 5 }}>Order {i + 1}</h5>
-                <FormGroup>
-                  <ControlLabel>Ice Type</ControlLabel>
-                  <SelectPicker
-                    defaultValue={"tube"}
-                    data={iceTypes}
-                    block
-                    onChange={(e) => updateIceType(e, i)}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>Weight</ControlLabel>
-                  <Input block onChange={(e) => updateWeight(e, i)} />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>Scale Type</ControlLabel>
-                  <SelectPicker
-                    defaultValue={"kg"}
-                    data={scaleTypes}
-                    block
-                    onChange={(e) => updateScaleType(e, i)}
-                  />
-                </FormGroup>
-                <hr />
+                  <FormGroup>
+                    <ControlLabel>Product {i + 1}</ControlLabel>
+                    <SelectPicker
+                      data={products}
+                      block
+                      onChange={(e) => updateProduct(e, i)}
+                    />
+                  </FormGroup>
+                  <hr />
               </>
             );
           })}
           <FormGroup>
             <a
-              onClick={() => addNewOrder()}
+              onClick={() => addNewProduct()}
               style={{ cursor: "pointer", marginBottom: 15 }}
             >
-              Add New Order
+              Add New Product
             </a>
           </FormGroup>
           <FormGroup>

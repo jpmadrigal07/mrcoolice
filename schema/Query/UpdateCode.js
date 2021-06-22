@@ -35,7 +35,6 @@ module.exports.updateCode = {
       }
       // Return isVerified true if all 3 condition passed
       childProcess.exec("update_code.bat", function (error, stdout, stderr) {
-        console.log(stdout);
       });
 
       return { updateExecuted: true };

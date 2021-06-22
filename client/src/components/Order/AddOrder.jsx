@@ -53,9 +53,6 @@ const AddOrder = (props) => {
             }
       }`;
       return await axios.post(graphqlUrl, { query });
-    },
-    {
-      refetchInterval: 1000,
     }
   );
 

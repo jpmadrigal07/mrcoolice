@@ -20,6 +20,7 @@ const OrderList = (props) => {
   const { Column, HeaderCell, Cell } = Table;
   const [isEditActive, setIsEditActive] = useState(false);
   const [orderId, setOrderId] = useState("");
+  const [products, setProducts] = useState([]);
   const deleteSales = useMutation((query) =>
     axios.post(graphqlUrl, { query })
   );
@@ -34,51 +35,52 @@ const OrderList = (props) => {
     );
     triggerTopAlert(true, "Order successfully deleted", "success");
   };
+  useEffect(() => {
+    const newProduct = orderList.map((res, i) => {
+      return {
+        number: i+1,
+        description: res.customerId.description,
+        iceType: res.productId.iceType,
+        weight: res.productId.weight,
+        scaleType: res.productId.scaleType,
+        cost: res.productId.cost,
+        receiptNumber: res.receiptNumber
+      }
+    })
+    setProducts(newProduct);
+  }, [])
   const renderEdit = () => {
     if (!isEditActive) {
       return (
         <Panel bordered style={{ margin: "10px" }}>
-          <Table height={400} data={orderList}>
-            <Column>
+          <Table height={400} data={products}>
+            <Column flexGrow={100} minWidth={50}>
               <HeaderCell>#</HeaderCell>
               <Cell dataKey="number" />
             </Column>
-            <Column>
+            <Column flexGrow={100} minWidth={50}>
               <HeaderCell>Customer</HeaderCell>
-              <Cell dataKey="customerId.description" />
+              <Cell dataKey="description" />
             </Column>
-            <Column>
+            <Column flexGrow={100} minWidth={50}>
               <HeaderCell>Ice Type</HeaderCell>
               <Cell dataKey="iceType" />
             </Column>
-            <Column>
+            <Column flexGrow={100} minWidth={50}>
               <HeaderCell>Weight</HeaderCell>
               <Cell dataKey="weight" />
             </Column>
-            <Column>
+            <Column flexGrow={100} minWidth={50}>
               <HeaderCell>Scale Type</HeaderCell>
               <Cell dataKey="scaleType" />
             </Column>
-            <Column width={120} fixed="right">
-              <HeaderCell>Action</HeaderCell>
-              <Cell>
-                {(rowData) => {
-                  return (
-                    <span>
-                      <a
-                        onClick={() => {
-                          setOrderId(rowData._id);
-                          setIsEditActive(!isEditActive);
-                        }}
-                      >
-                        Edit
-                      </a>{" "}
-                      |{"  "}
-                      <a onClick={() => handleRemove(rowData._id)}>Remove</a>
-                    </span>
-                  );
-                }}
-              </Cell>
+            <Column flexGrow={100} minWidth={50}>
+              <HeaderCell>Cost Type</HeaderCell>
+              <Cell dataKey="cost" />
+            </Column>
+            <Column flexGrow={100} minWidth={50}>
+              <HeaderCell>Receipt Number</HeaderCell>
+              <Cell dataKey="receiptNumber" />
             </Column>
           </Table>
         </Panel>

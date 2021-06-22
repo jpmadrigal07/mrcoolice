@@ -9,6 +9,7 @@ const {
     name: "Product",
     fields: () => ({
       _id: { type: GraphQLID },
+      iceType: { type: GraphQLString },
       weight: { type: GraphQLInt },
       scaleType: { type: GraphQLString },
       cost: { type: GraphQLInt },

@@ -97,7 +97,7 @@ const ExpenseList = (props) => {
               <Cell dataKey="name" />
             </Column>
             <Column flexGrow={100} minWidth={100}>
-              <HeaderCell>Cost</HeaderCell>
+              <HeaderCell>Cost (Pesos)</HeaderCell>
               <Cell dataKey="cost" />
             </Column>
             <Column flexGrow={100} minWidth={100} fixed="right">
