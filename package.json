@@ -10,7 +10,8 @@
     "client": "yarn --cwd client start",
     "dev": "concurrently \"yarn server\" \"yarn client\"",
     "test": "yarn start",
-    "format": "prettier --write '**/*.{js,jsx,ts,tsx,css,scss}'"
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,css,scss}'",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "author": "",
   "license": "ISC",

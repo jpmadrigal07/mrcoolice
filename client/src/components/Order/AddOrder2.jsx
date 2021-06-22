@@ -15,8 +15,10 @@ import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useHistory } from "react-router-dom";
 
 const AddOrder2 = (props) => {
+  const history = useHistory();
   const { triggerTopAlert } = props;
   const [order, setOrder] = useState([]);
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
@@ -236,8 +238,9 @@ const AddOrder2 = (props) => {
               data={customers}
               block
               onChange={(e) => setSelectedCustomerId(e)}
+              disabled={createSales.isLoading}
             />
-            <a style={{ cursor: "pointer" }} onClick={() => {}}>
+            <a style={{ cursor: "pointer" }} onClick={() => history.push("/customer")}>
               Add new customer?
             </a>
           </FormGroup>
@@ -251,6 +254,7 @@ const AddOrder2 = (props) => {
                       data={products}
                       block
                       onChange={(e) => updateProduct(e, i)}
+                      disabled={createSales.isLoading}
                     />
                   </FormGroup>
                   <hr />
@@ -271,10 +275,10 @@ const AddOrder2 = (props) => {
                 appearance="primary"
                 type="submit"
                 style={{ marginRight: 10 }}
+                disabled={createSales.isLoading}
               >
                 Create
               </Button>
-              <Button appearance="default">Reset</Button>
             </ButtonToolbar>
           </FormGroup>
         </Form>

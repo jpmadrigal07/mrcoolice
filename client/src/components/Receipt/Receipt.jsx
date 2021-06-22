@@ -8,6 +8,7 @@ import { graphqlUrl } from "../../services/constants";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import moment from "moment";
+import { useLocation } from "react-router-dom";
 
 function Receipt(props) {
   const { triggerTopAlert } = props;
@@ -15,7 +16,9 @@ function Receipt(props) {
   const [staff, setStaff] = useState("---");
   const [orders, setOrders] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
-  const receiptNumber = 27920;
+  const { search } = useLocation();
+  const receiptNumber = search ? search.replace("?receiptNumber=", "") : "";
+
   const getOrders = useQuery("getOrders", async () => {
     const query = `{
       salesByReceiptNumber(receiptNumber: ${receiptNumber}) {
@@ -71,10 +74,18 @@ function Receipt(props) {
       triggerTopAlert(true, "Unknown error occured", "danger");
     }
   }, [getOrders.data]);
+
+  useEffect(() => {
+    if(cust && staff && orders.length > 0) {
+      window.print()
+    }
+  }, [cust, staff, orders])
+
   return (
     <div>
       <Navigation currentPage={""} />
-      <div id="receipt">
+      {receiptNumber ? (
+        <div id="receipt">
         <div>
           <p
             style={{ fontWeight: "800", fontSize: "18px", textAlign: "center" }}
@@ -129,6 +140,7 @@ function Receipt(props) {
           ----
         </p>
       </div>
+      ) : <h5>No receipt number.</h5> }
     </div>
   );
 }

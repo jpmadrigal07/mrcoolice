@@ -75,12 +75,26 @@ const OrderList = (props) => {
               <Cell dataKey="scaleType" />
             </Column>
             <Column flexGrow={100} minWidth={50}>
-              <HeaderCell>Cost Type</HeaderCell>
+              <HeaderCell>Cost</HeaderCell>
               <Cell dataKey="cost" />
             </Column>
             <Column flexGrow={100} minWidth={50}>
               <HeaderCell>Receipt Number</HeaderCell>
               <Cell dataKey="receiptNumber" />
+            </Column>
+            <Column flexGrow={100} minWidth={100} fixed="right">
+              <HeaderCell>Action</HeaderCell>
+              <Cell>
+              {(rowData) => {
+                  return (
+              <a
+                onClick={() => window.open(`/receipt?receiptNumber=${rowData.receiptNumber}`, "_blank")}
+                style={{cursor: 'pointer'}}
+              >
+                Print Receipt
+              </a>
+              )}}
+              </Cell>
             </Column>
           </Table>
         </Panel>
