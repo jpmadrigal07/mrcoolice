@@ -127,7 +127,7 @@ function ReportsList() {
                 <p style={{marginTop: 20}}>Total Sales: <strong>P {totalSales}</strong></p>
         <Table
           style={{ marginTop: 20 }}
-          data={salesFilteredByDate}
+          data={selectedDate ? salesFilteredByDate : salesList}
           height={300}
         >
           <Column>
@@ -160,7 +160,7 @@ function ReportsList() {
         <p style={{marginTop: 20}}>Total Expense: <strong>P {totalExpenses}</strong></p>
         <Table
           style={{ marginTop: 20 }}
-          data={expenseFilteredByDate}
+          data={selectedDate ? expenseFilteredByDate : expenseList}
           height={300}
         >
           <Column>
