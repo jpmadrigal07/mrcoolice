@@ -131,10 +131,7 @@ function Receipt(props) {
           </tr>
         </table>
         <hr id="lineDivider" />
-        <p style={{ fontSize: "8px", lineHeight: "10px", fontWeight: "400" }}>
-          THIS IS AN OFFICIAL RECEIPT AND THIS SHALL BE VALID FOR FIVE(5) YEARS
-          FROM THE DATE OF PERMIT TO USE.
-        </p>
+        
         <br />
         <p style={{ fontSize: "8px", lineHeight: "10px", fontWeight: "400" }}>
           ----

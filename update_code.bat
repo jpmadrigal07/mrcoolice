@@ -1,3 +1,3 @@
-cd C:\Users\john.madrigal\Personal\mrcoolice
+cd C:\Users\MR. COOL ICE\mrcoolice
 set HOME=%USERPROFILE%
 git pull
