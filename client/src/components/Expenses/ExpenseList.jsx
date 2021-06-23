@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 import { graphqlUrl } from "../../services/constants";
 
 const ExpenseList = (props) => {
-  const { userId, triggerTopAlert } = props;
+  const { userId, triggerTopAlert, userType } = props;
   const [isEditActive, setIsEditActive] = useState(false);
   const [expenseId, setExpenseId] = useState("");
   const [expenseList, setExpenseList] = useState([]);
@@ -104,20 +104,28 @@ const ExpenseList = (props) => {
               <HeaderCell>Action</HeaderCell>
               <Cell>
                 {(rowData) => {
-                  return (
-                    <span style={{ cursor: "pointer" }}>
-                      <a
-                        onClick={() => {
-                          setIsEditActive(!isEditActive);
-                          setExpenseId(rowData._id);
-                        }}
-                      >
-                        Edit
-                      </a>{" "}
-                      {"  "}|{"  "}
-                      <a onClick={() => remove(rowData._id)}>Remove</a>
-                    </span>
-                  );
+                  if(userType === "Admin") {
+                    return (
+                      <span style={{ cursor: "pointer" }}>
+                        <a
+                          onClick={() => {
+                            setIsEditActive(!isEditActive);
+                            setExpenseId(rowData._id);
+                          }}
+                        >
+                          Edit
+                        </a>{" "}
+                        |{"  "}
+                        <a onClick={() => remove(rowData._id)}>Remove</a>
+                      </span>
+                    );
+                  } else {
+                    return (
+                      <span style={{ cursor: "pointer" }}>
+                        <a onClick={() => remove(rowData._id)}>Remove</a>
+                      </span>
+                    );
+                  }
                 }}
               </Cell>
             </Column>
@@ -139,6 +147,8 @@ const ExpenseList = (props) => {
   return <div>{renderExpense()}</div>;
 };
 
-const mapStateToProps = (global) => ({});
+const mapStateToProps = (global) => ({
+  userType: global.loggedInUser.userType
+});
 
 export default connect(mapStateToProps, { triggerTopAlert })(ExpenseList);

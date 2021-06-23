@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 import { graphqlUrl } from "../../services/constants";
 
 const ProductList = (props) => {
-  const { userId, triggerTopAlert } = props;
+  const { userId, triggerTopAlert, userType } = props;
   const [isEditActive, setIsEditActive] = useState(false);
   const [productId, setProductId] = useState("");
   const [productList, setProductList] = useState([]);
@@ -114,20 +114,28 @@ const ProductList = (props) => {
               <HeaderCell>Action</HeaderCell>
               <Cell>
                 {(rowData) => {
-                  return (
-                    <span style={{ cursor: "pointer" }}>
-                      <a
-                        onClick={() => {
-                          setIsEditActive(!isEditActive);
-                          setProductId(rowData._id);
-                        }}
-                      >
-                        Edit
-                      </a>{" "}
-                      {"  "}|{"  "}
-                      <a onClick={() => remove(rowData._id)}>Remove</a>
-                    </span>
-                  );
+                  if(userType === "Admin") {
+                    return (
+                      <span style={{ cursor: "pointer" }}>
+                        <a
+                          onClick={() => {
+                            setIsEditActive(!isEditActive);
+                            setProductId(rowData._id);
+                          }}
+                        >
+                          Edit
+                        </a>{" "}
+                        |{"  "}
+                        <a onClick={() => remove(rowData._id)}>Remove</a>
+                      </span>
+                    );
+                  } else {
+                    return (
+                      <span style={{ cursor: "pointer" }}>
+                        <a onClick={() => remove(rowData._id)}>Remove</a>
+                      </span>
+                    );
+                  }
                 }}
               </Cell>
             </Column>
@@ -149,6 +157,8 @@ const ProductList = (props) => {
   return <div>{renderProduct()}</div>;
 };
 
-const mapStateToProps = (global) => ({});
+const mapStateToProps = (global) => ({
+  userType: global.loggedInUser.userType
+});
 
 export default connect(mapStateToProps, { triggerTopAlert })(ProductList);

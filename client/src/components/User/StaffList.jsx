@@ -8,7 +8,7 @@ import EditUser from "./EditStaff";
 import { graphqlUrl } from "../../services/constants";
 
 const UserList = (props) => {
-  const { triggerTopAlert } = props;
+  const { triggerTopAlert, userType } = props;
   const [isEditActive, setIsEditActive] = useState(false);
   const [staffId, setStaffId] = useState("");
   const [staffList, setStaffList] = useState([]);
@@ -114,27 +114,29 @@ const UserList = (props) => {
               <HeaderCell>Last name</HeaderCell>
               <Cell dataKey="lastName" />
             </Column>
-            <Column flexGrow={100} minWidth={120} fixed="right">
-              <HeaderCell>Action</HeaderCell>
-              <Cell>
-                {(rowData) => {
-                  return (
-                    <span>
-                      <a
-                        onClick={() => {
-                          setIsEditActive(!isEditActive);
-                          setStaffId(rowData._id);
-                        }}
-                      >
-                        Edit
-                      </a>{" "}
-                      |{"  "}
-                      <a onClick={() => remove(rowData._id)}>Remove</a>
-                    </span>
-                  );
-                }}
-              </Cell>
-            </Column>
+            {userType === "Admin" ? (
+              <Column flexGrow={100} minWidth={120} fixed="right">
+                <HeaderCell>Action</HeaderCell>
+                <Cell>
+                  {(rowData) => {
+                    return (
+                      <span>
+                        <a
+                          onClick={() => {
+                            setIsEditActive(!isEditActive);
+                            setStaffId(rowData._id);
+                          }}
+                        >
+                          Edit
+                        </a>{" "}
+                        |{"  "}
+                        <a onClick={() => remove(rowData._id)}>Remove</a>
+                      </span>
+                    );
+                  }}
+                </Cell>
+              </Column>
+            ) : null}
           </Table>
         </Panel>
       );
@@ -152,6 +154,8 @@ const UserList = (props) => {
   return <div>{renderStaffs()}</div>;
 };
 
-const mapStateToProps = (global) => ({});
+const mapStateToProps = (global) => ({
+  userType: global.loggedInUser.userType
+});
 
 export default connect(mapStateToProps, { triggerTopAlert })(UserList);
