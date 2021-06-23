@@ -5,12 +5,13 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { graphqlUrl } from "../../services/constants";
 import { triggerTopAlert } from "../../actions/topAlertActions";
+import { updateLoggedInUser } from "../../actions/loggedInUserActions";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 const Navigation = (props) => {
   const history = useHistory();
-  const { triggerTopAlert, currentPage } = props;
+  const { triggerTopAlert, updateLoggedInUser, currentPage } = props;
 
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -33,8 +34,10 @@ const Navigation = (props) => {
       } else {
         if (verifyToken.data.data?.data?.verifyToken.userType === "Admin") {
           setIsAdmin(true);
+          updateLoggedInUser("", "", "Admin");
         } else {
           setIsAdmin(false);
+          updateLoggedInUser("", "", "Staff");
         }
       }
     }
@@ -105,4 +108,4 @@ const Navigation = (props) => {
 
 const mapStateToProps = (global) => ({});
 
-export default connect(mapStateToProps, { triggerTopAlert })(Navigation);
+export default connect(mapStateToProps, { triggerTopAlert, updateLoggedInUser })(Navigation);
