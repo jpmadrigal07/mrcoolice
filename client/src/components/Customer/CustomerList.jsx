@@ -9,7 +9,7 @@ import EditCustomer from "./EditCustomer";
 import { graphqlUrl } from "../../services/constants";
 
 const CustomerList = (props) => {
-  const { triggerTopAlert } = props;
+  const { triggerTopAlert, userType } = props;
   const { Column, HeaderCell, Cell } = Table;
   const [isEditActive, setIsEditActive] = useState(false);
   const [customerId, setCustomerId] = useState("");
@@ -99,20 +99,28 @@ const CustomerList = (props) => {
               <HeaderCell>Action</HeaderCell>
               <Cell>
                 {(rowData) => {
-                  return (
-                    <span style={{ cursor: "pointer" }}>
-                      <a
-                        onClick={() => {
-                          setIsEditActive(!isEditActive);
-                          setCustomerId(rowData._id);
-                        }}
-                      >
-                        Edit
-                      </a>{" "}
-                      |{"  "}
-                      <a onClick={() => remove(rowData._id)}>Remove</a>
-                    </span>
-                  );
+                  if(userType === "Admin") {
+                    return (
+                      <span style={{ cursor: "pointer" }}>
+                        <a
+                          onClick={() => {
+                            setIsEditActive(!isEditActive);
+                            setCustomerId(rowData._id);
+                          }}
+                        >
+                          Edit
+                        </a>{" "}
+                        |{"  "}
+                        <a onClick={() => remove(rowData._id)}>Remove</a>
+                      </span>
+                    );
+                  } else {
+                    return (
+                      <span style={{ cursor: "pointer" }}>
+                        <a onClick={() => remove(rowData._id)}>Remove</a>
+                      </span>
+                    );
+                  }
                 }}
               </Cell>
             </Column>
@@ -133,6 +141,8 @@ const CustomerList = (props) => {
   return <div>{renderEdit()}</div>;
 };
 
-const mapStateToProps = (global) => ({});
+const mapStateToProps = (global) => ({
+  userType: global.loggedInUser.userType
+});
 
 export default connect(mapStateToProps, { triggerTopAlert })(CustomerList);

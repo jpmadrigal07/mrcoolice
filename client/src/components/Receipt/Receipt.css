@@ -1,5 +1,4 @@
 #receipt {
-  page-break-after: always;
   color: black !important;
 }
 @media print {
@@ -7,6 +6,7 @@
     display: none !important;
   }
   #receipt {
+    page-break-before: always;
     margin-top: 0mm !important;
     margin-bottom: 3mm !important;
     margin-left: 4mm !important;
