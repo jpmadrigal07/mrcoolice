@@ -1,6 +1,12 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
-import { Table, DatePicker, ControlLabel, Panel } from "rsuite";
+import {
+  Table,
+  DatePicker,
+  ControlLabel,
+  Panel,
+  DateRangePicker,
+} from "rsuite";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { graphqlUrl } from "../../services/constants";
@@ -10,6 +16,8 @@ function ReportsList() {
   const [expenseList, setExpenseList] = useState([]);
   const [salesList, setSalesList] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDateFrom, setSelectedDateFrom] = useState(null);
+  const [selectedDateTo, setSelectedDateTo] = useState(null);
   const [expenseFilteredByDate, setExpenseFilteredByDate] = useState([]);
   const [salesFilteredByDate, setSalesFilteredByDate] = useState([]);
 
@@ -36,7 +44,14 @@ function ReportsList() {
                   description
                 },
               _id,
-              productId,
+              productId {
+                _id,
+                iceType,
+                scaleType,
+                cost,
+                weight,
+                createdAt
+              },
               createdAt
             }
           }`;
@@ -71,7 +86,12 @@ function ReportsList() {
         const salesWithNumber = sales?.reverse().map((res, index) => {
           return {
             id: index + 1,
-            ...res,
+            description: res.customerId.description,
+            iceType: res.productId.iceType,
+            weight: res.productId.weight,
+            cost: res.productId.cost,
+            scaleType: res.productId.scaleType,
+            createdAt: res.createdAt,
           };
         });
         setSalesList(salesWithNumber);
@@ -83,48 +103,62 @@ function ReportsList() {
     setExpenseFilteredByDate(
       expenseList.filter(
         (expense) =>
-          moment.unix(parseInt(expense.createdAt) / 1000).startOf("day") ==
-          selectedDate
+          parseInt(expense.createdAt) >
+            selectedDateFrom &&
+          parseInt(expense.createdAt) <
+            selectedDateTo
       )
     );
-    
+
     setSalesFilteredByDate(
-      salesList.filter(
-        (sales) =>
-          moment.unix(parseInt(sales.createdAt) / 1000).startOf("day") ==
-          selectedDate
-      )
+      salesList.filter((sales) => {
+        return (
+          parseInt(sales.createdAt) > selectedDateFrom &&
+          parseInt(sales.createdAt) < selectedDateTo
+        );
+      })
     );
-
-  }, [selectedDate]);
+  }, [selectedDateFrom, selectedDateTo]);
 
   useEffect(() => {
-    const total = salesFilteredByDate?.reverse().map((res) => {
-      return res.productId.cost;
-    }).reduce(function(a, b) { return a + b; }, 0);
+    const total = salesFilteredByDate
+      ?.reverse()
+      .map((res) => {
+        return res.cost;
+      })
+      .reduce(function (a, b) {
+        return a + b;
+      }, 0);
     setTotalSales(total);
-  }, [salesFilteredByDate])
+  }, [salesFilteredByDate]);
 
   useEffect(() => {
-    const total = expenseFilteredByDate?.reverse().map((res) => {
-      return res.cost;
-    }).reduce(function(a, b) { return a + b; }, 0);
+    const total = expenseFilteredByDate
+      ?.reverse()
+      .map((res) => {
+        return res.cost;
+      })
+      .reduce(function (a, b) {
+        return a + b;
+      }, 0);
     setTotalExpenses(total);
-  }, [expenseFilteredByDate])
+  }, [expenseFilteredByDate]);
 
   return (
     <>
       <Panel bordered style={{ margin: 10 }}>
         <ControlLabel>Sort by Date</ControlLabel>
-        <DatePicker
-          onChange={(e) =>
-            setSelectedDate(moment(e).startOf("day").unix() * 1000)
-          }
-          style={{ marginLeft: 10, width: 150 }}
-          oneTap
+        <DateRangePicker
+          onChange={([date1, date2]) => {
+            setSelectedDateFrom(moment(date1).startOf("day").unix() * 1000);
+            setSelectedDateTo(moment(date2).endOf("day").unix() * 1000);
+          }}
+          placeholder="Select Date Range"
         />
-                <h5 style={{ marginTop: 20 }}>Sales Report</h5>
-                <p style={{marginTop: 20}}>Total Sales: <strong>P {totalSales}</strong></p>
+        <h5 style={{ marginTop: 20 }}>Sales Report</h5>
+        <p style={{ marginTop: 20 }}>
+          Total Sales: <strong>P {totalSales}</strong>
+        </p>
         <Table
           style={{ marginTop: 20 }}
           data={selectedDate ? salesList : salesFilteredByDate}
@@ -136,28 +170,30 @@ function ReportsList() {
           </Column>
           <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Customer</HeaderCell>
-            <Cell dataKey="customerId.description" />
+            <Cell dataKey="description" />
           </Column>
           <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Ice Type</HeaderCell>
-            <Cell dataKey="productId.iceType" />
+            <Cell dataKey="iceType" />
           </Column>
           <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Weight</HeaderCell>
-            <Cell dataKey="productId.weight" />
+            <Cell dataKey="weight" />
           </Column>
           <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Scale Type</HeaderCell>
-            <Cell dataKey="productId.scaleType" />
+            <Cell dataKey="scaleType" />
           </Column>
           <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Cost</HeaderCell>
-            <Cell dataKey="productId.cost" />
+            <Cell dataKey="cost" />
           </Column>
         </Table>
-        <hr/>
+        <hr />
         <h5 style={{ marginTop: 20 }}>Expense Report</h5>
-        <p style={{marginTop: 20}}>Total Expense: <strong>P {totalExpenses}</strong></p>
+        <p style={{ marginTop: 20 }}>
+          Total Expense: <strong>P {totalExpenses}</strong>
+        </p>
         <Table
           style={{ marginTop: 20 }}
           data={selectedDate ? expenseList : expenseFilteredByDate}
