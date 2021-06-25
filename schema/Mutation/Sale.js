@@ -14,6 +14,7 @@ module.exports.createSale = {
     customerId: { type: GraphQLNonNull(GraphQLID) },
     productId: { type: GraphQLNonNull(GraphQLID) },
     receiptNumber: { type: GraphQLNonNull(GraphQLInt) },
+    birNumber: { type: GraphQLInt },
   },
   resolve: (parent, args) => {
     const sale = Sale(args);
@@ -22,6 +23,7 @@ module.exports.createSale = {
       customerId: args.customerId,
       productId: args.productId,
       receiptNumber: args.receiptNumber,
+      birNumber: args.birNumber,
     });
   },
 };
@@ -34,6 +36,7 @@ module.exports.updateSale = {
     customerId: { type: GraphQLID },
     productId: { type: GraphQLID },
     receiptNumber: { type: GraphQLInt },
+    birNumber: { type: GraphQLInt },
   },
   resolve: (parent, args) => {
     const toUpdate = {};
@@ -41,6 +44,7 @@ module.exports.updateSale = {
     args.customerId ? (toUpdate.customerId = args.customerId) : null;
     args.productId ? (toUpdate.productId = args.productId) : null;
     args.receiptNumber ? (toUpdate.receiptNumber = args.receiptNumber) : null;
+    args.birNumber ? (toUpdate.birNumber = args.birNumber) : null;
     return Sale.findByIdAndUpdate({ _id: args._id }, { $set: toUpdate });
   },
 };

@@ -18,6 +18,7 @@ function Receipt(props) {
   const [totalSales, setTotalSales] = useState(0);
   const { search } = useLocation();
   const receiptNumber = search ? search.replace("?receiptNumber=", "") : "";
+  const [birNumber, setBirNumber] = useState("---");
 
   const getOrders = useQuery("getOrders", async () => {
     const query = `{
@@ -35,7 +36,8 @@ function Receipt(props) {
                   weight,
                   scaleType,
                   cost
-                }
+                },
+                birNumber,
                 createdAt
             }
         }`;
@@ -53,6 +55,7 @@ function Receipt(props) {
           setStaff(
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
           );
+          setBirNumber(firstValue.birNumber ? firstValue.birNumber : "---")
 
           const newOrders = orders.map((res) => {
             return {
@@ -102,6 +105,8 @@ function Receipt(props) {
           <hr id="lineDivider" />
           <p style={{ fontSize: "10px", lineHeight: "13px" }}>
             <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
+            <br />
+            <span style={{ fontWeight: "700" }}>BIR#:</span> {birNumber}
             <br />
             <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
             {moment().format("MM/DD/YYYY hh:mm A")}
