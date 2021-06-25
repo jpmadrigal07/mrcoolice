@@ -44,7 +44,8 @@ const OrderList = (props) => {
         weight: res.productId.weight,
         scaleType: res.productId.scaleType,
         cost: res.productId.cost,
-        receiptNumber: res.receiptNumber
+        receiptNumber: res.receiptNumber,
+        birNumber: res.birNumber ? res.birNumber : "---"
       }
     })
     setProducts(newProduct);
@@ -79,8 +80,12 @@ const OrderList = (props) => {
               <Cell dataKey="cost" />
             </Column>
             <Column flexGrow={100} minWidth={50}>
-              <HeaderCell>Receipt Number</HeaderCell>
+              <HeaderCell>Receipt #</HeaderCell>
               <Cell dataKey="receiptNumber" />
+            </Column>
+            <Column flexGrow={100} minWidth={50}>
+              <HeaderCell>BIR Receipt #</HeaderCell>
+              <Cell dataKey="birNumber" />
             </Column>
             <Column flexGrow={100} minWidth={100} fixed="right">
               <HeaderCell>Action</HeaderCell>

@@ -9,7 +9,8 @@ import {
   ButtonToolbar,
   Button,
   SelectPicker,
-  Loader
+  Loader,
+  Input
 } from "rsuite";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
@@ -27,6 +28,7 @@ const AddOrder2 = (props) => {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [products, setProducts] = useState([]);
+  const [birNumber, setBirNumber] = useState([]);
   const token = Cookies.get("sessionToken");
 
   useEffect(() => {
@@ -166,6 +168,7 @@ const AddOrder2 = (props) => {
         const receiptNumber =
           createSales.data.data?.data?.createSale?.receiptNumber;
         setSelectedCustomerId(null);
+        setBirNumber("");
         const toUpdate = [];
         setOrder(toUpdate);
         createSales.reset();
@@ -190,6 +193,7 @@ const AddOrder2 = (props) => {
               ...res,
               customerId: selectedCustomerId,
               userId: autheticatedUserId,
+              birNumber: birNumber,
               receiptNumber,
             };
           }
@@ -198,7 +202,7 @@ const AddOrder2 = (props) => {
       if (toInsert.length > 0) {
         toInsert.map((res) => {
           createSales.mutate(`mutation {
-              createSale(customerId: "${res.customerId}", userId: "${res.userId}", receiptNumber: ${res.receiptNumber}, productId: "${res.productId}") {
+              createSale(customerId: "${res.customerId}", userId: "${res.userId}", receiptNumber: ${res.receiptNumber}, productId: "${res.productId}", birNumber: ${res.birNumber}) {
                 receiptNumber
             }
           }
@@ -232,7 +236,7 @@ const AddOrder2 = (props) => {
             <h4>{!getAutheticatedUserData.isLoading ? autheticatedUserFullName : <Loader/>}</h4>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Customer</ControlLabel>
+            <ControlLabel>Customer<span style={{color: 'red'}}>*</span></ControlLabel>
             <SelectPicker
               value={selectedCustomerId}
               data={customers}
@@ -243,6 +247,15 @@ const AddOrder2 = (props) => {
             <a style={{ cursor: "pointer" }} onClick={() => history.push("/customer")}>
               Add new customer?
             </a>
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>BIR Receipt #</ControlLabel>
+            <Input
+              block
+              type="number"
+              value={birNumber}
+              onChange={(e) => setBirNumber(e)}
+            />
           </FormGroup>
           <hr />
           {order.map((res, i) => {

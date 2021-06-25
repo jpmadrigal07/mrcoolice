@@ -34,6 +34,7 @@ const SaleType = new GraphQLObjectType({
         return await Product.findOne({ _id: sale.productId });
       },
     },
+    birNumber: { type: GraphQLInt },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
     deletedAt: { type: GraphQLString },
