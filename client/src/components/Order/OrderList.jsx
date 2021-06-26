@@ -68,7 +68,6 @@ const OrderList = (props) => {
         setOrderList(salesWithNumber);
       }
     }
-    console.log(getOrderList.data.data?.data?.sales)
   }, [getOrderList.data]);
 
   useEffect(() => {
@@ -86,6 +85,7 @@ const OrderList = (props) => {
     })
     setProducts(newProduct);
   }, [orderList])
+
   const renderEdit = () => {
     if (!isEditActive) {
       return (
