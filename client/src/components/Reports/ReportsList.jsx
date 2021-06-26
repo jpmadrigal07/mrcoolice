@@ -147,7 +147,7 @@ function ReportsList() {
   return (
     <>
       <Panel bordered style={{ margin: 10 }}>
-        <ControlLabel>Sort by Date</ControlLabel>
+        <ControlLabel>Sort by Date </ControlLabel>
         <DateRangePicker
           onChange={([date1, date2]) => {
             setSelectedDateFrom(moment(date1).startOf("day").unix() * 1000);
