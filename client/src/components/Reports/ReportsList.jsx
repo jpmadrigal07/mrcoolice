@@ -185,7 +185,7 @@ function ReportsList() {
             <Cell dataKey="scaleType" />
           </Column>
           <Column flexGrow={100} minWidth={100}>
-            <HeaderCell>Cost</HeaderCell>
+            <HeaderCell>Cost (Pesos)</HeaderCell>
             <Cell dataKey="cost" />
           </Column>
         </Table>
