@@ -98,9 +98,9 @@ const ExpenseForm = (props) => {
       if (createProduct.isSuccess) {
         if (!createProduct.data?.data?.errors) {
           setIceType("tube");
-          setWeight(null);
+          setWeight("");
           setScaleType("kg");
-          setCost(null);
+          setCost("");
           createProduct.reset();
           triggerTopAlert(true, "Successfully added", "success");
         } else {

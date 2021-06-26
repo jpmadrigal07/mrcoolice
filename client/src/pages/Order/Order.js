@@ -10,8 +10,6 @@ import { graphqlUrl } from "../../services/constants";
 
 const Order = () => {
   const [activeTab, setActiveTab] = useState("addOrder");
-  const [orderList, setOrderList] = useState();
-  const [customerList, setCustomerList] = useState();
   const iceTypeContent = [
     {
       label: "Tube",
@@ -57,64 +55,7 @@ const Order = () => {
       value: "g",
     },
   ];
-  const getOrderList = useQuery(
-    "OrderList",
-    async () => {
-      const query = `{
-        sales {
-          customerId {
-              _id
-              description
-            },
-          _id,
-          productId {
-            _id,
-            iceType,
-            weight,
-            scaleType,
-            cost
-          },
-          receiptNumber
-        }
-      }`;
-      return await axios.post(graphqlUrl, { query });
-    }
-  );
-  const getCustomerList = useQuery(
-    "CustomerList",
-    async () => {
-      const query = `{
-        customers {
-          _id
-          description
-        }
-      }`;
-      return await axios.post(graphqlUrl, { query });
-    }
-  );
-  useEffect(() => {
-    if (getCustomerList.isSuccess && getCustomerList.isFetched) {
-      if (
-        !getCustomerList.data.data?.errors &&
-        getCustomerList.data.data?.data?.customers
-      ) {
-        setCustomerList(getCustomerList.data.data?.data?.customers);
-      }
-    }
-    if (getOrderList.isSuccess) {
-      if (
-        !getOrderList.data.data?.errors &&
-        getOrderList.data.data?.data?.sales
-      ) {
-        setOrderList(getOrderList.data.data?.data?.sales);
-      }
-    }
-  }, [
-    getOrderList.data,
-    getOrderList.isSuccess,
-    getCustomerList.data,
-    getCustomerList.isSuccess,
-  ]);
+  
   const renderTabs = () => {
     if (activeTab === "addOrder") {
       return (
@@ -122,7 +63,6 @@ const Order = () => {
           iceTypeContent={iceTypeContent}
           weightContent={weightContent}
           scaleContent={scaleContent}
-          customerList={customerList}
         />
       );
     } else if (activeTab === "orderList") {
@@ -131,8 +71,6 @@ const Order = () => {
           iceTypeContent={iceTypeContent}
           weightContent={weightContent}
           scaleContent={scaleContent}
-          orderList={orderList}
-          customerList={customerList}
         />
       );
     }
