@@ -24,17 +24,6 @@ const OrderList = (props) => {
   const deleteSales = useMutation((query) =>
     axios.post(graphqlUrl, { query })
   );
-  const handleRemove = (id) => {
-    deleteSales.mutate(
-      `mutation{
-        deleteSale(_id: "${id}") {
-          iceType
-          weight
-        }
-      }`
-    );
-    triggerTopAlert(true, "Order successfully deleted", "success");
-  };
   useEffect(() => {
     const newProduct = orderList.map((res, i) => {
       return {
