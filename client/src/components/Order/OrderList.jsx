@@ -23,15 +23,14 @@ const OrderList = (props) => {
       return {
         number: i+1,
         description: res.customerId.description,
-        iceType: res.productId.iceType,
-        weight: res.productId.weight,
-        scaleType: res.productId.scaleType,
-        cost: res.productId.cost,
+        iceType: res.productId?.iceType,
+        weight: res.productId?.weight,
+        scaleType: res.productId?.scaleType,
+        cost: res.productId?.cost,
         receiptNumber: res.receiptNumber,
         birNumber: res.birNumber ? res.birNumber : "---"
       }
     })
-
     setProducts(newProduct);
   }, [])
   const renderEdit = () => {
