@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import moment from "moment";
+import "./Receipt.css";
 
 const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber }) => {
   const [totalSales, setTotalSales] = useState(0);

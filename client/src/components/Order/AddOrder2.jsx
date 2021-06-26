@@ -21,6 +21,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom";
 import Receipt from "../Receipt/ReceiptNew";
+import { update } from "lodash";
 
 const AddOrder2 = (props) => {
   const history = useHistory();
@@ -318,7 +319,7 @@ const AddOrder2 = (props) => {
                         <SelectPicker
                           data={products}
                           block
-                          onChange={(e) => updateProduct(e, i)}
+                          onChange={(e) => {updateProduct(e, i)}}
                           disabled={createSales.isLoading}
                         />
                       </FormGroup>
