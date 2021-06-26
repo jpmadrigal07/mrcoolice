@@ -147,7 +147,7 @@ function ReportsList() {
   return (
     <>
       <Panel bordered style={{ margin: 10 }}>
-        <ControlLabel>Sort by Date</ControlLabel>
+        <ControlLabel>Sort by Date </ControlLabel>
         <DateRangePicker
           onChange={([date1, date2]) => {
             setSelectedDateFrom(moment(date1).startOf("day").unix() * 1000);
@@ -185,7 +185,7 @@ function ReportsList() {
             <Cell dataKey="scaleType" />
           </Column>
           <Column flexGrow={100} minWidth={100}>
-            <HeaderCell>Cost</HeaderCell>
+            <HeaderCell>Cost (Pesos)</HeaderCell>
             <Cell dataKey="cost" />
           </Column>
         </Table>

@@ -74,7 +74,8 @@ const Order = () => {
             scaleType,
             cost
           },
-          receiptNumber
+          receiptNumber,
+          birNumber
         }
       }`;
       return await axios.post(graphqlUrl, { query });

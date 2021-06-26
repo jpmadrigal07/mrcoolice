@@ -136,7 +136,7 @@ const EditOrder = (props) => {
           <Panel bordered style={{ backgroundColor: "white" }}>
             <Form onSubmit={() => handleEditOrder()}>
               <FormGroup>
-                <ControlLabel>Cashier</ControlLabel>
+                <ControlLabel>Staff</ControlLabel>
                 <h4>Trixie C. Aguila</h4>
               </FormGroup>
               <FormGroup>

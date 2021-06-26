@@ -16,7 +16,7 @@ import { connect } from "react-redux";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 
 const StaffForm = (props) => {
-  const { triggerTopAlert, setIsEditActive, isEditActive, toUpdateStaff } =
+  const { triggerTopAlert, setIsEditActive, isEditActive, toUpdateStaff, userType } =
     props;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -175,7 +175,7 @@ const StaffForm = (props) => {
           </FormGroup>
           <FormGroup>
             <ButtonToolbar>
-              {isEditActive ? (
+              {isEditActive && userType === "Admin" ? (
                 <Row>
                   <Button
                     appearance="primary"
@@ -191,7 +191,7 @@ const StaffForm = (props) => {
                     Back to list
                   </Button>
                 </Row>
-              ) : (
+              ) : userType === "Admin" ? (
                 <Button
                   appearance="primary"
                   type="submit"
@@ -199,7 +199,7 @@ const StaffForm = (props) => {
                 >
                   Add
                 </Button>
-              )}
+              ) : null}
             </ButtonToolbar>
           </FormGroup>
         </Form>
@@ -208,6 +208,8 @@ const StaffForm = (props) => {
   );
 };
 
-const mapStateToProps = (global) => ({});
+const mapStateToProps = (global) => ({
+  userType: global.loggedInUser.userType
+});
 
 export default connect(mapStateToProps, { triggerTopAlert })(StaffForm);

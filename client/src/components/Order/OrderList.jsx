@@ -1,12 +1,9 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { Table, Panel, Row, Col } from "rsuite";
-import { useMutation } from "react-query";
+import { Table, Panel } from "rsuite";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
-import axios from "axios";
 import EditOrder from "./EditOrder";
-import { graphqlUrl } from "../../services/constants";
 
 const OrderList = (props) => {
   const {
@@ -21,22 +18,8 @@ const OrderList = (props) => {
   const [isEditActive, setIsEditActive] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [products, setProducts] = useState([]);
-  const deleteSales = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
-  );
-  const handleRemove = (id) => {
-    deleteSales.mutate(
-      `mutation{
-        deleteSale(_id: "${id}") {
-          iceType
-          weight
-        }
-      }`
-    );
-    triggerTopAlert(true, "Order successfully deleted", "success");
-  };
   useEffect(() => {
-    const newProduct = orderList.map((res, i) => {
+    const newProduct = orderList?.reverse().map((res, i) => {
       return {
         number: i+1,
         description: res.customerId.description,
@@ -48,6 +31,7 @@ const OrderList = (props) => {
         birNumber: res.birNumber ? res.birNumber : "---"
       }
     })
+
     setProducts(newProduct);
   }, [])
   const renderEdit = () => {

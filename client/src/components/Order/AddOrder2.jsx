@@ -10,29 +10,39 @@ import {
   Button,
   SelectPicker,
   Loader,
-  Input
+  Input,
+  Col,
+  Row,
+  Grid,
 } from "rsuite";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom";
+import Receipt from "../Receipt/ReceiptNew";
 
 const AddOrder2 = (props) => {
   const history = useHistory();
   const { triggerTopAlert } = props;
   const [order, setOrder] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
   const [autheticatedUserFullName, setAutheticatedUserFullName] =
     useState(null);
   const [customers, setCustomers] = useState([]);
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [products, setProducts] = useState([]);
-  const [birNumber, setBirNumber] = useState([]);
+  const [originalProducts, setOriginalProducts] = useState([]);
+  const [birNumber, setBirNumber] = useState(null);
+  const [selectedCustomerDescription, setSelectedCustomerDescription] =
+    useState(null);
   const token = Cookies.get("sessionToken");
+  const [receiptNumber, setReceiptNumber] = useState(null);
 
   useEffect(() => {
     addNewProduct();
+    setReceiptNumber(Math.floor(Math.random() * 90000) + 10000);
   }, []);
 
   const createSales = useMutation((query) => axios.post(graphqlUrl, { query }));
@@ -56,8 +66,9 @@ const AddOrder2 = (props) => {
             }
       }`;
       return await axios.post(graphqlUrl, { query });
-    },  {
-      enabled: false
+    },
+    {
+      enabled: false,
     }
   );
 
@@ -101,10 +112,20 @@ const AddOrder2 = (props) => {
   }, [getAutheticatedUserId.data]);
 
   useEffect(() => {
-    if(autheticatedUserId) {
-      getAutheticatedUserData.refetch()
+    if (selectedCustomerId) {
+      const foundCustomers = getCustomers.data.data?.data?.customers;
+      const foundCustomer = foundCustomers.find(
+        (res) => res._id === selectedCustomerId
+      );
+      setSelectedCustomerDescription(foundCustomer.description);
     }
-  }, [autheticatedUserId])
+  }, [selectedCustomerId]);
+
+  useEffect(() => {
+    if (autheticatedUserId) {
+      getAutheticatedUserData.refetch();
+    }
+  }, [autheticatedUserId]);
 
   useEffect(() => {
     if (getAutheticatedUserData.isSuccess) {
@@ -155,6 +176,7 @@ const AddOrder2 = (props) => {
           };
         });
         setProducts(newProducts);
+        setOriginalProducts(foundProducts);
       }
     }
   }, [getProducts.data]);
@@ -168,9 +190,12 @@ const AddOrder2 = (props) => {
         const receiptNumber =
           createSales.data.data?.data?.createSale?.receiptNumber;
         setSelectedCustomerId(null);
+        setSelectedCustomerDescription(null);
+        setReceiptNumber(Math.floor(Math.random() * 90000) + 10000);
         setBirNumber("");
         const toUpdate = [];
         setOrder(toUpdate);
+        setOrders(toUpdate);
         createSales.reset();
         window.open(`/receipt?receiptNumber=${receiptNumber}`, "_blank");
         triggerTopAlert(true, "Success creating orders", "success");
@@ -185,7 +210,6 @@ const AddOrder2 = (props) => {
 
   const submit = () => {
     if (selectedCustomerId) {
-      const receiptNumber = Math.floor(Math.random() * 90000) + 10000;
       const toInsert = order
         .map((res) => {
           if (res.productId) {
@@ -218,84 +242,132 @@ const AddOrder2 = (props) => {
 
   const addNewProduct = () => {
     const toUpdate = order;
-    setOrder([...toUpdate, {productId: ""}]);
+    setOrder([...toUpdate, { productId: "" }]);
   };
 
   const updateProduct = (value, index) => {
     const toUpdate = order;
     toUpdate[index].productId = value;
-    setOrder(toUpdate);
+    setOrder([...toUpdate]);
   };
+
+  useEffect(() => {
+    if (order.length > 0 && originalProducts.length > 0) {
+      const newOrder = order
+        .map((res) => {
+          return originalProducts.find((res2) => res.productId === res2._id);
+        })
+        .filter((res3) => res3);
+      setOrders(newOrder);
+    }
+  }, [products, order]);
 
   return (
     <>
-      <Panel bordered style={{ margin: 10 }}>
-        <Form onSubmit={() => submit()}>
-          <FormGroup>
-            <ControlLabel>Cashier</ControlLabel>
-            <h4>{!getAutheticatedUserData.isLoading ? autheticatedUserFullName : <Loader/>}</h4>
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Customer<span style={{color: 'red'}}>*</span></ControlLabel>
-            <SelectPicker
-              value={selectedCustomerId}
-              data={customers}
-              block
-              onChange={(e) => setSelectedCustomerId(e)}
-              disabled={createSales.isLoading}
-            />
-            <a style={{ cursor: "pointer" }} onClick={() => history.push("/customer")}>
-              Add new customer?
-            </a>
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>BIR Receipt #</ControlLabel>
-            <Input
-              block
-              type="number"
-              value={birNumber}
-              onChange={(e) => setBirNumber(e)}
-            />
-          </FormGroup>
-          <hr />
-          {order.map((res, i) => {
-            return (
-              <>
-                  <FormGroup>
-                    <ControlLabel>Product {i + 1}</ControlLabel>
-                    <SelectPicker
-                      data={products}
-                      block
-                      onChange={(e) => updateProduct(e, i)}
+      <Grid fluid>
+        <Row>
+          <Col xs={18}>
+            <Panel bordered style={{ marginTop: 10 }} header="Order">
+              <Form onSubmit={() => submit()}>
+                <FormGroup>
+                  <ControlLabel>Staff</ControlLabel>
+                  <h4>
+                    {!getAutheticatedUserData.isLoading ? (
+                      autheticatedUserFullName
+                    ) : (
+                      <Loader />
+                    )}
+                  </h4>
+                </FormGroup>
+                <FormGroup>
+                  <ControlLabel>
+                    Customer<span style={{ color: "red" }}>*</span>
+                  </ControlLabel>
+                  <SelectPicker
+                    value={selectedCustomerId}
+                    data={customers}
+                    block
+                    onChange={(e) => {
+                      setSelectedCustomerId(e);
+                      setSelectedCustomerDescription(e);
+                    }}
+                    disabled={createSales.isLoading}
+                  />
+                  <a
+                    style={{ cursor: "pointer" }}
+                    onClick={() => history.push("/customer?tab=addCustomer")}
+                  >
+                    Add new customer?
+                  </a>
+                </FormGroup>
+                <FormGroup>
+                  <ControlLabel>BIR Receipt #</ControlLabel>
+                  <Input
+                    block
+                    type="number"
+                    value={birNumber}
+                    onChange={(e) => setBirNumber(e)}
+                  />
+                </FormGroup>
+                <hr />
+                {order.map((res, i) => {
+                  return (
+                    <>
+                      <FormGroup>
+                        <ControlLabel>Product {i + 1}</ControlLabel>
+                        <SelectPicker
+                          data={products}
+                          block
+                          onChange={(e) => updateProduct(e, i)}
+                          disabled={createSales.isLoading}
+                        />
+                      </FormGroup>
+                      <hr />
+                    </>
+                  );
+                })}
+                <FormGroup>
+                  <a
+                    onClick={() => addNewProduct()}
+                    style={{ cursor: "pointer", marginBottom: 15 }}
+                  >
+                    Add New Product
+                  </a>
+                </FormGroup>
+                <FormGroup>
+                  <ButtonToolbar>
+                    <Button
+                      appearance="primary"
+                      type="submit"
+                      style={{ marginRight: 10 }}
                       disabled={createSales.isLoading}
-                    />
-                  </FormGroup>
-                  <hr />
-              </>
-            );
-          })}
-          <FormGroup>
-            <a
-              onClick={() => addNewProduct()}
-              style={{ cursor: "pointer", marginBottom: 15 }}
-            >
-              Add New Product
-            </a>
-          </FormGroup>
-          <FormGroup>
-            <ButtonToolbar>
-              <Button
-                appearance="primary"
-                type="submit"
-                style={{ marginRight: 10 }}
-                disabled={createSales.isLoading}
-              >
-                Create
-              </Button>
-            </ButtonToolbar>
-          </FormGroup>
-        </Form>
-      </Panel>
+                    >
+                      Create
+                    </Button>
+                  </ButtonToolbar>
+                </FormGroup>
+              </Form>
+            </Panel>
+          </Col>
+          <Col xs={6}>
+            <Panel bordered style={{ marginTop: 10 }} header="Receipt Preview">
+              <Receipt
+                cust={
+                  selectedCustomerDescription
+                    ? selectedCustomerDescription
+                    : "---"
+                }
+                staff={
+                  autheticatedUserFullName ? autheticatedUserFullName : "---"
+                }
+                orders={orders}
+                birNumber={birNumber ? birNumber : "---"}
+                receiptNumber={receiptNumber ? receiptNumber : "---"}
+              />
+            </Panel>
+          </Col>
+        </Row>
+      </Grid>
     </>
   );
 };

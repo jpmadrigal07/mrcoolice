@@ -109,7 +109,7 @@ const AddOrder = (props) => {
       <Panel bordered style={{ margin: 10 }}>
         <Form onSubmit={() => handleCreateOrder()}>
           <FormGroup>
-            <ControlLabel>Cashier</ControlLabel>
+            <ControlLabel>Staff</ControlLabel>
             <h4>Trixie C. Aguila</h4>
           </FormGroup>
           <FormGroup>
