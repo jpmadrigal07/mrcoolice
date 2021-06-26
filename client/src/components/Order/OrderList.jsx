@@ -4,10 +4,12 @@ import { Table, Panel } from "rsuite";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import EditOrder from "./EditOrder";
+import { useQuery } from "react-query";
+import axios from "axios";
+import { graphqlUrl } from "../../services/constants";
 
 const OrderList = (props) => {
   const {
-    orderList,
     triggerTopAlert,
     iceTypeContent,
     weightContent,
@@ -17,12 +19,63 @@ const OrderList = (props) => {
   const { Column, HeaderCell, Cell } = Table;
   const [isEditActive, setIsEditActive] = useState(false);
   const [orderId, setOrderId] = useState("");
+  const [orderList, setOrderList] = useState([]);
   const [products, setProducts] = useState([]);
+  useEffect(() => {
+    if (!isEditActive) {
+      getOrderList.refetch();
+    }
+  }, [isEditActive]);
+
+  const getOrderList = useQuery(
+    "OrderList",
+    async () => {
+      const query = `{
+        sales {
+          customerId {
+              _id
+              description
+            },
+          _id,
+          productId {
+            _id,
+            iceType,
+            weight,
+            scaleType,
+            cost
+          },
+          receiptNumber,
+          birNumber
+        }
+      }`;
+      return await axios.post(graphqlUrl, { query });
+    }
+  );
+
+  useEffect(() => {
+    if (getOrderList.isSuccess) {
+      if (
+        !getOrderList.data.data?.errors &&
+        getOrderList.data.data?.data?.sales
+      ) {
+        const sales = getOrderList.data.data?.data?.sales;
+        const salesWithNumber = sales?.reverse().map((res, index) => {
+          return {
+            id: index + 1,
+            ...res,
+          };
+        });
+        setOrderList(salesWithNumber);
+      }
+    }
+    console.log(getOrderList.data.data?.data?.sales)
+  }, [getOrderList.data]);
+
   useEffect(() => {
     const newProduct = orderList?.reverse().map((res, i) => {
       return {
         number: i+1,
-        description: res.customerId.description,
+        description: res.customerId?.description,
         iceType: res.productId?.iceType,
         weight: res.productId?.weight,
         scaleType: res.productId?.scaleType,
@@ -32,7 +85,7 @@ const OrderList = (props) => {
       }
     })
     setProducts(newProduct);
-  }, [])
+  }, [orderList])
   const renderEdit = () => {
     if (!isEditActive) {
       return (
