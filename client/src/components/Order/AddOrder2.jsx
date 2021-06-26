@@ -295,7 +295,7 @@ const AddOrder2 = (props) => {
                   />
                   <a
                     style={{ cursor: "pointer" }}
-                    onClick={() => history.push("/customer")}
+                    onClick={() => history.push("/customer?tab=addCustomer")}
                   >
                     Add new customer?
                   </a>
