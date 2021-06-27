@@ -1,12 +1,6 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
-import {
-  Table,
-  DatePicker,
-  ControlLabel,
-  Panel,
-  DateRangePicker,
-} from "rsuite";
+import { Table, Button, ControlLabel, Panel, DateRangePicker } from "rsuite";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { graphqlUrl } from "../../services/constants";
@@ -103,10 +97,8 @@ function ReportsList() {
     setExpenseFilteredByDate(
       expenseList.filter(
         (expense) =>
-          parseInt(expense.createdAt) >
-            selectedDateFrom &&
-          parseInt(expense.createdAt) <
-            selectedDateTo
+          parseInt(expense.createdAt) > selectedDateFrom &&
+          parseInt(expense.createdAt) < selectedDateTo
       )
     );
 
@@ -154,7 +146,21 @@ function ReportsList() {
             setSelectedDateTo(moment(date2).endOf("day").unix() * 1000);
           }}
           placeholder="Select Date Range"
-        />
+        />{" "}
+        <Button
+          appearance="primary"
+          type="submit"
+          style={{ marginRight: 10 }}
+          disabled={!selectedDateFrom}
+          onClick={() =>
+            window.open(
+              `/print-report?dateFrom=${selectedDateFrom}&dateTo=${selectedDateTo}`,
+              "_blank"
+            )
+          }
+        >
+          Print Report
+        </Button>
         <h5 style={{ marginTop: 20 }}>Sales Report</h5>
         <p style={{ marginTop: 20 }}>
           Total Sales: <strong>P {totalSales}</strong>
