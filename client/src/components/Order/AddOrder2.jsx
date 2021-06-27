@@ -35,6 +35,7 @@ const AddOrder2 = (props) => {
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [products, setProducts] = useState([]);
   const [originalProducts, setOriginalProducts] = useState([]);
+  const [productQuantity, setProductQuantity] = useState(0)
   const [birNumber, setBirNumber] = useState(null);
   const [selectedCustomerDescription, setSelectedCustomerDescription] =
     useState(null);
@@ -211,7 +212,18 @@ const AddOrder2 = (props) => {
 
   const submit = () => {
     if (selectedCustomerId) {
-      const toInsert = order
+      const newOrder = order.map((res) => {
+        if (res.productId) {
+          const newOrderArr = Array(res.quantity)
+          newOrderArr.fill({ productId: res.productId })
+          console.log(newOrderArr)
+          return newOrderArr
+        }
+      })
+      
+      const flattenNewOrder = newOrder.reduce((acc, curVal) => acc.concat(curVal), []);
+
+      const toInsert = flattenNewOrder
         .map((res) => {
           if (res.productId) {
             return {
@@ -243,12 +255,18 @@ const AddOrder2 = (props) => {
 
   const addNewProduct = () => {
     const toUpdate = order;
-    setOrder([...toUpdate, { productId: "" }]);
+    setOrder([...toUpdate, { productId: "", quantity: 0 }]);
   };
 
   const updateProduct = (value, index) => {
     const toUpdate = order;
     toUpdate[index].productId = value;
+    setOrder([...toUpdate]);
+  };
+
+  const updateProductQuantity = (value, index) => {
+    const toUpdate = order;
+    toUpdate[index].quantity = parseInt(value);
     setOrder([...toUpdate]);
   };
 
@@ -262,7 +280,9 @@ const AddOrder2 = (props) => {
       setOrders(newOrder);
     }
   }, [products, order]);
-
+  useEffect(() => {
+    console.log(order)
+  }, [order])
   return (
     <>
       <Grid fluid>
@@ -319,10 +339,17 @@ const AddOrder2 = (props) => {
                         <SelectPicker
                           data={products}
                           block
-                          onChange={(e) => {updateProduct(e, i)}}
+                          onChange={(e) => updateProduct(e, i)}
                           disabled={createSales.isLoading}
                         />
                       </FormGroup>
+                      <ControlLabel>Quantity</ControlLabel>
+                      <Input
+                        block
+                        type="number"
+                        onChange={(e) => updateProductQuantity(e, i)}
+                        value={updateProductQuantity.quantity}
+                      />
                       <hr />
                     </>
                   );

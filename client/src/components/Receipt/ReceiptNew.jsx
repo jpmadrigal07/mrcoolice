@@ -5,7 +5,6 @@ import "./Receipt.css";
 
 const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber }) => {
   const [totalSales, setTotalSales] = useState(0);
-
   useEffect(() => {
     if (orders.length > 0) {
       const total = orders
@@ -20,7 +19,6 @@ const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber }) => {
       setTotalSales(0);
     }
   }, [orders]);
-
   return (
     <>
       <div id="receipt">

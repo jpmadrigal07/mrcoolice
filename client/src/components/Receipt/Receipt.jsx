@@ -9,6 +9,7 @@ import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import moment from "moment";
 import { useLocation } from "react-router-dom";
+import _ from 'lodash';
 
 function Receipt(props) {
   const { triggerTopAlert } = props;
@@ -83,7 +84,13 @@ function Receipt(props) {
       window.print()
     }
   }, [cust, staff, orders])
-
+  
+  // useEffect(() => {
+  //   const countOrders = _.countBy(orders, orders.value)
+  //   console.log(orders)
+  //   console.log(countOrders)
+  // }, [])
+  
   return (
     <div>
       <Navigation currentPage={""} />
