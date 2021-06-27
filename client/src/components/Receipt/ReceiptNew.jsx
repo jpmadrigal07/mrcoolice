@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import moment from "moment";
 import "./Receipt.css";
 
-const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber }) => {
+const ReceiptNew = ({ cust, staff, remappedNewOrder, birNumber, receiptNumber }) => {
   const [totalSales, setTotalSales] = useState(0);
   useEffect(() => {
-    if (orders.length > 0) {
-      const total = orders
+    if (remappedNewOrder.length > 0) {
+      const total = remappedNewOrder
         .map((res) => {
           return res.cost;
         })
@@ -18,7 +18,9 @@ const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber }) => {
     } else {
       setTotalSales(0);
     }
-  }, [orders]);
+  }, [remappedNewOrder]);
+  console.log(remappedNewOrder)
+  console.log(remappedNewOrder)
   return (
     <>
       <div id="receipt">
@@ -58,14 +60,14 @@ const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber }) => {
           <br />
         </div>
         <table style={{ width: "100%", fontSize: "8px" }}>
-          {orders && orders.length > 0
-            ? orders
+          {remappedNewOrder && remappedNewOrder.length > 0
+            ? remappedNewOrder
                 .map((_, i) => {
                   if (_.cost) {
                     return (
                       <tr>
                         <td style={{ width: "70%", fontSize: 10 }}>
-                          {`${_.weight} ${_.scaleType} ${_.iceType}`} ice
+                         x{_.quantity} {`${_.weight} ${_.scaleType} ${_.iceType}`} ice
                         </td>
                         <td
                           style={{

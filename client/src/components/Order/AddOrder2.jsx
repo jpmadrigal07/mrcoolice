@@ -20,8 +20,8 @@ import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom";
-import Receipt from "../Receipt/ReceiptNew";
-import { update } from "lodash";
+import ReceiptNew from "../Receipt/ReceiptNew";
+import Receipt from "../Receipt/Receipt";
 
 const AddOrder2 = (props) => {
   const history = useHistory();
@@ -35,7 +35,9 @@ const AddOrder2 = (props) => {
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [products, setProducts] = useState([]);
   const [originalProducts, setOriginalProducts] = useState([]);
-  const [productQuantity, setProductQuantity] = useState(0)
+  const [newOrder, setNewOrder] = useState([])
+  const [remappedNewOrder, setRemappedNewOrder] = useState([])
+  const [flattenedNewOrder, setFlattenedNewOrder] = useState([])
   const [birNumber, setBirNumber] = useState(null);
   const [selectedCustomerDescription, setSelectedCustomerDescription] =
     useState(null);
@@ -210,19 +212,46 @@ const AddOrder2 = (props) => {
     }
   }, [createSales.data]);
 
+  useEffect(() => {
+    if(newOrder.length > 0 && originalProducts.length > 0) {
+      const newOrders = newOrder.map((res) => {
+        const foundProduct = originalProducts.find(element => element._id === res[0].productId)
+        return {
+          _id: res[0].productId,
+          iceType: foundProduct.iceType,
+          weight: foundProduct.weight,
+          scaleType: foundProduct.scaleType,
+          quantity: res.length, 
+          cost: foundProduct.cost * res.length
+        }
+      })
+      setRemappedNewOrder(newOrders)
+    }
+  }, [originalProducts])
+
+  useEffect(() => {
+    if (order.length > 0 && originalProducts.length > 0) {
+      const newOrder = order
+        .map((res) => {
+          return originalProducts.find((res2) => res.productId === res2._id);
+        })
+        .filter((res3) => res3);
+      setOrders(newOrder);
+    }
+  }, [products, order]);
+  
+
   const submit = () => {
     if (selectedCustomerId) {
       const newOrder = order.map((res) => {
         if (res.productId) {
           const newOrderArr = Array(res.quantity)
           newOrderArr.fill({ productId: res.productId })
-          console.log(newOrderArr)
           return newOrderArr
         }
       })
-      
+      setNewOrder(newOrder)
       const flattenNewOrder = newOrder.reduce((acc, curVal) => acc.concat(curVal), []);
-
       const toInsert = flattenNewOrder
         .map((res) => {
           if (res.productId) {
@@ -270,19 +299,7 @@ const AddOrder2 = (props) => {
     setOrder([...toUpdate]);
   };
 
-  useEffect(() => {
-    if (order.length > 0 && originalProducts.length > 0) {
-      const newOrder = order
-        .map((res) => {
-          return originalProducts.find((res2) => res.productId === res2._id);
-        })
-        .filter((res3) => res3);
-      setOrders(newOrder);
-    }
-  }, [products, order]);
-  useEffect(() => {
-    console.log(order)
-  }, [order])
+
   return (
     <>
       <Grid fluid>
@@ -379,7 +396,7 @@ const AddOrder2 = (props) => {
           </Col>
           <Col xs={6}>
             <Panel bordered style={{ marginTop: 10 }} header="Receipt Preview">
-              <Receipt
+              <ReceiptNew
                 cust={
                   selectedCustomerDescription
                     ? selectedCustomerDescription
@@ -388,6 +405,7 @@ const AddOrder2 = (props) => {
                 staff={
                   autheticatedUserFullName ? autheticatedUserFullName : "---"
                 }
+                remappedNewOrder={remappedNewOrder}
                 orders={orders}
                 birNumber={birNumber ? birNumber : "---"}
                 receiptNumber={receiptNumber ? receiptNumber : "---"}
