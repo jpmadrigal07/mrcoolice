@@ -198,7 +198,7 @@ const AddOrder2 = (props) => {
         setOrder(toUpdate);
         setOrders(toUpdate);
         createSales.reset();
-        window.open(`/receipt?receiptNumber=${receiptNumber}&for=Customer&for=Guard&for=Production&for=Cashier`, "_blank");
+        window.open(`/receipt?receiptNumber=${receiptNumber}`, "_blank");
         triggerTopAlert(true, "Success creating orders", "success");
       } else {
         triggerTopAlert(true, "Server error", "warning");

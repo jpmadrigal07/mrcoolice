@@ -16,18 +16,11 @@ function Receipt(props) {
   const [staff, setStaff] = useState("---");
   const [orders, setOrders] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
-  // const [receiptNumber, setReceiptNumber] = useState([])
   const { search } = useLocation();
-  // const receiptNumber = search ? search.replace("?receiptNumber=", "") : "";
-  const roles = search ? search.split("&for=") : [];
-  const receiptNumber= roles[0].split("=")[1]
+  const forValues = ["Cashier", "Guard", "Customer", "Production"]
+  const receiptNumber = search ? search.replace("?receiptNumber=", "") : "";
   const [birNumber, setBirNumber] = useState("---");
 
-  useEffect(() => {
-    roles.shift()
-  }, [roles])
-  
-  console.log(roles)
   const getOrders = useQuery("getOrders", async () => {
     const query = `{
       salesByReceiptNumber(receiptNumber: ${receiptNumber}) {
@@ -74,7 +67,7 @@ function Receipt(props) {
 
           const total = orders.map((res) => {
             return res.productId.cost
-          }).reduce(function(a, b) { return a + b; }, 0);
+          }).reduce(function (a, b) { return a + b; }, 0);
 
           setTotalSales(total)
           setOrders(newOrders)
@@ -97,232 +90,68 @@ function Receipt(props) {
       <Navigation currentPage={""} />
       {receiptNumber ? (
         <>
-        <div id="receipt">
-        <div>
-          <p
-            style={{ fontWeight: "800", fontSize: "18px", textAlign: "center" }}
-          >
-            MR. COOL ICE
-          </p>
-          <p
-            style={{ fontWeight: "300", fontSize: "8px", textAlign: "center" }}
-          >
-            Address: Victoria Woods, Brgy. San Francisco, Victoria Laguna ●
-            Telephone: (0997) 1162923, (0947) 8129639
-          </p>
-          <hr id="lineDivider" />
-          <p style={{ fontSize: "10px", lineHeight: "13px" }}>
-            <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
-            <br />
-            <span style={{ fontWeight: "700" }}>BIR#:</span> {birNumber}
-            <br />
-            <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
-            {moment().format("MM/DD/YYYY hh:mm A")}
-            <br />
-            <span style={{ fontWeight: "700" }}>CUST:</span> {cust}
-            <br />
-            <span style={{ fontWeight: "700" }}>STAFF:</span> {staff}
-          </p>
-          <br />
-        </div>
-        <table style={{ width: "100%", fontSize: "8px" }}>
-          {orders.map((_, i) => {
-            return (<tr>
-              <td style={{ width: "70%", fontSize: 10 }}>{_.value} ice</td>
-              <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-                P{_.cost.toLocaleString()}
-              </td>
-            </tr>)
+          {forValues.map((res) => {
+            return (
+              <div id="receipt">
+                <div>
+                  <p
+                    style={{ fontWeight: "800", fontSize: "18px", textAlign: "center" }}
+                  >
+                    MR. COOL ICE
+                  </p>
+                  <p
+                    style={{ fontWeight: "300", fontSize: "8px", textAlign: "center" }}
+                  >
+                    Address: Victoria Woods, Brgy. San Francisco, Victoria Laguna ●
+                    Telephone: (0997) 1162923, (0947) 8129639
+                  </p>
+                  <hr id="lineDivider" />
+                  <p style={{ fontSize: "10px", lineHeight: "13px" }}>
+                    <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
+                    <br />
+                    <span style={{ fontWeight: "700" }}>BIR#:</span> {birNumber}
+                    <br />
+                    <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
+                    {moment().format("MM/DD/YYYY hh:mm A")}
+                    <br />
+                    <span style={{ fontWeight: "700" }}>CUST:</span> {cust}
+                    <br />
+                    <span style={{ fontWeight: "700" }}>STAFF:</span> {staff}
+                  </p>
+                  <br />
+                </div>
+                <table style={{ width: "100%", fontSize: "8px" }}>
+                  {orders.map((_, i) => {
+                    return (<tr>
+                      <td style={{ width: "70%", fontSize: 10 }}>{_.value} ice</td>
+                      <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
+                        P{_.cost.toLocaleString()}
+                      </td>
+                    </tr>)
+                  })}
+                </table>
+                <hr id="lineTotal" />
+                <table style={{ width: "100%", fontSize: "8px" }}>
+                  <tr>
+                    <td style={{ width: "70%" }}>Total</td>
+                    <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
+                      P{totalSales.toLocaleString()}
+                    </td>
+                  </tr>
+                </table>
+                <hr id="lineDivider" />
+
+                <br />
+                <p style={{ fontSize: "8px", lineHeight: "10px", fontWeight: "400" }}>
+                  {res}
+                  <br />
+                  ----
+                </p>
+              </div>
+            )
           })}
-        </table>
-        <hr id="lineTotal" />
-        <table style={{ width: "100%", fontSize: "8px" }}>
-          <tr>
-            <td style={{ width: "70%" }}>Total</td>
-            <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-              P{totalSales.toLocaleString()}
-            </td>
-          </tr>
-        </table>
-        <hr id="lineDivider" />
-        
-        <br />
-        <p style={{ fontSize: "8px", lineHeight: "10px", fontWeight: "400" }}>
-          {roles.shift(), roles[0]}
-          <br/>
-          ----
-        </p>
-      </div>
-      <div id="receipt">
-        <div>
-          <p
-            style={{ fontWeight: "800", fontSize: "18px", textAlign: "center" }}
-          >
-            MR. COOL ICE
-          </p>
-          <p
-            style={{ fontWeight: "300", fontSize: "8px", textAlign: "center" }}
-          >
-            Address: Victoria Woods, Brgy. San Francisco, Victoria Laguna ●
-            Telephone: (0997) 1162923, (0947) 8129639
-          </p>
-          <hr id="lineDivider" />
-          <p style={{ fontSize: "10px", lineHeight: "13px" }}>
-            <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
-            <br />
-            <span style={{ fontWeight: "700" }}>BIR#:</span> {birNumber}
-            <br />
-            <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
-            {moment().format("MM/DD/YYYY hh:mm A")}
-            <br />
-            <span style={{ fontWeight: "700" }}>CUST:</span> {cust}
-            <br />
-            <span style={{ fontWeight: "700" }}>STAFF:</span> {staff}
-          </p>
-          <br />
-        </div>
-        <table style={{ width: "100%", fontSize: "8px" }}>
-          {orders.map((_, i) => {
-            return (<tr>
-              <td style={{ width: "70%", fontSize: 10 }}>{_.value} ice</td>
-              <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-                P{_.cost.toLocaleString()}
-              </td>
-            </tr>)
-          })}
-        </table>
-        <hr id="lineTotal" />
-        <table style={{ width: "100%", fontSize: "8px" }}>
-          <tr>
-            <td style={{ width: "70%" }}>Total</td>
-            <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-              P{totalSales.toLocaleString()}
-            </td>
-          </tr>
-        </table>
-        <hr id="lineDivider" />
-        
-        <br />
-        <p style={{ fontSize: "8px", lineHeight: "10px", fontWeight: "400" }}>
-          {roles.shift(), roles[0]}
-          <br/>
-          ----
-        </p>
-      </div>
-      <div id="receipt">
-        <div>
-          <p
-            style={{ fontWeight: "800", fontSize: "18px", textAlign: "center" }}
-          >
-            MR. COOL ICE
-          </p>
-          <p
-            style={{ fontWeight: "300", fontSize: "8px", textAlign: "center" }}
-          >
-            Address: Victoria Woods, Brgy. San Francisco, Victoria Laguna ●
-            Telephone: (0997) 1162923, (0947) 8129639
-          </p>
-          <hr id="lineDivider" />
-          <p style={{ fontSize: "10px", lineHeight: "13px" }}>
-            <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
-            <br />
-            <span style={{ fontWeight: "700" }}>BIR#:</span> {birNumber}
-            <br />
-            <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
-            {moment().format("MM/DD/YYYY hh:mm A")}
-            <br />
-            <span style={{ fontWeight: "700" }}>CUST:</span> {cust}
-            <br />
-            <span style={{ fontWeight: "700" }}>STAFF:</span> {staff}
-          </p>
-          <br />
-        </div>
-        <table style={{ width: "100%", fontSize: "8px" }}>
-          {orders.map((_, i) => {
-            return (<tr>
-              <td style={{ width: "70%", fontSize: 10 }}>{_.value} ice</td>
-              <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-                P{_.cost.toLocaleString()}
-              </td>
-            </tr>)
-          })}
-        </table>
-        <hr id="lineTotal" />
-        <table style={{ width: "100%", fontSize: "8px" }}>
-          <tr>
-            <td style={{ width: "70%" }}>Total</td>
-            <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-              P{totalSales.toLocaleString()}
-            </td>
-          </tr>
-        </table>
-        <hr id="lineDivider" />
-        
-        <br />
-        <p style={{ fontSize: "8px", lineHeight: "10px", fontWeight: "400" }}>
-          {roles.shift(), roles[0]}
-          <br/>
-          ----
-        </p>
-      </div>
-      <div id="receipt">
-        <div>
-          <p
-            style={{ fontWeight: "800", fontSize: "18px", textAlign: "center" }}
-          >
-            MR. COOL ICE
-          </p>
-          <p
-            style={{ fontWeight: "300", fontSize: "8px", textAlign: "center" }}
-          >
-            Address: Victoria Woods, Brgy. San Francisco, Victoria Laguna ●
-            Telephone: (0997) 1162923, (0947) 8129639
-          </p>
-          <hr id="lineDivider" />
-          <p style={{ fontSize: "10px", lineHeight: "13px" }}>
-            <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
-            <br />
-            <span style={{ fontWeight: "700" }}>BIR#:</span> {birNumber}
-            <br />
-            <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
-            {moment().format("MM/DD/YYYY hh:mm A")}
-            <br />
-            <span style={{ fontWeight: "700" }}>CUST:</span> {cust}
-            <br />
-            <span style={{ fontWeight: "700" }}>STAFF:</span> {staff}
-          </p>
-          <br />
-        </div>
-        <table style={{ width: "100%", fontSize: "8px" }}>
-          {orders.map((_, i) => {
-            return (<tr>
-              <td style={{ width: "70%", fontSize: 10 }}>{_.value} ice</td>
-              <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-                P{_.cost.toLocaleString()}
-              </td>
-            </tr>)
-          })}
-        </table>
-        <hr id="lineTotal" />
-        <table style={{ width: "100%", fontSize: "8px" }}>
-          <tr>
-            <td style={{ width: "70%" }}>Total</td>
-            <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-              P{totalSales.toLocaleString()}
-            </td>
-          </tr>
-        </table>
-        <hr id="lineDivider" />
-        
-        <br />
-        <p style={{ fontSize: "8px", lineHeight: "10px", fontWeight: "400" }}>
-          {roles.shift(), roles[0]}
-          <br/>
-          ----
-        </p>
-      </div>
-      </>
-      ) : <h5>No receipt number.</h5> }
+        </>
+      ) : <h5>No receipt number.</h5>}
     </div>
   );
 }
