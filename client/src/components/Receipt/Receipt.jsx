@@ -62,7 +62,7 @@ function Receipt(props) {
           const uniqOrder = uniqBy(orders, "productId._id");
           const newData = uniqOrder.map((res) => {
             const foundOrder = orders.filter(
-              (res2) => res2.productId._id === res.productId._id
+              (res2) => res2.productId?._id === res.productId?._id
             );
             return {
               count: foundOrder.length,
