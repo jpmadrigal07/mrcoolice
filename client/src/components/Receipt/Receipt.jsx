@@ -71,8 +71,8 @@ function Receipt(props) {
           });
           const newOrders = newData.map((res) => {
             return {
-              value: `x${res.count} ${res.productId.weight} ${res.productId.scaleType} ${res.productId.iceType}`,
-              cost: res.productId.cost * res.count,
+              value: `x${res.count} ${res.productId?.weight} ${res.productId?.scaleType} ${res.productId?.iceType}`,
+              cost: res.productId?.cost * res.count,
             };
           });
 
