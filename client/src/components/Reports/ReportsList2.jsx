@@ -136,7 +136,7 @@ const ReportsList2 = (props) => {
           } else if (res2 === "DESC.") {
             return "";
           } else if (res2 === "PARTICULARS") {
-            return res[0].customerId.description;
+            return res[0].customerId?.description;
           } else {
             return "";
           }
