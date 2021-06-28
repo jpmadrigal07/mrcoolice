@@ -54,7 +54,7 @@ function Receipt(props) {
         const orders = getOrders.data.data?.data?.salesByReceiptNumber;
         if (orders.length > 0) {
           const firstValue = orders[0];
-          setCust(firstValue.customerId.description);
+          setCust(firstValue.customerId?.description);
           setStaff(
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
           );

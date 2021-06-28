@@ -1,7 +1,6 @@
 #receipt {
   color: black !important;
 }
-@page { size: portrait; }
 @media print {
   .rs-navbar {
     display: none !important;
