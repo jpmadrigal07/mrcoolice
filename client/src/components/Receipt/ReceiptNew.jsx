@@ -19,8 +19,6 @@ const ReceiptNew = ({ cust, staff, remappedNewOrder, birNumber, receiptNumber })
       setTotalSales(0);
     }
   }, [remappedNewOrder]);
-  console.log(remappedNewOrder)
-  console.log(remappedNewOrder)
   return (
     <>
       <div id="receipt">

@@ -79,30 +79,7 @@ function Receipt(props) {
       triggerTopAlert(true, "Unknown error occured", "danger");
     }
   }, [getOrders.data]);
-
-  // useEffect(() => {
-  //   if(cust && staff && orders.length > 0) {
-  //     window.print()
-  //   }
-  // }, [cust, staff, orders])
-
-  useEffect(() => {
-    // const newOrders = orders.find((res) => {
-    //   const filteredOrders = orders.find(order => order.value === res.value)
-    //   return {
-    //     filteredOrders
-    //   }
-    // })
-
-    // const unique = orders.map(order => {
-    //   return [order.value]
-    // })
-    
-    const newOrder = Array.from(new Set(orders))
-    setGroupedOrders(newOrder)
-    console.log(groupedOrders)
-  }, [orders])
-
+  
   return (
     <div>
       <Navigation currentPage={""} />
