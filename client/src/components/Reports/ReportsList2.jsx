@@ -247,7 +247,7 @@ const ReportsList2 = (props) => {
       }, 0);
     return {
       particulars: `${capitalize(res?.iceType)} (${res?.weight} ${
-        res.scaleType
+        res?.scaleType
       })`,
       totalQty: totalData?.length,
       totalKgs: totalDataCost,
