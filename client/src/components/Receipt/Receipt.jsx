@@ -78,7 +78,7 @@ function Receipt(props) {
 
           const total = orders
             .map((res) => {
-              return res.productId.cost;
+              return res.productId?.cost;
             })
             .reduce(function (a, b) {
               return a + b;
