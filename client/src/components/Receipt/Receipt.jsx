@@ -190,6 +190,7 @@ function Receipt(props) {
                   }}
                 >
                   {res}
+                  <br/>
                   ----
                 </p>
               </div>
