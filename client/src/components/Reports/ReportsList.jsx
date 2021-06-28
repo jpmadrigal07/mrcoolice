@@ -80,11 +80,11 @@ function ReportsList() {
         const salesWithNumber = sales?.reverse().map((res, index) => {
           return {
             id: index + 1,
-            description: res.customerId.description,
-            iceType: res.productId.iceType,
-            weight: res.productId.weight,
-            cost: res.productId.cost,
-            scaleType: res.productId.scaleType,
+            description: res.customerId?.description,
+            iceType: res.productId?.iceType,
+            weight: res.productId?.weight,
+            cost: res.productId?.cost,
+            scaleType: res.productId?.scaleType,
             createdAt: res.createdAt,
           };
         });
@@ -117,8 +117,7 @@ function ReportsList() {
       ?.reverse()
       .map((res) => {
         return res.cost;
-      })
-      .reduce(function (a, b) {
+      }).reduce(function (a, b) {
         return a + b;
       }, 0);
     setTotalSales(total);
