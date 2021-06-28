@@ -113,7 +113,7 @@ const ReportsList2 = (props) => {
   ];
 
   function capitalize(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    return string?.charAt(0).toUpperCase() + string?.slice(1).toLowerCase();
   }
 
   useEffect(() => {
