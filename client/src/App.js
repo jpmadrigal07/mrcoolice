@@ -8,6 +8,7 @@ import "./App.css";
 import Expenses from "./pages/Expenses/Expenses";
 import Staff from "./pages/Staff/Staff";
 import Reports from "./pages/Reports/Reports";
+import Reports2 from "./pages/Reports/Reports2";
 import Receipt from "./pages/Receipt/Receipt";
 import Product from "./pages/Product/Product";
 import { Alert } from "rsuite";
@@ -41,6 +42,7 @@ function App(props) {
         <Route path="/reports" exact render={() => <Reports />} />
         <Route path="/product" exact render={() => <Product />} />
         <Route path="/receipt" exact render={() => <Receipt />} />
+        <Route path="/print-report" exact render={() => <Reports2 />} />
       </>
     );
   };
