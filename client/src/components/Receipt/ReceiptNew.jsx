@@ -2,12 +2,14 @@ import React from "react";
 import { useState, useEffect } from "react";
 import moment from "moment";
 import "./Receipt.css";
+import uniqBy from 'lodash/uniqBy'
 
-const ReceiptNew = ({ cust, staff, remappedNewOrder, birNumber, receiptNumber }) => {
+const ReceiptNew = ({ cust, staff, orders, remappedNewOrder, birNumber, receiptNumber }) => {
+  const [remappedOrders, setRemappedOrders] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
   useEffect(() => {
-    if (remappedNewOrder.length > 0) {
-      const total = remappedNewOrder
+    if (orders.length > 0) {
+      const total = orders
         .map((res) => {
           return res.cost;
         })
@@ -15,12 +17,21 @@ const ReceiptNew = ({ cust, staff, remappedNewOrder, birNumber, receiptNumber })
           return a + b;
         }, 0);
       setTotalSales(total);
+
+      const uniqOrder = uniqBy(orders, "_id")
+      const newOrders = uniqOrder.map(res => {
+        const foundOrder = orders.filter(res2 => res2._id === res._id);
+        return {
+          count: foundOrder.length,
+          ...res
+        }
+      })
+
+      setRemappedOrders(newOrders)
     } else {
       setTotalSales(0);
     }
-  }, [remappedNewOrder]);
-  console.log(remappedNewOrder)
-  console.log(remappedNewOrder)
+  }, [orders]);
   return (
     <>
       <div id="receipt">
@@ -60,14 +71,14 @@ const ReceiptNew = ({ cust, staff, remappedNewOrder, birNumber, receiptNumber })
           <br />
         </div>
         <table style={{ width: "100%", fontSize: "8px" }}>
-          {remappedNewOrder && remappedNewOrder.length > 0
-            ? remappedNewOrder
+          {remappedOrders && remappedOrders.length > 0
+            ? remappedOrders
                 .map((_, i) => {
                   if (_.cost) {
                     return (
                       <tr>
                         <td style={{ width: "70%", fontSize: 10 }}>
-                         x{_.quantity} {`${_.weight} ${_.scaleType} ${_.iceType}`} ice
+                         x{_.count} {`${_.weight} ${_.scaleType} ${_.iceType}`} ice
                         </td>
                         <td
                           style={{
@@ -76,7 +87,7 @@ const ReceiptNew = ({ cust, staff, remappedNewOrder, birNumber, receiptNumber })
                             fontWeight: "600",
                           }}
                         >
-                          P{_.cost.toLocaleString()}
+                          P{_.cost*_.count.toLocaleString()}
                         </td>
                       </tr>
                     );

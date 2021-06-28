@@ -231,16 +231,23 @@ const AddOrder2 = (props) => {
 
   useEffect(() => {
     if (order.length > 0 && originalProducts.length > 0) {
-      const newOrder = order
+      const newOrder = order.map((res) => {
+        if (res.productId) {
+          const newOrderArr = Array(res.quantity)
+          newOrderArr.fill({ productId: res.productId })
+          return newOrderArr
+        }
+      }).filter(res => res)
+      const flattenNewOrder = newOrder.reduce((acc, curVal) => acc.concat(curVal), []);
+      const allOrders = flattenNewOrder
         .map((res) => {
           return originalProducts.find((res2) => res.productId === res2._id);
         })
         .filter((res3) => res3);
-      setOrders(newOrder);
+      setOrders(allOrders);
     }
   }, [products, order]);
   
-
   const submit = () => {
     if (selectedCustomerId) {
       const newOrder = order.map((res) => {
@@ -249,8 +256,7 @@ const AddOrder2 = (props) => {
           newOrderArr.fill({ productId: res.productId })
           return newOrderArr
         }
-      })
-      setNewOrder(newOrder)
+      }).filter(res => res);
       const flattenNewOrder = newOrder.reduce((acc, curVal) => acc.concat(curVal), []);
       const toInsert = flattenNewOrder
         .map((res) => {
@@ -284,7 +290,7 @@ const AddOrder2 = (props) => {
 
   const addNewProduct = () => {
     const toUpdate = order;
-    setOrder([...toUpdate, { productId: "", quantity: 0 }]);
+    setOrder([...toUpdate, { productId: "", quantity: 1 }]);
   };
 
   const updateProduct = (value, index) => {
@@ -365,7 +371,7 @@ const AddOrder2 = (props) => {
                         block
                         type="number"
                         onChange={(e) => updateProductQuantity(e, i)}
-                        value={updateProductQuantity.quantity}
+                        value={res.quantity}
                       />
                       <hr />
                     </>

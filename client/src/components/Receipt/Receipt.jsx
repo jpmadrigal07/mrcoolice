@@ -10,12 +10,12 @@ import { connect } from "react-redux";
 import moment from "moment";
 import { useLocation } from "react-router-dom";
 import _, { uniq } from 'lodash';
+import uniqBy from 'lodash/uniqBy'
 
 function Receipt(props) {
-  const { triggerTopAlert, remappedNewOrder } = props;
+  const { triggerTopAlert } = props;
   const [cust, setCust] = useState("---");
   const [staff, setStaff] = useState("---");
-  const [groupedOrders, setGroupedOrders] = useState([])
   const [orders, setOrders] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
   const { search } = useLocation();
@@ -58,11 +58,18 @@ function Receipt(props) {
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
           );
           setBirNumber(firstValue.birNumber ? firstValue.birNumber : "---")
-
-          const newOrders = orders.map((res) => {
+          const uniqOrder = uniqBy(orders, "productId._id")
+          const newData = uniqOrder.map(res => {
+            const foundOrder = orders.filter(res2 => res2.productId._id === res.productId._id);
             return {
-              value: `${res.productId.weight} ${res.productId.scaleType} ${res.productId.iceType}`,
-              cost: res.productId.cost
+              count: foundOrder.length,
+              ...res
+            }
+          })
+          const newOrders = newData.map((res) => {
+            return {
+              value: `x${res.count} ${res.productId.weight} ${res.productId.scaleType} ${res.productId.iceType}`,
+              cost: res.productId.cost*res.count
             };
           });
 
@@ -80,28 +87,11 @@ function Receipt(props) {
     }
   }, [getOrders.data]);
 
-  // useEffect(() => {
-  //   if(cust && staff && orders.length > 0) {
-  //     window.print()
-  //   }
-  // }, [cust, staff, orders])
-
   useEffect(() => {
-    // const newOrders = orders.find((res) => {
-    //   const filteredOrders = orders.find(order => order.value === res.value)
-    //   return {
-    //     filteredOrders
-    //   }
-    // })
-
-    // const unique = orders.map(order => {
-    //   return [order.value]
-    // })
-    
-    const newOrder = Array.from(new Set(orders))
-    setGroupedOrders(newOrder)
-    console.log(groupedOrders)
-  }, [orders])
+    if(cust && staff && orders.length > 0) {
+      window.print()
+    }
+  }, [cust, staff, orders])
 
   return (
     <div>
