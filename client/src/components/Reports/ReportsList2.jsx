@@ -237,26 +237,26 @@ const ReportsList2 = (props) => {
   const salesProducts = sales.map((res) => res.productId);
   const uniqSales = uniqBy(salesProducts, "_id");
   const totalKiloGramData = uniqSales.map((res) => {
-    const totalData = salesProducts.filter((res2) => res2._id === res._id);
+    const totalData = salesProducts.filter((res2) => res2?._id === res?._id);
     const totalDataCost = totalData
-      .map((res2) => res2.cost)
+      .map((res2) => res2?.cost)
       .reduce(function (a, b) {
         const num1 = a === "" ? 0 : a;
         const num2 = b === "" ? 0 : b;
         return num1 + num2;
       }, 0);
     return {
-      particulars: `${capitalize(res.iceType)} (${res.weight} ${
+      particulars: `${capitalize(res?.iceType)} (${res?.weight} ${
         res.scaleType
       })`,
-      totalQty: totalData.length,
+      totalQty: totalData?.length,
       totalKgs: totalDataCost,
-      total: totalData.length * totalDataCost,
+      total: totalData?.length * totalDataCost,
     };
   });
 
   const totalKiloGrandTotal = totalKiloGramData
-    .map((res) => res.total)
+    .map((res) => res?.total)
     .reduce(function (a, b) {
       const num1 = a === "" ? 0 : a;
       const num2 = b === "" ? 0 : b;
