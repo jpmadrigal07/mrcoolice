@@ -9,6 +9,8 @@ import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import moment from "moment";
 import { useLocation } from "react-router-dom";
+import _, { uniq } from "lodash";
+import uniqBy from "lodash/uniqBy";
 
 function Receipt(props) {
   const { triggerTopAlert } = props;
@@ -17,7 +19,7 @@ function Receipt(props) {
   const [orders, setOrders] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
   const { search } = useLocation();
-  const forValues = ["Cashier", "Guard", "Customer", "Production"]
+  const forValues = ["Cashier", "Guard", "Customer", "Production"];
   const receiptNumber = search ? search.replace("?receiptNumber=", "") : "";
   const [birNumber, setBirNumber] = useState("---");
 
@@ -56,21 +58,34 @@ function Receipt(props) {
           setStaff(
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
           );
-          setBirNumber(firstValue.birNumber ? firstValue.birNumber : "---")
-
-          const newOrders = orders.map((res) => {
+          setBirNumber(firstValue.birNumber ? firstValue.birNumber : "---");
+          const uniqOrder = uniqBy(orders, "productId._id");
+          const newData = uniqOrder.map((res) => {
+            const foundOrder = orders.filter(
+              (res2) => res2.productId._id === res.productId._id
+            );
             return {
-              value: `${res.productId.weight} ${res.productId.scaleType} ${res.productId.iceType}`,
-              cost: res.productId.cost
+              count: foundOrder.length,
+              ...res,
+            };
+          });
+          const newOrders = newData.map((res) => {
+            return {
+              value: `x${res.count} ${res.productId.weight} ${res.productId.scaleType} ${res.productId.iceType}`,
+              cost: res.productId.cost * res.count,
             };
           });
 
-          const total = orders.map((res) => {
-            return res.productId.cost
-          }).reduce(function (a, b) { return a + b; }, 0);
+          const total = orders
+            .map((res) => {
+              return res.productId.cost;
+            })
+            .reduce(function (a, b) {
+              return a + b;
+            }, 0);
 
-          setTotalSales(total)
-          setOrders(newOrders)
+          setTotalSales(total);
+          setOrders(newOrders);
         }
       }
     }
@@ -80,10 +95,10 @@ function Receipt(props) {
   }, [getOrders.data]);
 
   useEffect(() => {
-    if(cust && staff && orders.length > 0) {
-      window.print()
+    if (cust && staff && orders.length > 0) {
+      window.print();
     }
-  }, [cust, staff, orders])
+  }, [cust, staff, orders]);
 
   return (
     <div>
@@ -95,19 +110,28 @@ function Receipt(props) {
               <div id="receipt">
                 <div>
                   <p
-                    style={{ fontWeight: "800", fontSize: "18px", textAlign: "center" }}
+                    style={{
+                      fontWeight: "800",
+                      fontSize: "18px",
+                      textAlign: "center",
+                    }}
                   >
                     MR. COOL ICE
                   </p>
                   <p
-                    style={{ fontWeight: "300", fontSize: "8px", textAlign: "center" }}
+                    style={{
+                      fontWeight: "300",
+                      fontSize: "8px",
+                      textAlign: "center",
+                    }}
                   >
-                    Address: Victoria Woods, Brgy. San Francisco, Victoria Laguna ●
-                    Telephone: (0997) 1162923, (0947) 8129639
+                    Address: Victoria Woods, Brgy. San Francisco, Victoria
+                    Laguna ● Telephone: (0997) 1162923, (0947) 8129639
                   </p>
                   <hr id="lineDivider" />
                   <p style={{ fontSize: "10px", lineHeight: "13px" }}>
-                    <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
+                    <span style={{ fontWeight: "700" }}>RCPT#:</span>{" "}
+                    {receiptNumber}
                     <br />
                     <span style={{ fontWeight: "700" }}>BIR#:</span> {birNumber}
                     <br />
@@ -122,19 +146,35 @@ function Receipt(props) {
                 </div>
                 <table style={{ width: "100%", fontSize: "8px" }}>
                   {orders.map((_, i) => {
-                    return (<tr>
-                      <td style={{ width: "70%", fontSize: 10 }}>{_.value} ice</td>
-                      <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
-                        P{_.cost.toLocaleString()}
-                      </td>
-                    </tr>)
+                    return (
+                      <tr>
+                        <td style={{ width: "70%", fontSize: 10 }}>
+                          {_.value} ice
+                        </td>
+                        <td
+                          style={{
+                            width: "30%",
+                            textAlign: "right",
+                            fontWeight: "600",
+                          }}
+                        >
+                          P{_.cost.toLocaleString()}
+                        </td>
+                      </tr>
+                    );
                   })}
                 </table>
                 <hr id="lineTotal" />
                 <table style={{ width: "100%", fontSize: "8px" }}>
                   <tr>
                     <td style={{ width: "70%" }}>Total</td>
-                    <td style={{ width: "30%", textAlign: "right", fontWeight: "600" }}>
+                    <td
+                      style={{
+                        width: "30%",
+                        textAlign: "right",
+                        fontWeight: "600",
+                      }}
+                    >
                       P{totalSales.toLocaleString()}
                     </td>
                   </tr>
@@ -142,16 +182,22 @@ function Receipt(props) {
                 <hr id="lineDivider" />
 
                 <br />
-                <p style={{ fontSize: "8px", lineHeight: "10px", fontWeight: "400" }}>
-                  {res}
-                  <br />
+                <p
+                  style={{
+                    fontSize: "8px",
+                    lineHeight: "10px",
+                    fontWeight: "400",
+                  }}
+                >
                   ----
                 </p>
               </div>
-            )
+            );
           })}
         </>
-      ) : <h5>No receipt number.</h5>}
+      ) : (
+        <h5>No receipt number.</h5>
+      )}
     </div>
   );
 }
