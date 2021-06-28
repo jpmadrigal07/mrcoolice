@@ -189,6 +189,7 @@ function Receipt(props) {
                     fontWeight: "400",
                   }}
                 >
+                  {res}
                   ----
                 </p>
               </div>
