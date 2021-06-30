@@ -54,7 +54,7 @@ function Receipt(props) {
         const orders = getOrders.data.data?.data?.salesByReceiptNumber;
         if (orders.length > 0) {
           const firstValue = orders[0];
-          setCust(firstValue.customerId.description);
+          setCust(firstValue.customerId?.description);
           setStaff(
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
           );
@@ -62,7 +62,7 @@ function Receipt(props) {
           const uniqOrder = uniqBy(orders, "productId._id");
           const newData = uniqOrder.map((res) => {
             const foundOrder = orders.filter(
-              (res2) => res2.productId._id === res.productId._id
+              (res2) => res2.productId?._id === res.productId?._id
             );
             return {
               count: foundOrder.length,
@@ -71,14 +71,14 @@ function Receipt(props) {
           });
           const newOrders = newData.map((res) => {
             return {
-              value: `x${res.count} ${res.productId.weight} ${res.productId.scaleType} ${res.productId.iceType}`,
-              cost: res.productId.cost * res.count,
+              value: `x${res.count} ${res.productId?.weight} ${res.productId?.scaleType} ${res.productId?.iceType}`,
+              cost: res.productId?.cost * res.count,
             };
           });
 
           const total = orders
             .map((res) => {
-              return res.productId.cost;
+              return res.productId?.cost;
             })
             .reduce(function (a, b) {
               return a + b;
@@ -189,6 +189,8 @@ function Receipt(props) {
                     fontWeight: "400",
                   }}
                 >
+                  {res}
+                  <br/>
                   ----
                 </p>
               </div>

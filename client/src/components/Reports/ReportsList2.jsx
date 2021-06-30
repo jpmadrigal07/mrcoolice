@@ -135,7 +135,7 @@ const ReportsList2 = (props) => {
   ];
 
   function capitalize(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    return string?.charAt(0).toUpperCase() + string?.slice(1).toLowerCase();
   }
 
   useEffect(() => {
@@ -168,7 +168,7 @@ const ReportsList2 = (props) => {
         });
         const rowValuesSecondPart = products.map((res3) => {
           const foundProducts = res.filter(
-            (res4) => res4.productId._id === res3._id
+            (res4) => res4.productId?._id === res3?._id
           );
           return foundProducts.length > 0 ? foundProducts.length : "";
         });
@@ -179,10 +179,10 @@ const ReportsList2 = (props) => {
         }, 0);
         const rowValuesThirdPart = products.map((res5) => {
           const foundProducts = res.filter(
-            (res6) => res6.productId._id === res5._id
+            (res6) => res6.productId?._id === res5?._id
           );
           const costsValue = foundProducts
-            .map((res) => res.productId.cost)
+            .map((res) => res.productId?.cost)
             .filter((res2) => res2);
           const sum = costsValue.reduce(function (a, b) {
             const num1 = a === "" ? 0 : a;
@@ -263,26 +263,26 @@ const ReportsList2 = (props) => {
   const salesProducts = sales.map((res) => res.productId);
   const uniqSales = uniqBy(salesProducts, "_id");
   const totalKiloGramData = uniqSales.map((res) => {
-    const totalData = salesProducts.filter((res2) => res2._id === res._id);
+    const totalData = salesProducts.filter((res2) => res2?._id === res?._id);
     const totalDataCost = totalData
-      .map((res2) => res2.cost)
+      .map((res2) => res2?.cost)
       .reduce(function (a, b) {
         const num1 = a === "" ? 0 : a;
         const num2 = b === "" ? 0 : b;
         return num1 + num2;
       }, 0);
     return {
-      particulars: `${capitalize(res.iceType)} (${res.weight} ${
-        res.scaleType
+      particulars: `${capitalize(res?.iceType)} (${res?.weight} ${
+        res?.scaleType
       })`,
-      totalQty: totalData.length,
-      kgs: res.weight,
-      total: totalData.length * res.weight,
+      totalQty: totalData?.length,
+      totalKgs: totalDataCost,
+      total: totalData?.length * totalDataCost,
     };
   });
 
   const totalKiloGrandTotal = totalKiloGramData
-    .map((res) => res.total)
+    .map((res) => res?.total)
     .reduce(function (a, b) {
       const num1 = a === "" ? 0 : a;
       const num2 = b === "" ? 0 : b;

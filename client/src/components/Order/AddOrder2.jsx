@@ -231,7 +231,7 @@ const AddOrder2 = (props) => {
     if (order.length > 0 && originalProducts.length > 0) {
       const newOrder = order.map((res) => {
         if (res.productId) {
-          const newOrderArr = Array(res.quantity)
+          const newOrderArr = Array(res.quantity ? res.quantity : 1)
           newOrderArr.fill({ productId: res.productId })
           return newOrderArr
         }
