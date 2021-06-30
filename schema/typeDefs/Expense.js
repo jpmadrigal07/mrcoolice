@@ -18,6 +18,7 @@ const ExpenseType = new GraphQLObjectType({
       },
     },
     name: { type: GraphQLString },
+    vendor: { type: GraphQLString},
     cost: { type: GraphQLInt },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
