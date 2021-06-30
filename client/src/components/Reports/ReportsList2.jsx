@@ -136,7 +136,7 @@ const ReportsList2 = (props) => {
           } else if (res2 === "DESC.") {
             return "";
           } else if (res2 === "PARTICULARS") {
-            return res[0].customerId.description;
+            return res[0].customerId?.description;
           } else {
             return "";
           }
@@ -250,8 +250,8 @@ const ReportsList2 = (props) => {
         res.scaleType
       })`,
       totalQty: totalData.length,
-      totalKgs: totalDataCost,
-      total: totalData.length * totalDataCost,
+      kgs: res.weight,
+      total: totalData.length * res.weight,
     };
   });
 
@@ -496,7 +496,7 @@ const ReportsList2 = (props) => {
                 } else if (i === 1) {
                   return <td>{res.totalQty}</td>;
                 } else if (i === 2) {
-                  return <td>{res.totalKgs}</td>;
+                  return <td>{res.kgs}</td>;
                 } else if (i === 3) {
                   return <td>{res.total}</td>;
                 } else {
