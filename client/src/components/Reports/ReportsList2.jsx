@@ -91,6 +91,7 @@ const ReportsList2 = (props) => {
             _id,
             name,
             cost,
+            vendor,
             createdAt
         }
       }`;
@@ -483,7 +484,9 @@ const ReportsList2 = (props) => {
           return (
             <tr>
               {tableHeaderExpense.map((res2, i) => {
-                if (i === 5) {
+                if (i === 2) {
+                  return <td>{res.vendor ? res.vendor : "---"}</td>;
+                } else if (i === 5) {
                   return <td>{res.name}</td>;
                 } else if (i === 6) {
                   return <td>{res.cost}</td>;

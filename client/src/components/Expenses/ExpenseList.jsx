@@ -44,7 +44,7 @@ const ExpenseList = (props) => {
             number: index + 1,
             _id: res._id,
             name: res.name,
-            vendor: res.vendor === "null" || res.vendor === "" ? "---" : res.vendor,
+            vendor: res.vendor ? res.vendor : "---",
             cost: res.cost
           };
         });
@@ -60,7 +60,6 @@ const ExpenseList = (props) => {
   );
 
   const remove = (id) => {
-    console.log(id)
     deleteExpense.mutate(
       `mutation{
         deleteExpense(_id: "${id}") {
