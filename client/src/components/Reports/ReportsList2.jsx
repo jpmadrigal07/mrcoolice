@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { products, expenses } from "./constant";
+import { Loader } from "rsuite";
 import uniqBy from "lodash/uniqBy";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery } from "react-query";
@@ -9,22 +9,31 @@ import { triggerTopAlert } from "../../actions/topAlertActions";
 import moment from "moment";
 import { connect } from "react-redux";
 import { useLocation } from "react-router-dom";
-import "./Reports.css"
+import "./Reports.css";
 
 const ReportsList2 = (props) => {
   const token = Cookies.get("sessionToken");
+  const [isLoading, setIsLoading] = useState(true);
   const [tableSales, setTableSales] = useState([]);
   const [totalResult, setTotalResult] = useState([]);
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
+  const [products, setProducts] = useState([]);
   const [autheticatedUserFullName, setAutheticatedUserFullName] =
     useState(null);
   const [expenses, setExpenses] = useState([]);
   const [sales, setSales] = useState([]);
   const { triggerTopAlert } = props;
   const { search } = useLocation();
-  const dates = search.split('&');
+  const dates = search.split("&");
   const dateFrom = dates[0]?.replace("?dateFrom=", "");
   const dateTo = dates[1]?.replace("dateTo=", "");
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+      window.print();
+    }, 5000);
+  }, []);
 
   const getAutheticatedUserId = useQuery("getAutheticatedUserId", async () => {
     const query = `{
@@ -51,10 +60,8 @@ const ReportsList2 = (props) => {
     }
   );
 
-  const getOrderList = useQuery(
-    "OrderList",
-    async () => {
-      const query = `{
+  const getOrderList = useQuery("OrderList", async () => {
+    const query = `{
         sales {
           customerId {
               _id
@@ -73,9 +80,10 @@ const ReportsList2 = (props) => {
           createdAt
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
-    }
-  );
+    return await axios.post(graphqlUrl, { query });
+  },{
+    refetchInterval: 3000
+  });
 
   const getExpenseList = useQuery("getExpenseList", async () => {
     const query = `{
@@ -84,6 +92,19 @@ const ReportsList2 = (props) => {
             name,
             cost,
             createdAt
+        }
+      }`;
+    return await axios.post(graphqlUrl, { query });
+  });
+
+  const getProductList = useQuery("getProductList", async () => {
+    const query = `{
+        products {
+            _id
+            iceType,
+            weight,
+            scaleType,
+            cost
         }
       }`;
     return await axios.post(graphqlUrl, { query });
@@ -117,18 +138,21 @@ const ReportsList2 = (props) => {
   }
 
   useEffect(() => {
-    if(sales.length > 0) {
+    if (sales.length > 0) {
       const values = sales
-      .map((item) => item.receiptNumber)
-      .filter((value, index, self) => self.indexOf(value) === index);
-  
+        .map((item) => item.receiptNumber)
+        .filter((value, index, self) => self.indexOf(value) === index);
+
       const chunkArr = values.map((res) => {
-        const distinctSales = sales.filter((res2) => res2.receiptNumber === res);
+        const distinctSales = sales.filter(
+          (res2) => res2.receiptNumber === res
+        );
         return distinctSales;
       });
 
       const tableWithValues = chunkArr.map((res) => {
         const rowValuesFirstPart = tableHeader2.map((res2) => {
+          const customer = res[0].customerId;
           if (res2 === "DR") {
             return res[0].receiptNumber;
           } else if (res2 === "SALES INV") {
@@ -136,7 +160,7 @@ const ReportsList2 = (props) => {
           } else if (res2 === "DESC.") {
             return "";
           } else if (res2 === "PARTICULARS") {
-            return res[0].customerId?.description;
+            return customer ? customer.description : `---`;
           } else {
             return "";
           }
@@ -179,24 +203,25 @@ const ReportsList2 = (props) => {
           totalThirdPart,
         ];
       });
-  
       setTableSales(tableWithValues);
     }
-  }, [sales])
+  }, [sales]);
 
   useEffect(() => {
     if (tableSales.length > 0) {
-      const convertedTableValue = tableSales.map(res => {
-        const toZero = res.map(res2 => {
-          return res2 === "" ? 0 : res2
-        })
-        return toZero
-      })
+      const convertedTableValue = tableSales.map((res) => {
+        const toZero = res.map((res2) => {
+          return res2 === "" ? 0 : res2;
+        });
+        return toZero;
+      });
       const result = convertedTableValue.reduce(function (array1, array2) {
         return array2.map(function (value, index) {
           if (index > 3 && !isNaN(value)) {
             const validValue = !isNaN(value) ? parseInt(value) : 0;
-            const validArray1Value = !isNaN(array1[index]) ? parseInt(array1[index]) : 0;
+            const validArray1Value = !isNaN(array1[index])
+              ? parseInt(array1[index])
+              : 0;
             const total = validValue + validArray1Value;
             return total;
           } else {
@@ -309,21 +334,19 @@ const ReportsList2 = (props) => {
         getOrderList.data.data?.data?.sales
       ) {
         const dataDB = getOrderList.data.data?.data?.sales;
-        setSales(dataDB.filter(
-          (res) =>
-            parseInt(res.createdAt) > parseInt(dateFrom) &&
-            parseInt(res.createdAt) < parseInt(dateTo)
-        ));
-
+        setSales(
+          dataDB.filter(
+            (res) =>
+              parseInt(res.createdAt) > parseInt(dateFrom) &&
+              parseInt(res.createdAt) < parseInt(dateTo)
+          )
+        );
       }
     }
     if (getOrderList.isError) {
       triggerTopAlert(true, getOrderList.error.message, "warning");
     }
-  }, [
-    getOrderList.data,
-    getOrderList.isLoading
-  ]);
+  }, [getOrderList.data, getOrderList.isLoading]);
 
   useEffect(() => {
     if (getExpenseList.isSuccess) {
@@ -332,25 +355,48 @@ const ReportsList2 = (props) => {
         getExpenseList.data.data?.data?.expenses
       ) {
         const dataDB = getExpenseList.data.data?.data?.expenses;
-        setExpenses(dataDB.filter(
-          (res) =>
-            parseInt(res.createdAt) > parseInt(dateFrom) &&
-            parseInt(res.createdAt) < parseInt(dateTo)
-        ));
+        setExpenses(
+          dataDB.filter(
+            (res) =>
+              parseInt(res.createdAt) > parseInt(dateFrom) &&
+              parseInt(res.createdAt) < parseInt(dateTo)
+          )
+        );
       }
     }
   }, [getExpenseList.data]);
 
   useEffect(() => {
-    if(autheticatedUserFullName !== "" && expenses.length > 0 && sales.length > 0) {
-      window.print()
+    if (getProductList.isSuccess) {
+      if (
+        !getProductList.data.data?.errors &&
+        getProductList.data.data?.data?.products
+      ) {
+        const product = getProductList.data.data?.data?.products;
+        setProducts(product);
+      }
     }
-  }, [autheticatedUserFullName, expenses, sales])
+  }, [getProductList.data]);
 
   return (
     <div style={{ margin: 15 }}>
+      {isLoading ? (
+        <div style={{ margin: 15 }}>
+          <Loader size="md" content="Loading..." />
+        </div>
+      ) : null}
       <p style={{ fontSize: 12, marginTop: 0 }}>
-        <strong>DATE: {moment.unix(parseInt(dateFrom) / 1000).format("MM/DD/YYYY") === moment.unix(parseInt(dateTo) / 1000).format("MM/DD/YYYY") ? moment.unix(parseInt(dateFrom) / 1000).format("MM/DD/YYYY") : `${moment.unix(parseInt(dateFrom) / 1000).format("MM/DD/YYYY")} to ${moment.unix(parseInt(dateTo) / 1000).format("MM/DD/YYYY")} `}</strong>
+        <strong>
+          DATE:{" "}
+          {moment.unix(parseInt(dateFrom) / 1000).format("MM/DD/YYYY") ===
+          moment.unix(parseInt(dateTo) / 1000).format("MM/DD/YYYY")
+            ? moment.unix(parseInt(dateFrom) / 1000).format("MM/DD/YYYY")
+            : `${moment
+                .unix(parseInt(dateFrom) / 1000)
+                .format("MM/DD/YYYY")} to ${moment
+                .unix(parseInt(dateTo) / 1000)
+                .format("MM/DD/YYYY")} `}
+        </strong>
       </p>
       <p style={{ fontSize: 12, marginTop: 0, marginBottom: 15 }}>
         <strong>CASHIER: {autheticatedUserFullName}</strong>
