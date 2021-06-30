@@ -8,6 +8,7 @@ const expense = new Schema({
     ref: "User",
   },
   name: String,
+  vendor: String,
   cost: Number,
   createdAt: {
     type: Date,

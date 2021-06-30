@@ -37,10 +37,8 @@ const AddOrder2 = (props) => {
   const [originalProducts, setOriginalProducts] = useState([]);
   const [newOrder, setNewOrder] = useState([])
   const [remappedNewOrder, setRemappedNewOrder] = useState([])
-  const [flattenedNewOrder, setFlattenedNewOrder] = useState([])
   const [birNumber, setBirNumber] = useState(null);
-  const [selectedCustomerDescription, setSelectedCustomerDescription] =
-    useState(null);
+  const [selectedCustomerDescription, setSelectedCustomerDescription] = useState(null);
   const token = Cookies.get("sessionToken");
   const [receiptNumber, setReceiptNumber] = useState(null);
 
