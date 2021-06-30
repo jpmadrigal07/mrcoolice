@@ -7,8 +7,7 @@ import {
   Input,
   ButtonToolbar,
   Button,
-  Row,
-  SelectPicker
+  Row
 } from "rsuite";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
@@ -16,16 +15,15 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { connect } from "react-redux";
 import { triggerTopAlert } from "../../actions/topAlertActions";
+import Asterisk from "../Asterisk/Asterisk"
 
 const ExpenseForm = (props) => {
-  const { isEditActive, setIsEditActive, toUpdateExpense, triggerTopAlert } =
-    props;
+  const { isEditActive, setIsEditActive, toUpdateExpense, triggerTopAlert } = props;
   const token = Cookies.get("sessionToken");
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
   const [expenseName, setExpenseName] = useState(null);
   const [expenseCost, setExpenseCost] = useState(null);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [customers, setCustomers] = useState([]);
+  const [vendor, setVendor] = useState(null);
   useState(null);
 
   const getAutheticatedUserId = useQuery("getAutheticatedUserId", async () => {
@@ -36,34 +34,6 @@ const ExpenseForm = (props) => {
           }`;
     return await axios.post(graphqlUrl, { query });
   });
-
-  const getCustomers = useQuery("getCustomers", async () => {
-    const query = `{
-        customers {
-          _id
-          description
-        }
-      }`;
-    return await axios.post(graphqlUrl, { query });
-  });
-
-  useEffect(() => {
-    if (getCustomers.isSuccess) {
-      if (
-        !getCustomers.data.data?.errors &&
-        getCustomers.data.data?.data?.customers
-      ) {
-        const foundCustomers = getCustomers.data.data?.data?.customers;
-        const newCustomers = foundCustomers.map((res) => {
-          return {
-            value: res._id,
-            label: res.description,
-          };
-        });
-        setCustomers(newCustomers);
-      }
-    }
-  }, [getCustomers.data]);
 
   const createExpense = useMutation((query) =>
     axios.post(graphqlUrl, { query })
@@ -76,12 +46,9 @@ const ExpenseForm = (props) => {
     if (expenseName && expenseCost) {
       createExpense.mutate(
         `mutation{
-                    createExpense(userId: "${autheticatedUserId}", cost: ${expenseCost}, name: "${expenseName}", customerId: ${selectedCustomer} ){
+                    createExpense(userId: "${autheticatedUserId}", name: "${expenseName}", vendor: "${vendor}", cost: ${expenseCost}){
                         name
-                        customerId{
-                          _id
-                          description
-                        }
+                        vendor
                         cost
                     }
                 }`
@@ -95,13 +62,10 @@ const ExpenseForm = (props) => {
     if (expenseName && expenseCost) {
       updateExpense.mutate(
         `mutation{
-                updateExpense(_id: "${toUpdateExpense._id}", userId: "${autheticatedUserId}", name: "${expenseName}", customerId: "${selectedCustomer}", cost: ${expenseCost}) 
+                updateExpense(_id: "${toUpdateExpense._id}", userId: "${autheticatedUserId}", name: "${expenseName}", vendor: "${vendor}", cost: ${expenseCost}) 
                 {
                   name
-                  customerId{
-                    _id
-                    description
-                  }
+                  vendor
                   cost
                 }
               }`
@@ -145,7 +109,7 @@ const ExpenseForm = (props) => {
         if (!createExpense.data?.data?.errors) {
           setExpenseCost("");
           setExpenseName("");
-          setSelectedCustomer("")
+          setVendor("")
           createExpense.reset();
           triggerTopAlert(true, "Successfully added", "success");
         } else {
@@ -183,7 +147,7 @@ const ExpenseForm = (props) => {
       <Panel bordered style={{ margin: "10px" }}>
         <Form onSubmit={isEditActive ? () => update() : () => create()}>
           <FormGroup>
-            <ControlLabel>Expense Name</ControlLabel>
+            <ControlLabel>Expense Name<Asterisk/></ControlLabel>
             <Input
               block
               onChange={(e) => setExpenseName(e)}
@@ -191,24 +155,20 @@ const ExpenseForm = (props) => {
             />
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Customer</ControlLabel>
-            <SelectPicker
-              value={selectedCustomer}
-              data={customers}
-              block
-              onChange={(e) => {
-                setSelectedCustomer(e);
-              }}
-              disabled={createExpense.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Cost (Pesos)</ControlLabel>
+            <ControlLabel>Cost (Pesos)<Asterisk/></ControlLabel>
             <Input
               block
               type="number"
               onChange={(e) => setExpenseCost(e)}
               value={expenseCost}
+            />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Vendor/Client</ControlLabel>
+            <Input
+              block
+              onChange={(e) => setVendor(e)}
+              value={vendor}
             />
           </FormGroup>
           <FormGroup>

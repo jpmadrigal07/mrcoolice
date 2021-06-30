@@ -8,10 +8,7 @@ const expense = new Schema({
     ref: "User",
   },
   name: String,
-  customerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Customer",
-  },
+  vendor: String,
   cost: Number,
   createdAt: {
     type: Date,

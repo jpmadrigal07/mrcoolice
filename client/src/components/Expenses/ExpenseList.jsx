@@ -19,10 +19,7 @@ const ExpenseList = (props) => {
         expenses {
             _id
             name
-            customerId {
-              _id
-              description
-            }
+            vendor
             cost
         }
       }`;
@@ -47,8 +44,8 @@ const ExpenseList = (props) => {
             number: index + 1,
             _id: res._id,
             name: res.name,
-            customerId: res.customerId?.description,
-            cost: res.cost,
+            vendor: res.vendor === "null" || res.vendor === "" ? "---" : res.vendor,
+            cost: res.cost
           };
         });
         setExpenseList(expensesWithNumber);
@@ -68,10 +65,7 @@ const ExpenseList = (props) => {
       `mutation{
         deleteExpense(_id: "${id}") {
             name
-            customerId{ 
-              _id
-              description
-            }
+            vendor
             cost
         }
       }`
@@ -111,12 +105,12 @@ const ExpenseList = (props) => {
               <Cell dataKey="name" />
             </Column>
             <Column flexGrow={100} minWidth={100}>
-              <HeaderCell>Customer</HeaderCell>
-              <Cell dataKey="customerId" />
-            </Column>
-            <Column flexGrow={100} minWidth={100}>
               <HeaderCell>Cost (Pesos)</HeaderCell>
               <Cell dataKey="cost" />
+            </Column>
+            <Column flexGrow={100} minWidth={100}>
+              <HeaderCell>Vendor/Client</HeaderCell>
+              <Cell dataKey="vendor" />
             </Column>
             <Column flexGrow={100} minWidth={100} fixed="right">
               <HeaderCell>Action</HeaderCell>
