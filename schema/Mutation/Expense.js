@@ -12,6 +12,7 @@ module.exports.createExpense = {
   args: {
     userId: { type: GraphQLNonNull(GraphQLID) },
     name: { type: GraphQLNonNull(GraphQLString) },
+    customerId: { type: GraphQLID },
     cost: { type: GraphQLNonNull(GraphQLInt) },
   },
   resolve: (parent, args) => {
@@ -19,6 +20,7 @@ module.exports.createExpense = {
     return expense.save({
       userId: args.userId,
       name: args.name,
+      customerId: args.customerId,
       cost: args.cost,
     });
   },
@@ -30,12 +32,14 @@ module.exports.updateExpense = {
     _id: { type: GraphQLID },
     userId: { type: GraphQLID },
     name: { type: GraphQLString },
+    customerId: { type: GraphQLID},
     cost: { type: GraphQLInt },
   },
   resolve: (parent, args) => {
     const toUpdate = {};
     args.userId ? (toUpdate.userId = args.userId) : null;
     args.name ? (toUpdate.name = args.name) : null;
+    args.customerId ? (toUpdate.name = args.customerId) : null;
     args.cost ? (toUpdate.cost = args.cost) : null;
     return Expense.findByIdAndUpdate({ _id: args._id }, { $set: toUpdate });
   },

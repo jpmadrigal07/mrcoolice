@@ -8,6 +8,7 @@ import {
   ButtonToolbar,
   Button,
   Row,
+  SelectPicker
 } from "rsuite";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
@@ -23,6 +24,9 @@ const ExpenseForm = (props) => {
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
   const [expenseName, setExpenseName] = useState(null);
   const [expenseCost, setExpenseCost] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [customers, setCustomers] = useState([]);
+  useState(null);
 
   const getAutheticatedUserId = useQuery("getAutheticatedUserId", async () => {
     const query = `{
@@ -33,10 +37,38 @@ const ExpenseForm = (props) => {
     return await axios.post(graphqlUrl, { query });
   });
 
+  const getCustomers = useQuery("getCustomers", async () => {
+    const query = `{
+        customers {
+          _id
+          description
+        }
+      }`;
+    return await axios.post(graphqlUrl, { query });
+  });
+
+  useEffect(() => {
+    if (getCustomers.isSuccess) {
+      if (
+        !getCustomers.data.data?.errors &&
+        getCustomers.data.data?.data?.customers
+      ) {
+        const foundCustomers = getCustomers.data.data?.data?.customers;
+        const newCustomers = foundCustomers.map((res) => {
+          return {
+            value: res._id,
+            label: res.description,
+          };
+        });
+        setCustomers(newCustomers);
+      }
+    }
+  }, [getCustomers.data]);
+
   const createExpense = useMutation((query) =>
     axios.post(graphqlUrl, { query })
   );
-
+  
   const updateExpense = useMutation((query) =>
     axios.post(graphqlUrl, { query })
   );
@@ -44,8 +76,12 @@ const ExpenseForm = (props) => {
     if (expenseName && expenseCost) {
       createExpense.mutate(
         `mutation{
-                    createExpense(userId: "${autheticatedUserId}", name: "${expenseName}", cost: ${expenseCost}){
+                    createExpense(userId: "${autheticatedUserId}", cost: ${expenseCost}, name: "${expenseName}", customerId: ${selectedCustomer} ){
                         name
+                        customerId{
+                          _id
+                          description
+                        }
                         cost
                     }
                 }`
@@ -59,9 +95,13 @@ const ExpenseForm = (props) => {
     if (expenseName && expenseCost) {
       updateExpense.mutate(
         `mutation{
-                updateExpense(_id: "${toUpdateExpense._id}", userId: "${autheticatedUserId}", name: "${expenseName}", cost: ${expenseCost}) 
+                updateExpense(_id: "${toUpdateExpense._id}", userId: "${autheticatedUserId}", name: "${expenseName}", customerId: "${selectedCustomer}", cost: ${expenseCost}) 
                 {
                   name
+                  customerId{
+                    _id
+                    description
+                  }
                   cost
                 }
               }`
@@ -105,6 +145,7 @@ const ExpenseForm = (props) => {
         if (!createExpense.data?.data?.errors) {
           setExpenseCost("");
           setExpenseName("");
+          setSelectedCustomer("")
           createExpense.reset();
           triggerTopAlert(true, "Successfully added", "success");
         } else {
@@ -147,6 +188,18 @@ const ExpenseForm = (props) => {
               block
               onChange={(e) => setExpenseName(e)}
               value={expenseName}
+            />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Customer</ControlLabel>
+            <SelectPicker
+              value={selectedCustomer}
+              data={customers}
+              block
+              onChange={(e) => {
+                setSelectedCustomer(e);
+              }}
+              disabled={createExpense.isLoading}
             />
           </FormGroup>
           <FormGroup>

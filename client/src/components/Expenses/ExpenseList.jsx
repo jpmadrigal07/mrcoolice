@@ -19,6 +19,10 @@ const ExpenseList = (props) => {
         expenses {
             _id
             name
+            customerId {
+              _id
+              description
+            }
             cost
         }
       }`;
@@ -40,8 +44,11 @@ const ExpenseList = (props) => {
         const expenses = getExpenseList.data.data?.data?.expenses;
         const expensesWithNumber = expenses?.reverse().map((res, index) => {
           return {
-            id: index + 1,
-            ...res,
+            number: index + 1,
+            _id: res._id,
+            name: res.name,
+            customerId: res.customerId?.description,
+            cost: res.cost,
           };
         });
         setExpenseList(expensesWithNumber);
@@ -49,15 +56,22 @@ const ExpenseList = (props) => {
     }
   }, [getExpenseList.data]);
 
+  
+
   const deleteExpense = useMutation((query) =>
     axios.post(graphqlUrl, { query })
   );
 
   const remove = (id) => {
+    console.log(id)
     deleteExpense.mutate(
       `mutation{
         deleteExpense(_id: "${id}") {
             name
+            customerId{ 
+              _id
+              description
+            }
             cost
         }
       }`
@@ -90,11 +104,15 @@ const ExpenseList = (props) => {
           <Table height={400} data={expenseList}>
             <Column>
               <HeaderCell>#</HeaderCell>
-              <Cell dataKey="id" />
+              <Cell dataKey="number" />
             </Column>
             <Column flexGrow={100} minWidth={100}>
               <HeaderCell>Expense name</HeaderCell>
               <Cell dataKey="name" />
+            </Column>
+            <Column flexGrow={100} minWidth={100}>
+              <HeaderCell>Customer</HeaderCell>
+              <Cell dataKey="customerId" />
             </Column>
             <Column flexGrow={100} minWidth={100}>
               <HeaderCell>Cost (Pesos)</HeaderCell>

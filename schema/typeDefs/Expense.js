@@ -6,6 +6,8 @@ const {
 } = require("graphql");
 const UserType = require("./User");
 const User = require("../../models/user");
+const CustomerType = require("./Customer");
+const Customer = require("../../models/customer");
 
 const ExpenseType = new GraphQLObjectType({
   name: "Expense",
@@ -18,6 +20,12 @@ const ExpenseType = new GraphQLObjectType({
       },
     },
     name: { type: GraphQLString },
+    customerId: {
+      type: CustomerType,
+      resolve: async (expense) => {
+        return await Customer.findOne({ _id: expense.customerId });
+      },
+    },
     cost: { type: GraphQLInt },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
