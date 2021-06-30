@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { products, expenses } from "./constant";
+import { expenses } from "./constant";
 import uniqBy from "lodash/uniqBy";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery } from "react-query";
@@ -16,6 +16,7 @@ const ReportsList2 = (props) => {
   const [tableSales, setTableSales] = useState([]);
   const [totalResult, setTotalResult] = useState([]);
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
+  const [products, setProducts] = useState([]);
   const [autheticatedUserFullName, setAutheticatedUserFullName] =
     useState(null);
   const [expenses, setExpenses] = useState([]);
@@ -89,6 +90,19 @@ const ReportsList2 = (props) => {
     return await axios.post(graphqlUrl, { query });
   });
 
+  const getProductList = useQuery("getProductList", async () => {
+    const query = `{
+        products {
+            _id
+            iceType,
+            weight,
+            scaleType,
+            cost
+        }
+      }`;
+    return await axios.post(graphqlUrl, { query });
+  });
+
   const tableHeader1 = [
     "",
     "",
@@ -129,6 +143,7 @@ const ReportsList2 = (props) => {
 
       const tableWithValues = chunkArr.map((res) => {
         const rowValuesFirstPart = tableHeader2.map((res2) => {
+          const customer = res[0].customerId;
           if (res2 === "DR") {
             return res[0].receiptNumber;
           } else if (res2 === "SALES INV") {
@@ -136,7 +151,7 @@ const ReportsList2 = (props) => {
           } else if (res2 === "DESC.") {
             return "";
           } else if (res2 === "PARTICULARS") {
-            return res[0].customerId?.description;
+            return customer ? customer.description : `---`;
           } else {
             return "";
           }
@@ -346,6 +361,18 @@ const ReportsList2 = (props) => {
       window.print()
     }
   }, [autheticatedUserFullName, expenses, sales])
+
+  useEffect(() => {
+    if (getProductList.isSuccess) {
+      if (
+        !getProductList.data.data?.errors &&
+        getProductList.data.data?.data?.products
+      ) {
+        const product = getProductList.data.data?.data?.products;
+        setProducts(product);
+      }
+    }
+  }, [getProductList.data]);
 
   return (
     <div style={{ margin: 15 }}>
