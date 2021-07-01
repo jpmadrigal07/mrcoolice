@@ -276,11 +276,10 @@ const ReportsList2 = (props) => {
         res?.scaleType
       })`,
       totalQty: totalData?.length,
-      totalKgs: totalDataCost,
-      total: totalData?.length * totalDataCost,
+      totalKgs: res?.weight,
+      total: totalData?.length * res?.weight,
     };
   });
-
   const totalKiloGrandTotal = totalKiloGramData
     .map((res) => res?.total)
     .reduce(function (a, b) {
@@ -448,7 +447,7 @@ const ReportsList2 = (props) => {
             if (i === 0) {
               return (
                 <td>
-                  <strong>Grant Total</strong>
+                  <strong>Grand Total</strong>
                 </td>
               );
             } else {
@@ -545,7 +544,7 @@ const ReportsList2 = (props) => {
                 } else if (i === 1) {
                   return <td>{res.totalQty}</td>;
                 } else if (i === 2) {
-                  return <td>{res.kgs}</td>;
+                  return <td>{res.totalKgs}</td>;
                 } else if (i === 3) {
                   return <td>{res.total}</td>;
                 } else {
