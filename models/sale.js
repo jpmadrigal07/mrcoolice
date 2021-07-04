@@ -17,6 +17,7 @@ const sale = new Schema({
     ref: "Customer",
   },
   birNumber: Number,
+  drNumber: Number,
   createdAt: {
     type: Date,
     default: Date.now,

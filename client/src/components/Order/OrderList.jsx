@@ -45,7 +45,8 @@ const OrderList = (props) => {
             cost
           },
           receiptNumber,
-          birNumber
+          birNumber,
+          drNumber
         }
       }`;
       return await axios.post(graphqlUrl, { query });
@@ -80,7 +81,8 @@ const OrderList = (props) => {
         scaleType: res.productId?.scaleType,
         cost: res.productId?.cost,
         receiptNumber: res.receiptNumber,
-        birNumber: res.birNumber ? res.birNumber : "---"
+        birNumber: res.birNumber ? res.birNumber : "---",
+        drNumber: res.drNumber ? res.drNumber : "---"
       }
     })
     setProducts(newProduct);
@@ -94,6 +96,10 @@ const OrderList = (props) => {
             <Column flexGrow={100} minWidth={50}>
               <HeaderCell>#</HeaderCell>
               <Cell dataKey="number" />
+            </Column>
+            <Column flexGrow={100} minWidth={50}>
+              <HeaderCell>DR</HeaderCell>
+              <Cell dataKey="drNumber" />
             </Column>
             <Column flexGrow={100} minWidth={50}>
               <HeaderCell>Customer</HeaderCell>
