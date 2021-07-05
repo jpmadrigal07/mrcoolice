@@ -18,14 +18,8 @@ const sale = new Schema({
   },
   birNumber: Number,
   drNumber: Number,
-  location: {
-    type: String,
-    enum: ["Sta. Cruz", "Nagcarlan"],
-  },
-  vehicleType: {
-    type: String,
-    enum: ["H100", "Truck", "Tricycle"],
-  },
+  location: String,
+  vehicleType: String,
   createdAt: {
     type: Date,
     default: Date.now,

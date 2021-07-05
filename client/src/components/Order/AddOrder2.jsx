@@ -293,9 +293,8 @@ const AddOrder2 = (props) => {
               ) 
               {
                 receiptNumber
-            }
-          }
-          `);
+              }
+          }`);
         });
       } else {
         triggerTopAlert(true, "Please complete all the parameters", "warning");

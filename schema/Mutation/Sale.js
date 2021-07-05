@@ -20,6 +20,8 @@ module.exports.createSale = {
     vehicleType: { type: GraphQLString },
   },
   resolve: (parent, args) => {
+    if(args.location === "null") args.location = null
+    if(args.vehicleType === "null") args.vehicleType = null
     const sale = Sale(args);
     return sale.save({
       userId: args.userId,
