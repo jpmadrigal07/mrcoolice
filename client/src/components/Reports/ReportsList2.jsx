@@ -117,12 +117,13 @@ const ReportsList2 = (props) => {
     "",
     "",
     "",
+    "",
     "SALES QUANTITY",
     "",
     "SALES AMOUNT",
     "",
   ];
-  const tableHeader2 = ["RCPT#", "DR", "SALES INV", "DESC.", "PARTICULARS"];
+  const tableHeader2 = ["DR", "RECEIPT #", "SALES INV", "DESC.", "PARTICULARS"];
   const tableHeader3 = products.map((res) => {
     return `${capitalize(res.iceType)} (${res.weight} ${res.scaleType})`;
   });
@@ -155,7 +156,7 @@ const ReportsList2 = (props) => {
       const tableWithValues = chunkArr.map((res) => {
         const rowValuesFirstPart = tableHeader2.map((res2) => {
           const customer = res[0].customerId;
-          if (res2 === "RCPT#") {
+          if (res2 === "RECEIPT #") {
             return res[0].receiptNumber;
           } else if (res2 === "DR") {
             return res[0].drNumber;
