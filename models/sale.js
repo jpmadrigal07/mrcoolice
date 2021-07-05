@@ -18,6 +18,8 @@ const sale = new Schema({
   },
   birNumber: Number,
   drNumber: Number,
+  location: String,
+  vehicleType: String,
   createdAt: {
     type: Date,
     default: Date.now,

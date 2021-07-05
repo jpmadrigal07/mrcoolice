@@ -23,6 +23,8 @@ function Receipt(props) {
   const receiptNumber = search ? search.replace("?receiptNumber=", "") : "";
   const [birNumber, setBirNumber] = useState("---");
   const [drNumber, setDrNumber] = useState("---");
+  const [location, setLocation] = useState("---");
+  const [vehicleType, setVehicleType] = useState("---");
 
   const getOrders = useQuery("getOrders", async () => {
     const query = `{
@@ -42,7 +44,9 @@ function Receipt(props) {
                   cost
                 },
                 birNumber,
-                drNumber
+                drNumber,
+                location,
+                vehicleType,
                 createdAt
             }
         }`;
@@ -61,7 +65,9 @@ function Receipt(props) {
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
           );
           setBirNumber(firstValue.birNumber ? firstValue.birNumber : "---");
-          setDrNumber(firstValue.drNumber ? firstValue.drNumber : "---")
+          setDrNumber(firstValue.drNumber ? firstValue.drNumber : "---");
+          setLocation(firstValue.location ? firstValue.location : "---");
+          setVehicleType(firstValue.vehicleType ? firstValue.vehicleType : "---");
           const uniqOrder = uniqBy(orders, "productId._id");
           const newData = uniqOrder.map((res) => {
             const foundOrder = orders.filter(
@@ -139,6 +145,10 @@ function Receipt(props) {
                     <span style={{ fontWeight: "700" }}>DR:</span> {drNumber}
                     <br />
                     <span style={{ fontWeight: "700" }}>BIR#:</span> {birNumber}
+                    <br />
+                    <span style={{ fontWeight: "700" }}>LOC:</span> {location}
+                    <br />
+                    <span style={{ fontWeight: "700" }}>VEHICLE:</span> {vehicleType}
                     <br />
                     <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
                     {moment().format("MM/DD/YYYY hh:mm A")}
