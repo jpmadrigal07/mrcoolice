@@ -15,7 +15,9 @@ module.exports.createSale = {
     productId: { type: GraphQLNonNull(GraphQLID) },
     receiptNumber: { type: GraphQLNonNull(GraphQLInt) },
     birNumber: { type: GraphQLInt },
-    drNumber: { type: GraphQLInt }
+    drNumber: { type: GraphQLInt },
+    location: { type: GraphQLString },
+    vehicleType: { type: GraphQLString },
   },
   resolve: (parent, args) => {
     const sale = Sale(args);
@@ -25,7 +27,9 @@ module.exports.createSale = {
       productId: args.productId,
       receiptNumber: args.receiptNumber,
       birNumber: args.birNumber,
-      drNumber: args.drNumber
+      drNumber: args.drNumber,
+      location: args.location,
+      vehicleType: args.vehicleType,
     });
   },
 };
@@ -39,7 +43,9 @@ module.exports.updateSale = {
     productId: { type: GraphQLID },
     receiptNumber: { type: GraphQLInt },
     birNumber: { type: GraphQLInt },
-    drNumber: { type: GraphQLInt }
+    drNumber: { type: GraphQLInt },
+    location: { type: GraphQLString },
+    vehicleType: { type: GraphQLString },
   },
   resolve: (parent, args) => {
     const toUpdate = {};
@@ -48,7 +54,9 @@ module.exports.updateSale = {
     args.productId ? (toUpdate.productId = args.productId) : null;
     args.receiptNumber ? (toUpdate.receiptNumber = args.receiptNumber) : null;
     args.birNumber ? (toUpdate.birNumber = args.birNumber) : null;
-    args.drNumber ? (toUpdate.drNumber = args.drNumber) : null;
+    args.location ? (toUpdate.drNumber = args.drNumber) : null;
+    args.birNumber ? (toUpdate.location = args.location) : null;
+    args.vehicleType ? (toUpdate.vehicleType = args.vehicleType) : null;
     return Sale.findByIdAndUpdate({ _id: args._id }, { $set: toUpdate });
   },
 };

@@ -15,7 +15,7 @@ import {
   Row,
   Grid,
 } from "rsuite";
-import { graphqlUrl } from "../../services/constants";
+import { graphqlUrl, LOCATION_ITEMS, VEHICLE_TYPE_ITEMS } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -42,6 +42,8 @@ const AddOrder2 = (props) => {
   const [selectedCustomerDescription, setSelectedCustomerDescription] = useState(null);
   const token = Cookies.get("sessionToken");
   const [receiptNumber, setReceiptNumber] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [vehicleType, setVehicleType] = useState(null);
 
   useEffect(() => {
     addNewProduct();
@@ -196,6 +198,9 @@ const AddOrder2 = (props) => {
         setSelectedCustomerDescription(null);
         setReceiptNumber(Math.floor(Math.random() * 90000) + 10000);
         setBirNumber("");
+        setDrNumber("");
+        setLocation(null);
+        setVehicleType(null);
         const toUpdate = [];
         setOrder(toUpdate);
         setOrders(toUpdate);
@@ -266,6 +271,8 @@ const AddOrder2 = (props) => {
               userId: autheticatedUserId,
               birNumber: birNumber,
               drNumber: drNumber,
+              location: location,
+              vehicleType: vehicleType,
               receiptNumber,
             };
           }
@@ -280,7 +287,9 @@ const AddOrder2 = (props) => {
                 receiptNumber: ${res.receiptNumber}, 
                 productId: "${res.productId}", 
                 birNumber: ${res.birNumber},
-                drNumber: ${res.drNumber}
+                drNumber: ${res.drNumber},
+                location: "${res.location}",
+                vehicleType: "${res.vehicleType}",
               ) 
               {
                 receiptNumber
@@ -370,6 +379,30 @@ const AddOrder2 = (props) => {
                     onChange={(e) => setDrNumber(e)}
                   />
                 </FormGroup>
+                <FormGroup>
+                  <ControlLabel>
+                    Location
+                  </ControlLabel>
+                  <SelectPicker
+                    value={location}
+                    data={LOCATION_ITEMS}
+                    block
+                    onChange={(e) => setLocation(e)}
+                    disabled={createSales.isLoading}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <ControlLabel>
+                    Vehicle Type
+                  </ControlLabel>
+                  <SelectPicker
+                    value={vehicleType}
+                    data={VEHICLE_TYPE_ITEMS}
+                    block
+                    onChange={(e) => setVehicleType(e)}
+                    disabled={createSales.isLoading}
+                  />
+                </FormGroup>
                 <hr />
                 {order.map((res, i) => {
                   return (
@@ -433,6 +466,8 @@ const AddOrder2 = (props) => {
                 drNumber={drNumber ? drNumber : "---"}
                 birNumber={birNumber ? birNumber : "---"}
                 receiptNumber={receiptNumber ? receiptNumber : "---"}
+                location={location ? location : "---"}
+                vehicleType={vehicleType ? vehicleType : "---"}
               />
             </Panel>
           </Col>
