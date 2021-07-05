@@ -35,6 +35,7 @@ const SaleType = new GraphQLObjectType({
       },
     },
     birNumber: { type: GraphQLInt },
+    drNumber: { type: GraphQLInt },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
     deletedAt: { type: GraphQLString },

@@ -77,6 +77,7 @@ const ReportsList2 = (props) => {
           },
           receiptNumber,
           birNumber,
+          drNumber
           createdAt
         }
       }`;
@@ -157,6 +158,8 @@ const ReportsList2 = (props) => {
           const customer = res[0].customerId;
           if (res2 === "RECEIPT #") {
             return res[0].receiptNumber;
+          } else if (res2 === "DR") {
+            return res[0].drNumber;
           } else if (res2 === "SALES INV") {
             return "";
           } else if (res2 === "DESC.") {

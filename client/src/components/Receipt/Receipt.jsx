@@ -22,6 +22,7 @@ function Receipt(props) {
   const forValues = ["Cashier", "Guard", "Customer", "Production"];
   const receiptNumber = search ? search.replace("?receiptNumber=", "") : "";
   const [birNumber, setBirNumber] = useState("---");
+  const [drNumber, setDrNumber] = useState("---");
 
   const getOrders = useQuery("getOrders", async () => {
     const query = `{
@@ -41,6 +42,7 @@ function Receipt(props) {
                   cost
                 },
                 birNumber,
+                drNumber
                 createdAt
             }
         }`;
@@ -59,6 +61,7 @@ function Receipt(props) {
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
           );
           setBirNumber(firstValue.birNumber ? firstValue.birNumber : "---");
+          setDrNumber(firstValue.drNumber ? firstValue.drNumber : "---")
           const uniqOrder = uniqBy(orders, "productId._id");
           const newData = uniqOrder.map((res) => {
             const foundOrder = orders.filter(
@@ -132,6 +135,8 @@ function Receipt(props) {
                   <p style={{ fontSize: "10px", lineHeight: "13px" }}>
                     <span style={{ fontWeight: "700" }}>RCPT#:</span>{" "}
                     {receiptNumber}
+                    <br />
+                    <span style={{ fontWeight: "700" }}>DR:</span> {drNumber}
                     <br />
                     <span style={{ fontWeight: "700" }}>BIR#:</span> {birNumber}
                     <br />

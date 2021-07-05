@@ -38,6 +38,7 @@ const AddOrder2 = (props) => {
   const [newOrder, setNewOrder] = useState([])
   const [remappedNewOrder, setRemappedNewOrder] = useState([])
   const [birNumber, setBirNumber] = useState(null);
+  const [drNumber, setDrNumber] = useState(null);
   const [selectedCustomerDescription, setSelectedCustomerDescription] = useState(null);
   const token = Cookies.get("sessionToken");
   const [receiptNumber, setReceiptNumber] = useState(null);
@@ -264,6 +265,7 @@ const AddOrder2 = (props) => {
               customerId: selectedCustomerId,
               userId: autheticatedUserId,
               birNumber: birNumber,
+              drNumber: drNumber,
               receiptNumber,
             };
           }
@@ -272,7 +274,15 @@ const AddOrder2 = (props) => {
       if (toInsert.length > 0) {
         toInsert.map((res) => {
           createSales.mutate(`mutation {
-              createSale(customerId: "${res.customerId}", userId: "${res.userId}", receiptNumber: ${res.receiptNumber}, productId: "${res.productId}", birNumber: ${res.birNumber}) {
+              createSale(
+                customerId: "${res.customerId}", 
+                userId: "${res.userId}", 
+                receiptNumber: ${res.receiptNumber}, 
+                productId: "${res.productId}", 
+                birNumber: ${res.birNumber},
+                drNumber: ${res.drNumber}
+              ) 
+              {
                 receiptNumber
             }
           }
@@ -351,6 +361,15 @@ const AddOrder2 = (props) => {
                     onChange={(e) => setBirNumber(e)}
                   />
                 </FormGroup>
+                <FormGroup>
+                  <ControlLabel>DR Number</ControlLabel>
+                  <Input
+                    block
+                    type="number"
+                    value={drNumber}
+                    onChange={(e) => setDrNumber(e)}
+                  />
+                </FormGroup>
                 <hr />
                 {order.map((res, i) => {
                   return (
@@ -411,6 +430,7 @@ const AddOrder2 = (props) => {
                 }
                 remappedNewOrder={remappedNewOrder}
                 orders={orders}
+                drNumber={drNumber ? drNumber : "---"}
                 birNumber={birNumber ? birNumber : "---"}
                 receiptNumber={receiptNumber ? receiptNumber : "---"}
               />
