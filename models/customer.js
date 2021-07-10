@@ -7,6 +7,10 @@ const customer = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  type: {
+    type: String,
+    enum: ["Regular", "Dealer"],
+  },
   description: String,
   createdAt: {
     type: Date,
