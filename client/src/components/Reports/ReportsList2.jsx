@@ -76,6 +76,7 @@ const ReportsList2 = (props) => {
             cost
           },
           receiptNumber,
+          vehicleType,
           birNumber,
           drNumber
           createdAt
@@ -159,11 +160,11 @@ const ReportsList2 = (props) => {
           if (res2 === "RECEIPT #") {
             return res[0].receiptNumber;
           } else if (res2 === "DR") {
-            return res[0].drNumber;
+            return res[0]?.drNumber;
           } else if (res2 === "SALES INV") {
             return "";
           } else if (res2 === "DESC.") {
-            return "";
+            return res[0]?.vehicleType;
           } else if (res2 === "PARTICULARS") {
             return customer ? customer.description : `---`;
           } else {
