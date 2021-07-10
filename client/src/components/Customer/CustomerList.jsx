@@ -24,8 +24,9 @@ const CustomerList = (props) => {
   const getCustomerList = useQuery("getCustomerList", async () => {
     const query = `{
         customers {
-            _id
+            _id,
             description,
+            type,
         }
       }`;
     return await axios.post(graphqlUrl, { query });
@@ -94,6 +95,10 @@ const CustomerList = (props) => {
             <Column flexGrow={100} minWidth={50}>
               <HeaderCell>Customer Description</HeaderCell>
               <Cell dataKey="description" />
+            </Column>
+            <Column flexGrow={100} minWidth={50}>
+              <HeaderCell>Customer Type</HeaderCell>
+              <Cell dataKey="type" />
             </Column>
             <Column flexGrow={100} minWidth={50} fixed="right">
               <HeaderCell>Action</HeaderCell>

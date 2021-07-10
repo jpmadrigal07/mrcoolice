@@ -7,12 +7,14 @@ module.exports.createCustomer = {
   args: {
     userId: { type: GraphQLNonNull(GraphQLID) },
     description: { type: GraphQLNonNull(GraphQLString) },
+    type: { type: GraphQLNonNull(GraphQLString) },
   },
   resolve: (parent, args) => {
     const customer = Customer(args);
     return customer.save({
       userId: args.userId,
       description: args.description,
+      type: args.type,
     });
   },
 };
@@ -28,6 +30,7 @@ module.exports.updateCustomer = {
     const toUpdate = {};
     args.userId ? (toUpdate.userId = args.userId) : null;
     args.description ? (toUpdate.description = args.description) : null;
+    args.type ? (toUpdate.type = args.type) : null;
     return Customer.findByIdAndUpdate({ _id: args._id }, { $set: toUpdate });
   },
 };
