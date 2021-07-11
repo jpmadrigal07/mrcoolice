@@ -5,6 +5,7 @@ const {
   GraphQLNonNull,
   GraphQLInt,
   GraphQLString,
+  GraphQLBoolean,
 } = require("graphql");
 
 module.exports.createSale = {
@@ -18,6 +19,7 @@ module.exports.createSale = {
     drNumber: { type: GraphQLInt },
     location: { type: GraphQLString },
     vehicleType: { type: GraphQLString },
+    discountGiven: { type: GraphQLBoolean },
   },
   resolve: (parent, args) => {
     if(args.location === "null") args.location = null
@@ -32,6 +34,7 @@ module.exports.createSale = {
       drNumber: args.drNumber,
       location: args.location,
       vehicleType: args.vehicleType,
+      discountGiven: args.discountGiven,
     });
   },
 };
@@ -48,6 +51,7 @@ module.exports.updateSale = {
     drNumber: { type: GraphQLInt },
     location: { type: GraphQLString },
     vehicleType: { type: GraphQLString },
+    discountGiven: { type: GraphQLBoolean },
   },
   resolve: (parent, args) => {
     const toUpdate = {};
@@ -59,6 +63,7 @@ module.exports.updateSale = {
     args.location ? (toUpdate.drNumber = args.drNumber) : null;
     args.birNumber ? (toUpdate.location = args.location) : null;
     args.vehicleType ? (toUpdate.vehicleType = args.vehicleType) : null;
+    args.discountGiven ? (toUpdate.discountGiven = args.discountGiven) : null;
     return Sale.findByIdAndUpdate({ _id: args._id }, { $set: toUpdate });
   },
 };

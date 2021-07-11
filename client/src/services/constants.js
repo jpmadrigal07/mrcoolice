@@ -15,3 +15,8 @@ export const VEHICLE_TYPE_ITEMS = [
   { value: "Truck", label: "Truck" },
   { value: "Tricycle", label: "Tricycle" },
 ];
+
+export const YES_NO_ITEMS = [
+  { value: false, label: "No" },
+  { value: true, label: "Yes" },
+];

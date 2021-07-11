@@ -15,7 +15,7 @@ import {
   Row,
   Grid,
 } from "rsuite";
-import { graphqlUrl, LOCATION_ITEMS, VEHICLE_TYPE_ITEMS } from "../../services/constants";
+import { graphqlUrl, LOCATION_ITEMS, VEHICLE_TYPE_ITEMS, YES_NO_ITEMS } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -44,6 +44,7 @@ const AddOrder2 = (props) => {
   const [receiptNumber, setReceiptNumber] = useState(null);
   const [location, setLocation] = useState(null);
   const [vehicleType, setVehicleType] = useState(null);
+  const [discountGiven, setDiscountGiven] = useState(false);
 
   useEffect(() => {
     addNewProduct();
@@ -273,6 +274,7 @@ const AddOrder2 = (props) => {
               drNumber: drNumber,
               location: location,
               vehicleType: vehicleType,
+              discountGiven: discountGiven,
               receiptNumber,
             };
           }
@@ -290,6 +292,7 @@ const AddOrder2 = (props) => {
                 drNumber: ${res.drNumber},
                 location: "${res.location}",
                 vehicleType: "${res.vehicleType}",
+                discountGiven: ${res.discountGiven},
               ) 
               {
                 receiptNumber
@@ -399,6 +402,18 @@ const AddOrder2 = (props) => {
                     data={VEHICLE_TYPE_ITEMS}
                     block
                     onChange={(e) => setVehicleType(e)}
+                    disabled={createSales.isLoading}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <ControlLabel>
+                    Discount Given?
+                  </ControlLabel>
+                  <SelectPicker
+                    value={discountGiven}
+                    data={YES_NO_ITEMS}
+                    block
+                    onChange={(e) => setDiscountGiven(e)}
                     disabled={createSales.isLoading}
                   />
                 </FormGroup>
