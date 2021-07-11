@@ -156,15 +156,19 @@ const ReportsList2 = (props) => {
 
       const tableWithValues = chunkArr.map((res) => {
         const rowValuesFirstPart = tableHeader2.map((res2) => {
-          const customer = res[0].customerId;
+          const customer = res[0]?.customerId;
+          const receiptNumber = res[0]?.receiptNumber;
+          const drNumber = res[0]?.drNumber;
+          const birNumber = res[0]?.birNumber;
+          const vehicleType = res[0]?.vehicleType;
           if (res2 === "RECEIPT #") {
-            return res[0].receiptNumber;
+            return receiptNumber ? receiptNumber : `---`;
           } else if (res2 === "DR") {
-            return res[0]?.drNumber;
+            return drNumber ? drNumber : `---`;
           } else if (res2 === "SALES INV") {
-            return "";
+            return birNumber ? birNumber : `---`;
           } else if (res2 === "DESC.") {
-            return res[0]?.vehicleType;
+            return vehicleType ? vehicleType : `---`;
           } else if (res2 === "PARTICULARS") {
             return customer ? customer.description : `---`;
           } else {
