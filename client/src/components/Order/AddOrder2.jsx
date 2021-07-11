@@ -14,14 +14,14 @@ import {
   Col,
   Row,
   Grid,
+  AutoComplete
 } from "rsuite";
-import { graphqlUrl, LOCATION_ITEMS, VEHICLE_TYPE_ITEMS } from "../../services/constants";
+import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom";
 import ReceiptNew from "../Receipt/ReceiptNew";
-import Receipt from "../Receipt/Receipt";
 
 const AddOrder2 = (props) => {
   const history = useHistory();
@@ -32,18 +32,13 @@ const AddOrder2 = (props) => {
   const [autheticatedUserFullName, setAutheticatedUserFullName] =
     useState(null);
   const [customers, setCustomers] = useState([]);
-  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [inputCustomerDescription, setInputCustomerDescription] = useState(null);
+  const [foundCustomerId, setFoundCustomerId] = useState(null);
   const [products, setProducts] = useState([]);
   const [originalProducts, setOriginalProducts] = useState([]);
-  const [newOrder, setNewOrder] = useState([])
-  const [remappedNewOrder, setRemappedNewOrder] = useState([])
   const [birNumber, setBirNumber] = useState(null);
-  const [drNumber, setDrNumber] = useState(null);
-  const [selectedCustomerDescription, setSelectedCustomerDescription] = useState(null);
   const token = Cookies.get("sessionToken");
   const [receiptNumber, setReceiptNumber] = useState(null);
-  const [location, setLocation] = useState(null);
-  const [vehicleType, setVehicleType] = useState(null);
 
   useEffect(() => {
     addNewProduct();
@@ -117,19 +112,10 @@ const AddOrder2 = (props) => {
   }, [getAutheticatedUserId.data]);
 
   useEffect(() => {
-    if (selectedCustomerId) {
-      const foundCustomers = getCustomers.data.data?.data?.customers;
-      const foundCustomer = foundCustomers.find(
-        (res) => res._id === selectedCustomerId
-      );
-      setSelectedCustomerDescription(foundCustomer.description);
-    }
-  }, [selectedCustomerId]);
-
-  useEffect(() => {
     if (autheticatedUserId) {
       getAutheticatedUserData.refetch();
     }
+
   }, [autheticatedUserId]);
 
   useEffect(() => {
@@ -158,7 +144,7 @@ const AddOrder2 = (props) => {
         const foundCustomers = getCustomers.data.data?.data?.customers;
         const newCustomers = foundCustomers.map((res) => {
           return {
-            value: res._id,
+            value: res.description,
             label: res.description,
           };
         });
@@ -174,13 +160,13 @@ const AddOrder2 = (props) => {
         getProducts.data.data?.data?.products
       ) {
         const foundProducts = getProducts.data.data?.data?.products;
-        const newProducts = foundProducts.map((res) => {
+        const remappedNewProducts = foundProducts.map((res) => {
           return {
             value: res._id,
             label: `${res.weight} ${res.scaleType} ${res.iceType} ice`,
           };
         });
-        setProducts(newProducts);
+        setProducts(remappedNewProducts)
         setOriginalProducts(foundProducts);
       }
     }
@@ -194,13 +180,10 @@ const AddOrder2 = (props) => {
       ) {
         const receiptNumber =
           createSales.data.data?.data?.createSale?.receiptNumber;
-        setSelectedCustomerId(null);
-        setSelectedCustomerDescription(null);
+        setProducts([])
         setReceiptNumber(Math.floor(Math.random() * 90000) + 10000);
         setBirNumber("");
-        setDrNumber("");
-        setLocation(null);
-        setVehicleType(null);
+        setFoundCustomerId("")
         const toUpdate = [];
         setOrder(toUpdate);
         setOrders(toUpdate);
@@ -215,23 +198,6 @@ const AddOrder2 = (props) => {
       triggerTopAlert(true, createSales.error.message, "warning");
     }
   }, [createSales.data]);
-
-  useEffect(() => {
-    if(newOrder.length > 0 && originalProducts.length > 0) {
-      const newOrders = newOrder.map((res) => {
-        const foundProduct = originalProducts.find(element => element._id === res[0].productId)
-        return {
-          _id: res[0].productId,
-          iceType: foundProduct.iceType,
-          weight: foundProduct.weight,
-          scaleType: foundProduct.scaleType,
-          quantity: res.length, 
-          cost: foundProduct.cost * res.length
-        }
-      })
-      setRemappedNewOrder(newOrders)
-    }
-  }, [originalProducts])
 
   useEffect(() => {
     if (order.length > 0 && originalProducts.length > 0) {
@@ -251,9 +217,9 @@ const AddOrder2 = (props) => {
       setOrders(allOrders);
     }
   }, [products, order]);
-  
+
   const submit = () => {
-    if (selectedCustomerId) {
+    if(foundCustomerId) {
       const newOrder = order.map((res) => {
         if (res.productId) {
           const newOrderArr = Array(res.quantity)
@@ -267,12 +233,9 @@ const AddOrder2 = (props) => {
           if (res.productId) {
             return {
               ...res,
-              customerId: selectedCustomerId,
+              customerId: foundCustomerId,
               userId: autheticatedUserId,
               birNumber: birNumber,
-              drNumber: drNumber,
-              location: location,
-              vehicleType: vehicleType,
               receiptNumber,
             };
           }
@@ -286,23 +249,18 @@ const AddOrder2 = (props) => {
                 userId: "${res.userId}", 
                 receiptNumber: ${res.receiptNumber}, 
                 productId: "${res.productId}", 
-                birNumber: ${res.birNumber},
-                drNumber: ${res.drNumber},
-                location: "${res.location}",
-                vehicleType: "${res.vehicleType}",
-              ) 
-              {
+                birNumber: ${res.birNumber}) 
+                {
                 receiptNumber
-              }
-          }`);
+            }
+          }
+          `);
         });
       } else {
         triggerTopAlert(true, "Please complete all the parameters", "warning");
       }
-    } else {
-      triggerTopAlert(true, "Please select customer", "warning");
     }
-  };
+  }
 
   const addNewProduct = () => {
     const toUpdate = order;
@@ -321,6 +279,21 @@ const AddOrder2 = (props) => {
     setOrder([...toUpdate]);
   };
 
+  useEffect(() => {
+    if (inputCustomerDescription) {
+      const foundCustomers = getCustomers.data.data?.data?.customers
+      const foundCustomer = foundCustomers?.find(
+        (res) => res.description?.toLowerCase() === inputCustomerDescription?.toLowerCase()
+      );
+      if (foundCustomer) {
+        setFoundCustomerId(foundCustomer._id);
+      } else {
+        setFoundCustomerId(null);
+      }
+    } else {
+      setFoundCustomerId(null);
+    }
+  }, [inputCustomerDescription]);
 
   return (
     <>
@@ -343,22 +316,16 @@ const AddOrder2 = (props) => {
                   <ControlLabel>
                     Customer<span style={{ color: "red" }}>*</span>
                   </ControlLabel>
-                  <SelectPicker
-                    value={selectedCustomerId}
+                  <AutoComplete
+                    type={"string"}
+                    value={inputCustomerDescription}
                     data={customers}
                     block
                     onChange={(e) => {
-                      setSelectedCustomerId(e);
-                      setSelectedCustomerDescription(e);
+                      setInputCustomerDescription(e);
                     }}
                     disabled={createSales.isLoading}
                   />
-                  <a
-                    style={{ cursor: "pointer" }}
-                    onClick={() => history.push("/customer?tab=addCustomer")}
-                  >
-                    Add new customer?
-                  </a>
                 </FormGroup>
                 <FormGroup>
                   <ControlLabel>BIR Receipt #</ControlLabel>
@@ -367,39 +334,6 @@ const AddOrder2 = (props) => {
                     type="number"
                     value={birNumber}
                     onChange={(e) => setBirNumber(e)}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>DR Number</ControlLabel>
-                  <Input
-                    block
-                    type="number"
-                    value={drNumber}
-                    onChange={(e) => setDrNumber(e)}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>
-                    Location
-                  </ControlLabel>
-                  <SelectPicker
-                    value={location}
-                    data={LOCATION_ITEMS}
-                    block
-                    onChange={(e) => setLocation(e)}
-                    disabled={createSales.isLoading}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>
-                    Vehicle Type
-                  </ControlLabel>
-                  <SelectPicker
-                    value={vehicleType}
-                    data={VEHICLE_TYPE_ITEMS}
-                    block
-                    onChange={(e) => setVehicleType(e)}
-                    disabled={createSales.isLoading}
                   />
                 </FormGroup>
                 <hr />
@@ -453,20 +387,16 @@ const AddOrder2 = (props) => {
             <Panel bordered style={{ marginTop: 10 }} header="Receipt Preview">
               <ReceiptNew
                 cust={
-                  selectedCustomerDescription
-                    ? selectedCustomerDescription
+                  inputCustomerDescription
+                    ? inputCustomerDescription
                     : "---"
                 }
                 staff={
                   autheticatedUserFullName ? autheticatedUserFullName : "---"
                 }
-                remappedNewOrder={remappedNewOrder}
-                orders={orders}
-                drNumber={drNumber ? drNumber : "---"}
+                orders={orders ? orders : updateProduct}
                 birNumber={birNumber ? birNumber : "---"}
                 receiptNumber={receiptNumber ? receiptNumber : "---"}
-                location={location ? location : "---"}
-                vehicleType={vehicleType ? vehicleType : "---"}
               />
             </Panel>
           </Col>
