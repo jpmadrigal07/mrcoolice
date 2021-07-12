@@ -6,6 +6,7 @@ const CustomerType = new GraphQLObjectType({
   name: "Customer",
   fields: () => ({
     _id: { type: GraphQLID },
+    type: { type: GraphQLString },
     userId: {
       type: UserType,
       resolve: async (expense) => {

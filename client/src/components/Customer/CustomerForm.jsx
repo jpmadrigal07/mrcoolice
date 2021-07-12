@@ -8,8 +8,9 @@ import {
   ButtonToolbar,
   Button,
   Row,
+  SelectPicker,
 } from "rsuite";
-import { graphqlUrl } from "../../services/constants";
+import { CUSTOMER_TYPE_ITEMS, graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -27,6 +28,7 @@ const CustomerForm = (props) => {
   // local state
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
   const [customerDescription, setCustomerDescription] = useState(null);
+  const [customerType, setCustomerType] = useState("Regular");
 
   // functions
   const getAutheticatedUserId = useQuery("getAutheticatedUserId", async () => {
@@ -50,7 +52,7 @@ const CustomerForm = (props) => {
     if (customerDescription) {
       createCustomer.mutate(
         `mutation{
-            createCustomer(userId: "${autheticatedUserId}", description: "${customerDescription}") {
+            createCustomer(userId: "${autheticatedUserId}", description: "${customerDescription}", type: "${customerType}") {
                 description
             }
         }`
@@ -65,7 +67,7 @@ const CustomerForm = (props) => {
     if (customerDescription) {
       updateCustomer.mutate(
         `mutation{
-            updateCustomer(_id: "${toUpdateCustomer._id}", userId: "${autheticatedUserId}", description: "${customerDescription}") {
+            updateCustomer(_id: "${toUpdateCustomer._id}", userId: "${autheticatedUserId}", description: "${customerDescription}", type: "${customerType}") {
                 description
             }
         }`
@@ -108,6 +110,7 @@ const CustomerForm = (props) => {
       if (createCustomer.isSuccess) {
         if (!createCustomer.data?.data?.errors) {
           setCustomerDescription("");
+          setCustomerType("Regular")
           createCustomer.reset();
           triggerTopAlert(true, "Successfully added", "success");
         } else {
@@ -150,6 +153,16 @@ const CustomerForm = (props) => {
               block
               onChange={(e) => setCustomerDescription(e)}
               value={customerDescription}
+              disabled={createCustomer.isLoading || updateCustomer.isLoading}
+            />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Customer Type</ControlLabel>
+            <SelectPicker
+              value={customerType}
+              data={CUSTOMER_TYPE_ITEMS}
+              block
+              onChange={(e) => setCustomerType(e)}
               disabled={createCustomer.isLoading || updateCustomer.isLoading}
             />
           </FormGroup>
