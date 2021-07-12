@@ -44,12 +44,56 @@ const AddOrder2 = (props) => {
   const [receiptNumber, setReceiptNumber] = useState(null);
   const [location, setLocation] = useState(null);
   const [vehicleType, setVehicleType] = useState(null);
+  const [orderList, setOrderList] = useState([]);
   const [discountGiven, setDiscountGiven] = useState(false);
+
+  const getOrderList = useQuery(
+    "OrderList",
+    async () => {
+      const query = `{
+        sales {
+          customerId {
+              _id
+              description
+            },
+          _id,
+          productId {
+            _id,
+            iceType,
+            weight,
+            scaleType,
+            cost
+          },
+          receiptNumber,
+          birNumber,
+          drNumber
+        }
+      }`;
+      return await axios.post(graphqlUrl, { query });
+    }
+  );
+
+  useEffect(() => {
+    if (getOrderList.isSuccess) {
+      if (
+        !getOrderList.data.data?.errors &&
+        getOrderList.data.data?.data?.sales
+      ) {
+        const sales = getOrderList.data.data?.data?.sales;
+        setOrderList(sales);
+      }
+    }
+  }, [getOrderList.data]);
 
   useEffect(() => {
     addNewProduct();
-    setReceiptNumber(Math.floor(Math.random() * 90000) + 10000);
-  }, []);
+    if(orderList.length > 0) {
+      const receiptIncrement = orderList[orderList?.length - 1]?.receiptNumber + 1
+      setReceiptNumber(receiptIncrement);
+    } else {
+      setReceiptNumber(1)
+    }
+  }, [orderList]);
 
   const createSales = useMutation((query) => axios.post(graphqlUrl, { query }));
 
@@ -186,7 +230,7 @@ const AddOrder2 = (props) => {
       }
     }
   }, [getProducts.data]);
-
+  
   useEffect(() => {
     if (createSales.isSuccess) {
       if (
@@ -197,7 +241,8 @@ const AddOrder2 = (props) => {
           createSales.data.data?.data?.createSale?.receiptNumber;
         setSelectedCustomerId(null);
         setSelectedCustomerDescription(null);
-        setReceiptNumber(Math.floor(Math.random() * 90000) + 10000);
+        const receiptIncrement = orderList[orderList?.length - 1]?.receiptNumber
+        setReceiptNumber(receiptIncrement);
         setBirNumber("");
         setDrNumber("");
         setLocation(null);
@@ -289,8 +334,8 @@ const AddOrder2 = (props) => {
                 receiptNumber: ${res.receiptNumber}, 
                 productId: "${res.productId}", 
                 birNumber: ${res.birNumber},
-                drNumber: ${res.drNumber},
                 location: "${res.location}",
+                drNumber: ${res.drNumber},
                 vehicleType: "${res.vehicleType}",
                 discountGiven: ${res.discountGiven},
               ) 

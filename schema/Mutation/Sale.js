@@ -14,16 +14,21 @@ module.exports.createSale = {
     userId: { type: GraphQLNonNull(GraphQLID) },
     customerId: { type: GraphQLNonNull(GraphQLID) },
     productId: { type: GraphQLNonNull(GraphQLID) },
-    receiptNumber: { type: GraphQLNonNull(GraphQLInt) },
+    receiptNumber: { type: GraphQLInt },
     birNumber: { type: GraphQLInt },
     drNumber: { type: GraphQLInt },
     location: { type: GraphQLString },
     vehicleType: { type: GraphQLString },
     discountGiven: { type: GraphQLBoolean },
   },
-  resolve: (parent, args) => {
+  resolve: async (parent, args) => {
     if(args.location === "null") args.location = null
     if(args.vehicleType === "null") args.vehicleType = null
+    const findLatestReceiptNumber = await Sale.find({}).sort({ _id: -1});
+    if(!findLatestReceiptNumber) {
+      const nextReceiptNumber = findLatestReceiptNumber[0].receiptNumber + 1
+      args.receiptNumber = nextReceiptNumber === null || nextReceiptNumber === undefined  ? 1 : nextReceiptNumber;
+    };
     const sale = Sale(args);
     return sale.save({
       userId: args.userId,
