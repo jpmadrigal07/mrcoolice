@@ -76,7 +76,9 @@ const ReportsList2 = (props) => {
             cost
           },
           receiptNumber,
+          vehicleType,
           birNumber,
+          drNumber
           createdAt
         }
       }`;
@@ -116,15 +118,18 @@ const ReportsList2 = (props) => {
     "",
     "",
     "",
+    "",
     "SALES QUANTITY",
     "",
     "SALES AMOUNT",
     "",
   ];
-  const tableHeader2 = ["DR", "SALES INV", "DESC.", "PARTICULARS"];
-  const tableHeader3 = products.map((res) => {
-    return `${capitalize(res.iceType)} (${res.weight} ${res.scaleType})`;
-  });
+  const tableHeader2 = ["DR", "RECEIPT #", "SALES INV", "DESC.", "PARTICULARS"];
+  const tableHeader3 = products.map((res, i) => {
+    if(i < 6) {
+      return `${capitalize(res.iceType)} (${res.weight} ${res.scaleType})`;
+    }
+  }).filter(res => res);
 
   const tableCombined = [
     ...tableHeader2,
@@ -153,47 +158,57 @@ const ReportsList2 = (props) => {
 
       const tableWithValues = chunkArr.map((res) => {
         const rowValuesFirstPart = tableHeader2.map((res2) => {
-          const customer = res[0].customerId;
-          if (res2 === "DR") {
-            return res[0].receiptNumber;
+          const customer = res[0]?.customerId;
+          const receiptNumber = res[0]?.receiptNumber;
+          const drNumber = res[0]?.drNumber;
+          const birNumber = res[0]?.birNumber;
+          const vehicleType = res[0]?.vehicleType;
+          if (res2 === "RECEIPT #") {
+            return receiptNumber ? receiptNumber : `---`;
+          } else if (res2 === "DR") {
+            return drNumber ? drNumber : `---`;
           } else if (res2 === "SALES INV") {
-            return "";
+            return birNumber ? birNumber : `---`;
           } else if (res2 === "DESC.") {
-            return "";
+            return vehicleType ? vehicleType : `---`;
           } else if (res2 === "PARTICULARS") {
             return customer ? customer.description : `---`;
           } else {
             return "";
           }
         });
-        const rowValuesSecondPart = products.map((res3) => {
-          const foundProducts = res.filter(
-            (res4) => res4.productId?._id === res3?._id
-          );
-          return foundProducts.length > 0 ? foundProducts.length : "";
-        });
+        const rowValuesSecondPart = products.map((res3, i) => {
+          if(i < 6) {
+            const foundProducts = res.filter(
+              (res4) => res4.productId?._id === res3?._id
+            );
+            return foundProducts.length > 0 ? foundProducts.length : "---";
+          }
+        }).filter(res => res);
         const totalSecondPart = rowValuesSecondPart.reduce(function (a, b) {
-          const num1 = a === "" ? 0 : a;
-          const num2 = b === "" ? 0 : b;
+          const num1 = a === "" || a === "---" ? 0 : a;
+          const num2 = b === "" || b === "---" ? 0 : b;
           return num1 + num2;
         }, 0);
-        const rowValuesThirdPart = products.map((res5) => {
-          const foundProducts = res.filter(
-            (res6) => res6.productId?._id === res5?._id
-          );
-          const costsValue = foundProducts
-            .map((res) => res.productId?.cost)
-            .filter((res2) => res2);
-          const sum = costsValue.reduce(function (a, b) {
-            const num1 = a === "" ? 0 : a;
-            const num2 = b === "" ? 0 : b;
-            return num1 + num2;
-          }, 0);
-          return foundProducts.length > 0 ? sum : "";
-        });
+        const rowValuesThirdPart = products.map((res5, i) => {
+          if(i < 6) {
+            const foundProducts = res.filter(
+              (res6) => res6.productId?._id === res5?._id
+            );
+            const costsValue = foundProducts
+              .map((res) => res.productId?.cost)
+              .filter((res2) => res2);
+            const sum = costsValue.reduce(function (a, b) {
+              const num1 = a === "" || a === "---" ? 0 : a;
+              const num2 = b === "" || b === "---" ? 0 : b;
+              return num1 + num2;
+            }, 0);
+            return foundProducts.length > 0 ? sum : "---";
+          }
+        }).filter(res => res);
         const totalThirdPart = rowValuesThirdPart.reduce(function (a, b) {
-          const num1 = a === "" ? 0 : a;
-          const num2 = b === "" ? 0 : b;
+          const num1 = isNaN(a) ? 0 : a;
+          const num2 = isNaN(b) ? 0 : b;
           return num1 + num2;
         }, 0);
         return [
@@ -212,7 +227,7 @@ const ReportsList2 = (props) => {
     if (tableSales.length > 0) {
       const convertedTableValue = tableSales.map((res) => {
         const toZero = res.map((res2) => {
-          return res2 === "" ? 0 : res2;
+          return res2 === "" || res2 === "---" ? 0 : res2;
         });
         return toZero;
       });

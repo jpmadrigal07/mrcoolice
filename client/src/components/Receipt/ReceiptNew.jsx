@@ -4,7 +4,7 @@ import moment from "moment";
 import "./Receipt.css";
 import uniqBy from 'lodash/uniqBy'
 
-const ReceiptNew = ({ cust, staff, orders, remappedNewOrder, birNumber, receiptNumber }) => {
+const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber, drNumber, location, vehicleType }) => {
   const [remappedOrders, setRemappedOrders] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
   useEffect(() => {
@@ -59,7 +59,13 @@ const ReceiptNew = ({ cust, staff, orders, remappedNewOrder, birNumber, receiptN
           <p style={{ fontSize: "10px", lineHeight: "13px" }}>
             <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
             <br />
+            <span style={{ fontWeight: "700" }}>DR:</span> {drNumber}
+            <br />
             <span style={{ fontWeight: "700" }}>BIR#:</span> {birNumber}
+            <br />
+            <span style={{ fontWeight: "700" }}>LOC:</span> {location}
+            <br />
+            <span style={{ fontWeight: "700" }}>VEHICLE:</span> {vehicleType}
             <br />
             <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
             {moment().format("MM/DD/YYYY hh:mm A")}

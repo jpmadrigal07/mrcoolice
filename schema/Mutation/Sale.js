@@ -5,6 +5,7 @@ const {
   GraphQLNonNull,
   GraphQLInt,
   GraphQLString,
+  GraphQLBoolean,
 } = require("graphql");
 
 module.exports.createSale = {
@@ -13,10 +14,21 @@ module.exports.createSale = {
     userId: { type: GraphQLNonNull(GraphQLID) },
     customerId: { type: GraphQLNonNull(GraphQLID) },
     productId: { type: GraphQLNonNull(GraphQLID) },
-    receiptNumber: { type: GraphQLNonNull(GraphQLInt) },
+    receiptNumber: { type: GraphQLInt },
     birNumber: { type: GraphQLInt },
+    drNumber: { type: GraphQLInt },
+    location: { type: GraphQLString },
+    vehicleType: { type: GraphQLString },
+    discountGiven: { type: GraphQLBoolean },
   },
-  resolve: (parent, args) => {
+  resolve: async (parent, args) => {
+    if(args.location === "null") args.location = null
+    if(args.vehicleType === "null") args.vehicleType = null
+    const findLatestReceiptNumber = await Sale.find({}).sort({ _id: -1});
+    if(!findLatestReceiptNumber) {
+      const nextReceiptNumber = findLatestReceiptNumber[0].receiptNumber + 1
+      args.receiptNumber = nextReceiptNumber === null || nextReceiptNumber === undefined  ? 1 : nextReceiptNumber;
+    };
     const sale = Sale(args);
     return sale.save({
       userId: args.userId,
@@ -24,6 +36,10 @@ module.exports.createSale = {
       productId: args.productId,
       receiptNumber: args.receiptNumber,
       birNumber: args.birNumber,
+      drNumber: args.drNumber,
+      location: args.location,
+      vehicleType: args.vehicleType,
+      discountGiven: args.discountGiven,
     });
   },
 };
@@ -37,6 +53,10 @@ module.exports.updateSale = {
     productId: { type: GraphQLID },
     receiptNumber: { type: GraphQLInt },
     birNumber: { type: GraphQLInt },
+    drNumber: { type: GraphQLInt },
+    location: { type: GraphQLString },
+    vehicleType: { type: GraphQLString },
+    discountGiven: { type: GraphQLBoolean },
   },
   resolve: (parent, args) => {
     const toUpdate = {};
@@ -45,6 +65,10 @@ module.exports.updateSale = {
     args.productId ? (toUpdate.productId = args.productId) : null;
     args.receiptNumber ? (toUpdate.receiptNumber = args.receiptNumber) : null;
     args.birNumber ? (toUpdate.birNumber = args.birNumber) : null;
+    args.location ? (toUpdate.drNumber = args.drNumber) : null;
+    args.birNumber ? (toUpdate.location = args.location) : null;
+    args.vehicleType ? (toUpdate.vehicleType = args.vehicleType) : null;
+    args.discountGiven ? (toUpdate.discountGiven = args.discountGiven) : null;
     return Sale.findByIdAndUpdate({ _id: args._id }, { $set: toUpdate });
   },
 };

@@ -3,6 +3,7 @@ const {
   GraphQLID,
   GraphQLString,
   GraphQLInt,
+  GraphQLBoolean,
 } = require("graphql");
 const UserType = require("./User");
 const CustomerType = require("./Customer");
@@ -35,6 +36,10 @@ const SaleType = new GraphQLObjectType({
       },
     },
     birNumber: { type: GraphQLInt },
+    drNumber: { type: GraphQLInt },
+    location: { type: GraphQLString },
+    vehicleType: { type: GraphQLString },
+    discountGiven: { type: GraphQLBoolean },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
     deletedAt: { type: GraphQLString },
