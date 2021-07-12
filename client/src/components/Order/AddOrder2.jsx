@@ -31,8 +31,11 @@ const AddOrder2 = (props) => {
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
   const [autheticatedUserFullName, setAutheticatedUserFullName] =
     useState(null);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [inputCustomerDescription, setInputCustomerDescription] = useState(null);
+  const [drNumber, setDrNumber] = useState(null);
+  const [selectedCustomerDescription, setSelectedCustomerDescription] = useState(null);
   const [foundCustomerId, setFoundCustomerId] = useState(null);
   const [products, setProducts] = useState([]);
   const [originalProducts, setOriginalProducts] = useState([]);
@@ -83,7 +86,9 @@ const AddOrder2 = (props) => {
   }, [getOrderList.data]);
 
   useEffect(() => {
-    addNewProduct();
+    if(order.length === 0) {
+      addNewProduct();
+    }
     if(orderList.length > 0) {
       const receiptIncrement = orderList[orderList?.length - 1]?.receiptNumber + 1
       setReceiptNumber(receiptIncrement);
@@ -232,7 +237,12 @@ const AddOrder2 = (props) => {
         const receiptIncrement = orderList[orderList?.length - 1]?.receiptNumber
         setReceiptNumber(receiptIncrement);
         setBirNumber("");
-        setFoundCustomerId("")
+        setFoundCustomerId("");
+        setDrNumber("");
+        setLocation(null);
+        setVehicleType(null);
+        setDiscountGiven(false);
+        setInputCustomerDescription("");
         const toUpdate = [];
         setOrder(toUpdate);
         setOrders(toUpdate);
@@ -268,7 +278,7 @@ const AddOrder2 = (props) => {
   }, [products, order]);
 
   const submit = () => {
-    if(foundCustomerId) {
+    if(inputCustomerDescription) {
       const newOrder = order.map((res) => {
         if (res.productId) {
           const newOrderArr = Array(res.quantity)
@@ -295,6 +305,7 @@ const AddOrder2 = (props) => {
         })
         .filter((res2) => res2);
       if (toInsert.length > 0) {
+        console.log('asdasd', toInsert)
         toInsert.map((res) => {
           createSales.mutate(`mutation {
               createSale(
@@ -317,6 +328,8 @@ const AddOrder2 = (props) => {
       } else {
         triggerTopAlert(true, "Please complete all the parameters", "warning");
       }
+    } else {
+      triggerTopAlert(true, "Please select customer", "warning");
     }
   }
 
@@ -500,6 +513,9 @@ const AddOrder2 = (props) => {
                 orders={orders ? orders : updateProduct}
                 birNumber={birNumber ? birNumber : "---"}
                 receiptNumber={receiptNumber ? receiptNumber : "---"}
+                location={location ? location : "---"}
+                vehicleType={vehicleType ? vehicleType : "---"}
+                drNumber={drNumber ? drNumber : "---"}
               />
             </Panel>
           </Col>
