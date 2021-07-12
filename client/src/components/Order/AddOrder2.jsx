@@ -259,6 +259,8 @@ const AddOrder2 = (props) => {
       } else {
         triggerTopAlert(true, "Please complete all the parameters", "warning");
       }
+    } else {
+      triggerTopAlert(true, `Customer ${inputCustomerDescription} is not yet registered`, "warning");
     }
   }
 
