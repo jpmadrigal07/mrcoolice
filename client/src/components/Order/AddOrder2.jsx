@@ -16,7 +16,7 @@ import {
   Grid,
   AutoComplete
 } from "rsuite";
-import { graphqlUrl } from "../../services/constants";
+import { graphqlUrl, LOCATION_ITEMS, VEHICLE_TYPE_ITEMS, YES_NO_ITEMS } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -39,11 +39,58 @@ const AddOrder2 = (props) => {
   const [birNumber, setBirNumber] = useState(null);
   const token = Cookies.get("sessionToken");
   const [receiptNumber, setReceiptNumber] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [vehicleType, setVehicleType] = useState(null);
+  const [orderList, setOrderList] = useState([]);
+  const [discountGiven, setDiscountGiven] = useState(false);
+
+  const getOrderList = useQuery(
+    "OrderList",
+    async () => {
+      const query = `{
+        sales {
+          customerId {
+              _id
+              description
+            },
+          _id,
+          productId {
+            _id,
+            iceType,
+            weight,
+            scaleType,
+            cost
+          },
+          receiptNumber,
+          birNumber,
+          drNumber
+        }
+      }`;
+      return await axios.post(graphqlUrl, { query });
+    }
+  );
+
+  useEffect(() => {
+    if (getOrderList.isSuccess) {
+      if (
+        !getOrderList.data.data?.errors &&
+        getOrderList.data.data?.data?.sales
+      ) {
+        const sales = getOrderList.data.data?.data?.sales;
+        setOrderList(sales);
+      }
+    }
+  }, [getOrderList.data]);
 
   useEffect(() => {
     addNewProduct();
-    setReceiptNumber(Math.floor(Math.random() * 90000) + 10000);
-  }, []);
+    if(orderList.length > 0) {
+      const receiptIncrement = orderList[orderList?.length - 1]?.receiptNumber + 1
+      setReceiptNumber(receiptIncrement);
+    } else {
+      setReceiptNumber(1)
+    }
+  }, [orderList]);
 
   const createSales = useMutation((query) => axios.post(graphqlUrl, { query }));
 
@@ -171,7 +218,7 @@ const AddOrder2 = (props) => {
       }
     }
   }, [getProducts.data]);
-
+  
   useEffect(() => {
     if (createSales.isSuccess) {
       if (
@@ -180,8 +227,10 @@ const AddOrder2 = (props) => {
       ) {
         const receiptNumber =
           createSales.data.data?.data?.createSale?.receiptNumber;
-        setProducts([])
-        setReceiptNumber(Math.floor(Math.random() * 90000) + 10000);
+        setSelectedCustomerId(null);
+        setSelectedCustomerDescription(null);
+        const receiptIncrement = orderList[orderList?.length - 1]?.receiptNumber
+        setReceiptNumber(receiptIncrement);
         setBirNumber("");
         setFoundCustomerId("")
         const toUpdate = [];
@@ -236,6 +285,10 @@ const AddOrder2 = (props) => {
               customerId: foundCustomerId,
               userId: autheticatedUserId,
               birNumber: birNumber,
+              drNumber: drNumber,
+              location: location,
+              vehicleType: vehicleType,
+              discountGiven: discountGiven,
               receiptNumber,
             };
           }
@@ -249,8 +302,13 @@ const AddOrder2 = (props) => {
                 userId: "${res.userId}", 
                 receiptNumber: ${res.receiptNumber}, 
                 productId: "${res.productId}", 
-                birNumber: ${res.birNumber}) 
-                {
+                birNumber: ${res.birNumber},
+                location: "${res.location}",
+                drNumber: ${res.drNumber},
+                vehicleType: "${res.vehicleType}",
+                discountGiven: ${res.discountGiven},
+              ) 
+              {
                 receiptNumber
             }
           }
@@ -334,6 +392,51 @@ const AddOrder2 = (props) => {
                     type="number"
                     value={birNumber}
                     onChange={(e) => setBirNumber(e)}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <ControlLabel>DR Number</ControlLabel>
+                  <Input
+                    block
+                    type="number"
+                    value={drNumber}
+                    onChange={(e) => setDrNumber(e)}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <ControlLabel>
+                    Location
+                  </ControlLabel>
+                  <SelectPicker
+                    value={location}
+                    data={LOCATION_ITEMS}
+                    block
+                    onChange={(e) => setLocation(e)}
+                    disabled={createSales.isLoading}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <ControlLabel>
+                    Vehicle Type
+                  </ControlLabel>
+                  <SelectPicker
+                    value={vehicleType}
+                    data={VEHICLE_TYPE_ITEMS}
+                    block
+                    onChange={(e) => setVehicleType(e)}
+                    disabled={createSales.isLoading}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <ControlLabel>
+                    Discount Given?
+                  </ControlLabel>
+                  <SelectPicker
+                    value={discountGiven}
+                    data={YES_NO_ITEMS}
+                    block
+                    onChange={(e) => setDiscountGiven(e)}
+                    disabled={createSales.isLoading}
                   />
                 </FormGroup>
                 <hr />
