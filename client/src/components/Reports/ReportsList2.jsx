@@ -125,6 +125,8 @@ const ReportsList2 = (props) => {
     "",
   ];
   const tableHeader2 = ["DR", "RECEIPT #", "SALES INV", "DESC.", "PARTICULARS"];
+  const fixedProduct = [{ iceType: "tube", weight: 50 }, { iceType: "tube", weight: 30 }, { iceType: "tube", weight: 5 }, { iceType: "tube", weight: 4 }, { iceType: "tube", weight: 2 }, { iceType: "crushed", weight: 30 }, { iceType: "crushed", weight: 4 }]
+  const fixedProductText = ["Tube (50 kgs)", "Tube (30 kgs)", "Tube (5 kgs)", "Tube (4 kgs)", "Tube (2 kgs)", "Crushed (30 kgs)", "Crushed (4 kgs)"]
   const tableHeader3 = products.map((res, i) => {
     if(i < 6) {
       return `${capitalize(res.iceType)} (${res.weight} ${res.scaleType})`;
@@ -133,9 +135,9 @@ const ReportsList2 = (props) => {
 
   const tableCombined = [
     ...tableHeader2,
-    ...tableHeader3,
+    ...fixedProductText,
     "TOTAL",
-    ...tableHeader3,
+    ...fixedProductText,
     "TOTAL AMNT",
   ];
 
@@ -177,34 +179,30 @@ const ReportsList2 = (props) => {
             return "";
           }
         });
-        const rowValuesSecondPart = products.map((res3, i) => {
-          if(i < 6) {
-            const foundProducts = res.filter(
-              (res4) => res4.productId?._id === res3?._id
-            );
-            return foundProducts.length > 0 ? foundProducts.length : "---";
-          }
+        const rowValuesSecondPart = fixedProduct.map((res3) => {
+          const foundProducts = res.filter(
+            (res4) => res4.productId?.weight === res3?.weight && res4.productId?.iceType === res3?.iceType
+          );
+          return foundProducts.length > 0 ? foundProducts.length : "---";
         }).filter(res => res);
         const totalSecondPart = rowValuesSecondPart.reduce(function (a, b) {
           const num1 = a === "" || a === "---" ? 0 : a;
           const num2 = b === "" || b === "---" ? 0 : b;
           return num1 + num2;
         }, 0);
-        const rowValuesThirdPart = products.map((res5, i) => {
-          if(i < 6) {
-            const foundProducts = res.filter(
-              (res6) => res6.productId?._id === res5?._id
-            );
-            const costsValue = foundProducts
-              .map((res) => res.productId?.cost)
-              .filter((res2) => res2);
-            const sum = costsValue.reduce(function (a, b) {
-              const num1 = a === "" || a === "---" ? 0 : a;
-              const num2 = b === "" || b === "---" ? 0 : b;
-              return num1 + num2;
-            }, 0);
-            return foundProducts.length > 0 ? sum : "---";
-          }
+        const rowValuesThirdPart = fixedProduct.map((res5, i) => {
+          const foundProducts = res.filter(
+            (res6) => res6.productId?.weight === res5?.weight && res6.productId?.iceType === res5?.iceType
+          );
+          const costsValue = foundProducts
+            .map((res) => res.productId?.cost)
+            .filter((res2) => res2);
+          const sum = costsValue.reduce(function (a, b) {
+            const num1 = a === "" || a === "---" ? 0 : a;
+            const num2 = b === "" || b === "---" ? 0 : b;
+            return num1 + num2;
+          }, 0);
+          return foundProducts.length > 0 ? sum : "---";
         }).filter(res => res);
         const totalThirdPart = rowValuesThirdPart.reduce(function (a, b) {
           const num1 = isNaN(a) ? 0 : a;
@@ -424,7 +422,7 @@ const ReportsList2 = (props) => {
           {tableHeader1.map((res) => {
             if (res !== "") {
               return (
-                <td colSpan={tableHeader3.length}>
+                <td colSpan={fixedProduct.length}>
                   <strong>{res}</strong>
                 </td>
               );

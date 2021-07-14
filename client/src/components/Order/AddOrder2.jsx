@@ -14,9 +14,14 @@ import {
   Col,
   Row,
   Grid,
-  AutoComplete
+  AutoComplete,
 } from "rsuite";
-import { graphqlUrl, LOCATION_ITEMS, VEHICLE_TYPE_ITEMS, YES_NO_ITEMS } from "../../services/constants";
+import {
+  graphqlUrl,
+  LOCATION_ITEMS,
+  VEHICLE_TYPE_ITEMS,
+  YES_NO_ITEMS,
+} from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -33,11 +38,14 @@ const AddOrder2 = (props) => {
     useState(null);
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [customers, setCustomers] = useState([]);
-  const [inputCustomerDescription, setInputCustomerDescription] = useState(null);
+  const [inputCustomerDescription, setInputCustomerDescription] =
+    useState(null);
   const [drNumber, setDrNumber] = useState(null);
-  const [selectedCustomerDescription, setSelectedCustomerDescription] = useState(null);
+  const [selectedCustomerDescription, setSelectedCustomerDescription] =
+    useState(null);
   const [foundCustomerId, setFoundCustomerId] = useState(null);
   const [products, setProducts] = useState([]);
+  const [productsWithId, setProductsWithId] = useState([]);
   const [originalProducts, setOriginalProducts] = useState([]);
   const [birNumber, setBirNumber] = useState(null);
   const token = Cookies.get("sessionToken");
@@ -45,12 +53,9 @@ const AddOrder2 = (props) => {
   const [location, setLocation] = useState(null);
   const [vehicleType, setVehicleType] = useState(null);
   const [orderList, setOrderList] = useState([]);
-  const [discountGiven, setDiscountGiven] = useState(false);
 
-  const getOrderList = useQuery(
-    "OrderList",
-    async () => {
-      const query = `{
+  const getOrderList = useQuery("OrderList", async () => {
+    const query = `{
         sales {
           customerId {
               _id
@@ -69,9 +74,8 @@ const AddOrder2 = (props) => {
           drNumber
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
-    }
-  );
+    return await axios.post(graphqlUrl, { query });
+  });
 
   useEffect(() => {
     if (getOrderList.isSuccess) {
@@ -86,14 +90,15 @@ const AddOrder2 = (props) => {
   }, [getOrderList.data]);
 
   useEffect(() => {
-    if(order.length === 0) {
+    if (order.length === 0) {
       addNewProduct();
     }
-    if(orderList.length > 0) {
-      const receiptIncrement = orderList[orderList?.length - 1]?.receiptNumber + 1
+    if (orderList.length > 0) {
+      const receiptIncrement =
+        orderList[orderList?.length - 1]?.receiptNumber + 1;
       setReceiptNumber(receiptIncrement);
     } else {
-      setReceiptNumber(1)
+      setReceiptNumber(1);
     }
   }, [orderList]);
 
@@ -167,7 +172,6 @@ const AddOrder2 = (props) => {
     if (autheticatedUserId) {
       getAutheticatedUserData.refetch();
     }
-
   }, [autheticatedUserId]);
 
   useEffect(() => {
@@ -214,16 +218,23 @@ const AddOrder2 = (props) => {
         const foundProducts = getProducts.data.data?.data?.products;
         const remappedNewProducts = foundProducts.map((res) => {
           return {
-            value: res._id,
-            label: `${res.weight} ${res.scaleType} ${res.iceType} ice`,
+            value: `(P${res.cost}) - ${res.weight} ${res.scaleType} ${res.iceType} ice`,
+            label: `(P${res.cost}) - ${res.weight} ${res.scaleType} ${res.iceType} ice`,
           };
         });
-        setProducts(remappedNewProducts)
+        const remappedNewProductsWithId = foundProducts.map((res) => {
+          return {
+            id: res._id,
+            label: `(P${res.cost}) - ${res.weight} ${res.scaleType} ${res.iceType} ice`,
+          };
+        });
+        setProducts(remappedNewProducts);
+        setProductsWithId(remappedNewProductsWithId);
         setOriginalProducts(foundProducts);
       }
     }
   }, [getProducts.data]);
-  
+
   useEffect(() => {
     if (createSales.isSuccess) {
       if (
@@ -234,14 +245,14 @@ const AddOrder2 = (props) => {
           createSales.data.data?.data?.createSale?.receiptNumber;
         setSelectedCustomerId(null);
         setSelectedCustomerDescription(null);
-        const receiptIncrement = orderList[orderList?.length - 1]?.receiptNumber
+        const receiptIncrement =
+          orderList[orderList?.length - 1]?.receiptNumber;
         setReceiptNumber(receiptIncrement);
         setBirNumber("");
         setFoundCustomerId("");
         setDrNumber("");
         setLocation(null);
         setVehicleType(null);
-        setDiscountGiven(false);
         setInputCustomerDescription("");
         const toUpdate = [];
         setOrder(toUpdate);
@@ -260,14 +271,19 @@ const AddOrder2 = (props) => {
 
   useEffect(() => {
     if (order.length > 0 && originalProducts.length > 0) {
-      const newOrder = order.map((res) => {
-        if (res.productId) {
-          const newOrderArr = Array(res.quantity ? res.quantity : 1)
-          newOrderArr.fill({ productId: res.productId })
-          return newOrderArr
-        }
-      }).filter(res => res)
-      const flattenNewOrder = newOrder.reduce((acc, curVal) => acc.concat(curVal), []);
+      const newOrder = order
+        .map((res) => {
+          if (res.productId) {
+            const newOrderArr = Array(res.quantity ? res.quantity : 1);
+            newOrderArr.fill({ productId: res.productId });
+            return newOrderArr;
+          }
+        })
+        .filter((res) => res);
+      const flattenNewOrder = newOrder.reduce(
+        (acc, curVal) => acc.concat(curVal),
+        []
+      );
       const allOrders = flattenNewOrder
         .map((res) => {
           return originalProducts.find((res2) => res.productId === res2._id);
@@ -278,15 +294,20 @@ const AddOrder2 = (props) => {
   }, [products, order]);
 
   const submit = () => {
-    if(foundCustomerId) {
-      const newOrder = order.map((res) => {
-        if (res.productId) {
-          const newOrderArr = Array(res.quantity)
-          newOrderArr.fill({ productId: res.productId })
-          return newOrderArr
-        }
-      }).filter(res => res);
-      const flattenNewOrder = newOrder.reduce((acc, curVal) => acc.concat(curVal), []);
+    if (foundCustomerId) {
+      const newOrder = order
+        .map((res) => {
+          if (res.productId) {
+            const newOrderArr = Array(res.quantity);
+            newOrderArr.fill({ productId: res.productId });
+            return newOrderArr;
+          }
+        })
+        .filter((res) => res);
+      const flattenNewOrder = newOrder.reduce(
+        (acc, curVal) => acc.concat(curVal),
+        []
+      );
       const toInsert = flattenNewOrder
         .map((res) => {
           if (res.productId) {
@@ -298,14 +319,12 @@ const AddOrder2 = (props) => {
               drNumber: drNumber,
               location: location,
               vehicleType: vehicleType,
-              discountGiven: discountGiven,
               receiptNumber,
             };
           }
         })
         .filter((res2) => res2);
       if (toInsert.length > 0) {
-        console.log('asdasd', toInsert)
         toInsert.map((res) => {
           createSales.mutate(`mutation {
               createSale(
@@ -317,7 +336,6 @@ const AddOrder2 = (props) => {
                 location: "${res.location}",
                 drNumber: ${res.drNumber},
                 vehicleType: "${res.vehicleType}",
-                discountGiven: ${res.discountGiven},
               ) 
               {
                 receiptNumber
@@ -331,7 +349,7 @@ const AddOrder2 = (props) => {
     } else {
       triggerTopAlert(true, "Please select a registered customer", "warning");
     }
-  }
+  };
 
   const addNewProduct = () => {
     const toUpdate = order;
@@ -339,8 +357,9 @@ const AddOrder2 = (props) => {
   };
 
   const updateProduct = (value, index) => {
+    const product = productsWithId.find(res => res.label === value);
     const toUpdate = order;
-    toUpdate[index].productId = value;
+    toUpdate[index].productId = product?.id;
     setOrder([...toUpdate]);
   };
 
@@ -352,9 +371,11 @@ const AddOrder2 = (props) => {
 
   useEffect(() => {
     if (inputCustomerDescription) {
-      const foundCustomers = getCustomers.data.data?.data?.customers
+      const foundCustomers = getCustomers.data.data?.data?.customers;
       const foundCustomer = foundCustomers?.find(
-        (res) => res.description?.toLowerCase() === inputCustomerDescription?.toLowerCase()
+        (res) =>
+          res.description?.toLowerCase() ===
+          inputCustomerDescription?.toLowerCase()
       );
       if (foundCustomer) {
         setFoundCustomerId(foundCustomer._id);
@@ -417,9 +438,7 @@ const AddOrder2 = (props) => {
                   />
                 </FormGroup>
                 <FormGroup>
-                  <ControlLabel>
-                    Location
-                  </ControlLabel>
+                  <ControlLabel>Location</ControlLabel>
                   <SelectPicker
                     value={location}
                     data={LOCATION_ITEMS}
@@ -429,26 +448,12 @@ const AddOrder2 = (props) => {
                   />
                 </FormGroup>
                 <FormGroup>
-                  <ControlLabel>
-                    Vehicle Type
-                  </ControlLabel>
+                  <ControlLabel>Vehicle Type</ControlLabel>
                   <SelectPicker
                     value={vehicleType}
                     data={VEHICLE_TYPE_ITEMS}
                     block
                     onChange={(e) => setVehicleType(e)}
-                    disabled={createSales.isLoading}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>
-                    Discount Given?
-                  </ControlLabel>
-                  <SelectPicker
-                    value={discountGiven}
-                    data={YES_NO_ITEMS}
-                    block
-                    onChange={(e) => setDiscountGiven(e)}
                     disabled={createSales.isLoading}
                   />
                 </FormGroup>
@@ -458,7 +463,14 @@ const AddOrder2 = (props) => {
                     <>
                       <FormGroup>
                         <ControlLabel>Product {i + 1}</ControlLabel>
-                        <SelectPicker
+                        {/* <SelectPicker
+                          data={products}
+                          block
+                          onChange={(e) => updateProduct(e, i)}
+                          disabled={createSales.isLoading}
+                        /> */}
+                        <AutoComplete
+                          type={"string"}
                           data={products}
                           block
                           onChange={(e) => updateProduct(e, i)}
@@ -503,9 +515,7 @@ const AddOrder2 = (props) => {
             <Panel bordered style={{ marginTop: 10 }} header="Receipt Preview">
               <ReceiptNew
                 cust={
-                  inputCustomerDescription
-                    ? inputCustomerDescription
-                    : "---"
+                  inputCustomerDescription ? inputCustomerDescription : "---"
                 }
                 staff={
                   autheticatedUserFullName ? autheticatedUserFullName : "---"
