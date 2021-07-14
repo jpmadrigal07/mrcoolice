@@ -20,7 +20,6 @@ const sale = new Schema({
   drNumber: Number,
   location: String,
   vehicleType: String,
-  discountGiven: Boolean,
   createdAt: {
     type: Date,
     default: Date.now,
