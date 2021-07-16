@@ -1,11 +1,21 @@
 const Sales = require("../../models/sale");
 const SalesType = require("../typeDefs/Sale");
-const { GraphQLID, GraphQLList, GraphQLInt } = require("graphql");
+const { GraphQLID, GraphQLList, GraphQLInt, GraphQLString } = require("graphql");
 
 module.exports.getAllSale = {
   type: GraphQLList(SalesType),
   resolve: (parent) => {
     return Sales.find();
+  },
+};
+
+module.exports.getAllSaleByUser = {
+  type: GraphQLList(SalesType),
+  args: {
+    userId: { type: GraphQLString },
+  },
+  resolve: (parent, { userId }) => {
+    return Sales.find({ userId });
   },
 };
 
