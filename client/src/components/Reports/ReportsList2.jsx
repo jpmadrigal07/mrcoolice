@@ -62,7 +62,7 @@ const ReportsList2 = (props) => {
 
   const getOrderList = useQuery("OrderList", async () => {
     const query = `{
-        sales {
+      salesByUser(userId: "${autheticatedUserId}") {
           customerId {
               _id
               description
@@ -78,18 +78,18 @@ const ReportsList2 = (props) => {
           receiptNumber,
           vehicleType,
           birNumber,
-          drNumber
+          drNumber,
           createdAt
         }
       }`;
     return await axios.post(graphqlUrl, { query });
   },{
-    refetchInterval: 3000
+    enabled: false,
   });
 
   const getExpenseList = useQuery("getExpenseList", async () => {
     const query = `{
-        expenses {
+        expenseByUser(userId: "${autheticatedUserId}") {
             _id,
             name,
             cost,
@@ -98,6 +98,8 @@ const ReportsList2 = (props) => {
         }
       }`;
     return await axios.post(graphqlUrl, { query });
+  },{
+    enabled: false,
   });
 
   const getProductList = useQuery("getProductList", async () => {
@@ -320,6 +322,8 @@ const ReportsList2 = (props) => {
   useEffect(() => {
     if (autheticatedUserId) {
       getAutheticatedUserData.refetch();
+      getOrderList.refetch();
+      getExpenseList.refetch();
     }
   }, [autheticatedUserId]);
 
@@ -344,9 +348,9 @@ const ReportsList2 = (props) => {
     if (getOrderList.isSuccess) {
       if (
         !getOrderList.data.data?.errors &&
-        getOrderList.data.data?.data?.sales
+        getOrderList.data.data?.data?.salesByUser
       ) {
-        const dataDB = getOrderList.data.data?.data?.sales;
+        const dataDB = getOrderList.data.data?.data?.salesByUser;
         setSales(
           dataDB.filter(
             (res) =>
@@ -365,9 +369,9 @@ const ReportsList2 = (props) => {
     if (getExpenseList.isSuccess) {
       if (
         !getExpenseList.data.data?.errors &&
-        getExpenseList.data.data?.data?.expenses
+        getExpenseList.data.data?.data?.expenseByUser
       ) {
-        const dataDB = getExpenseList.data.data?.data?.expenses;
+        const dataDB = getExpenseList.data.data?.data?.expenseByUser;
         setExpenses(
           dataDB.filter(
             (res) =>
@@ -496,7 +500,9 @@ const ReportsList2 = (props) => {
           return (
             <tr>
               {tableHeaderExpense.map((res2, i) => {
-                if (i === 2) {
+                if (i === 0) {
+                  return <td>{moment.unix(res.createdAt / 1000).format("MM/DD/YYYY")}</td>;
+                } else if (i === 2) {
                   return <td>{res.vendor ? res.vendor : "---"}</td>;
                 } else if (i === 5) {
                   return <td>{res.name}</td>;

@@ -3,9 +3,9 @@ const { GraphQLSchema, GraphQLObjectType } = require("graphql");
 
 // Query Functions
 const { getAllUser, getUser } = require("./Query/User");
-const { getAllSale, getSale, getAllSaleByReceiptNumber } = require("./Query/Sale");
+const { getAllSale, getSale, getAllSaleByReceiptNumber, getAllSaleByUser } = require("./Query/Sale");
 const { getAllCustomer, getCustomer } = require("./Query/Customer");
-const { getAllExpense, getExpense } = require("./Query/Expense");
+const { getAllExpense, getExpense, getAllExpenseByUser } = require("./Query/Expense");
 const { verifyToken } = require("./Query/Authentication");
 const { updateCode } = require("./Query/UpdateCode");
 const { getAllProduct, getProduct } = require("./Query/Product");
@@ -39,7 +39,9 @@ const Query = new GraphQLObjectType({
     customer: getCustomer,
     expenses: getAllExpense,
     expense: getExpense,
+    expenseByUser: getAllExpenseByUser,
     sales: getAllSale,
+    salesByUser: getAllSaleByUser,
     salesByReceiptNumber: getAllSaleByReceiptNumber,
     sale: getSale,
     products: getAllProduct,
