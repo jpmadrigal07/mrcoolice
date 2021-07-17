@@ -26,6 +26,7 @@ export const REPORTS_ITEMS = [
   { value: "Sales", label: "Sales" },
   { value: "Expenses", label: "Expenses" },
   { value: "Total Kilogram", label: "Total Kilogram" },
+  { value: "Cash Breakdown", label: "Cash Breakdown" },
 ];
 
 export const DATA_OWNER_ITEMS = [

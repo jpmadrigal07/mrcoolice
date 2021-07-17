@@ -11,6 +11,7 @@ import Reports from "./pages/Reports/Reports";
 import Reports2 from "./pages/Reports/Reports2";
 import Receipt from "./pages/Receipt/Receipt";
 import Product from "./pages/Product/Product";
+import Cash from "./pages/Cash/Cash";
 import { Alert } from "rsuite";
 import { connect } from "react-redux";
 import { triggerTopAlert } from "./actions/topAlertActions";
@@ -39,8 +40,9 @@ function App(props) {
         <Route path="/customer" exact render={() => <Customer />} />
         <Route path="/expenses" exact render={() => <Expenses />} />
         <Route path="/staff" exact render={() => <Staff />} />
-        <Route path="/reports" exact render={() => <Reports />} />
         <Route path="/product" exact render={() => <Product />} />
+        <Route path="/cash" exact render={() => <Cash />} />
+        <Route path="/reports" exact render={() => <Reports />} />
         <Route path="/receipt" exact render={() => <Receipt />} />
         <Route path="/print-report" exact render={() => <Reports2 />} />
       </>
