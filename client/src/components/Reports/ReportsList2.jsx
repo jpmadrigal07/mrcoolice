@@ -18,6 +18,8 @@ const ReportsList2 = (props) => {
   const [totalResult, setTotalResult] = useState([]);
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
   const [products, setProducts] = useState([]);
+  const [totalKiloGram, setTotalKiloGram] = useState([]);
+  const [totalKiloGrandTotal, setTotalKiloGrandTotal] = useState([]);
   const [autheticatedUserFullName, setAutheticatedUserFullName] =
     useState(null);
   const [expenses, setExpenses] = useState([]);
@@ -128,12 +130,7 @@ const ReportsList2 = (props) => {
   ];
   const tableHeader2 = ["DR", "RECEIPT #", "SALES INV", "DESC.", "PARTICULARS"];
   const fixedProduct = [{ iceType: "tube", weight: 50 }, { iceType: "tube", weight: 30 }, { iceType: "tube", weight: 5 }, { iceType: "tube", weight: 4 }, { iceType: "tube", weight: 2 }, { iceType: "crushed", weight: 30 }, { iceType: "crushed", weight: 4 }]
-  const fixedProductText = ["Tube (50 kgs)", "Tube (30 kgs)", "Tube (5 kgs)", "Tube (4 kgs)", "Tube (2 kgs)", "Crushed (30 kgs)", "Crushed (4 kgs)"]
-  const tableHeader3 = products.map((res, i) => {
-    if(i < 6) {
-      return `${capitalize(res.iceType)} (${res.weight} ${res.scaleType})`;
-    }
-  }).filter(res => res);
+  const fixedProductText = ["Tube (50 kg)", "Tube (30 kg)", "Tube (5 kg)", "Tube (4 kg)", "Tube (2 kg)", "Crushed (30 kg)", "Crushed (4 kg)"]
 
   const tableCombined = [
     ...tableHeader2,
@@ -220,6 +217,25 @@ const ReportsList2 = (props) => {
         ];
       });
       setTableSales(tableWithValues);
+      const salesProducts = sales.map((res) => res.productId);
+      const totalKiloGramData = fixedProductText.map((res) => {
+        const totalData = salesProducts.filter((res2) => `${res2?.iceType} (${res2?.weight} ${res2?.scaleType})` === res.toLocaleLowerCase());
+        return {
+          particulars: res,
+          totalQty: totalData?.length > 0 ? totalData?.length : "---",
+          totalKgs: totalData[0]?.weight ? totalData[0]?.weight : "---",
+          total: totalData[0]?.weight ? totalData?.length * totalData[0]?.weight : "---",
+        };
+      });
+      setTotalKiloGram(totalKiloGramData)
+      const totalKiloGrandTotalData = totalKiloGramData
+        .map((res) => res?.total)
+        .reduce(function (a, b) {
+          const num1 = a === "" || a === "---" ? 0 : a;
+          const num2 = b === "" || b === "---" ? 0 : b;
+          return num1 + num2;
+        }, 0);
+      setTotalKiloGrandTotal(totalKiloGrandTotalData)
     }
   }, [sales]);
 
@@ -274,34 +290,6 @@ const ReportsList2 = (props) => {
     "Kgs",
     "Total Kgs",
   ];
-
-  const salesProducts = sales.map((res) => res.productId);
-  const uniqSales = uniqBy(salesProducts, "_id");
-  const totalKiloGramData = uniqSales.map((res) => {
-    const totalData = salesProducts.filter((res2) => res2?._id === res?._id);
-    const totalDataCost = totalData
-      .map((res2) => res2?.cost)
-      .reduce(function (a, b) {
-        const num1 = a === "" ? 0 : a;
-        const num2 = b === "" ? 0 : b;
-        return num1 + num2;
-      }, 0);
-    return {
-      particulars: `${capitalize(res?.iceType)} (${res?.weight} ${
-        res?.scaleType
-      })`,
-      totalQty: totalData?.length,
-      totalKgs: res?.weight,
-      total: totalData?.length * res?.weight,
-    };
-  });
-  const totalKiloGrandTotal = totalKiloGramData
-    .map((res) => res?.total)
-    .reduce(function (a, b) {
-      const num1 = a === "" ? 0 : a;
-      const num2 = b === "" ? 0 : b;
-      return num1 + num2;
-    }, 0);
 
   useEffect(() => {
     if (getAutheticatedUserId.isSuccess) {
@@ -554,7 +542,7 @@ const ReportsList2 = (props) => {
             );
           })}
         </tr>
-        {totalKiloGramData.map((res) => {
+        {totalKiloGram.map((res) => {
           return (
             <tr>
               {tableHeaderTotalKilogram.map((res2, i) => {
