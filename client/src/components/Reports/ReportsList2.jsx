@@ -35,6 +35,8 @@ const ReportsList2 = (props) => {
   const isSalesIncluded = inclusions?.includes("Sales");
   const isExpensesIncluded = inclusions?.includes("Expenses");
   const isTotalKilogramIncluded = inclusions?.includes("Total%20Kilogram");
+  const dataOwner = dates[3]?.replace("dataOwner=", "");
+  const isDataOwnerUser = dataOwner === "My%20Records";
 
   useEffect(() => {
     setTimeout(() => {
@@ -70,6 +72,33 @@ const ReportsList2 = (props) => {
 
   const getOrderList = useQuery("OrderList", async () => {
     const query = `{
+      sales {
+          customerId {
+              _id
+              description
+            },
+          _id,
+          productId {
+            _id,
+            iceType,
+            weight,
+            scaleType,
+            cost
+          },
+          receiptNumber,
+          vehicleType,
+          birNumber,
+          drNumber,
+          createdAt
+        }
+      }`;
+    return await axios.post(graphqlUrl, { query });
+  },{
+    enabled: false,
+  });
+
+  const getOrderList2 = useQuery("OrderList2", async () => {
+    const query = `{
       salesByUser(userId: "${autheticatedUserId}") {
           customerId {
               _id
@@ -96,6 +125,21 @@ const ReportsList2 = (props) => {
   });
 
   const getExpenseList = useQuery("getExpenseList", async () => {
+    const query = `{
+        expenses {
+            _id,
+            name,
+            cost,
+            vendor,
+            createdAt
+        }
+      }`;
+    return await axios.post(graphqlUrl, { query });
+  },{
+    enabled: false,
+  });
+
+  const getExpenseList2 = useQuery("getExpenseList2", async () => {
     const query = `{
         expenseByUser(userId: "${autheticatedUserId}") {
             _id,
@@ -316,8 +360,13 @@ const ReportsList2 = (props) => {
   useEffect(() => {
     if (autheticatedUserId) {
       getAutheticatedUserData.refetch();
-      getOrderList.refetch();
-      getExpenseList.refetch();
+      if(isDataOwnerUser) {
+        getOrderList2.refetch(); 
+        getExpenseList2.refetch();
+      } else {
+        getOrderList.refetch(); 
+        getExpenseList.refetch();
+      }
     }
   }, [autheticatedUserId]);
 
@@ -342,9 +391,9 @@ const ReportsList2 = (props) => {
     if (getOrderList.isSuccess) {
       if (
         !getOrderList.data.data?.errors &&
-        getOrderList.data.data?.data?.salesByUser
+        getOrderList.data.data?.data?.sales
       ) {
-        const dataDB = getOrderList.data.data?.data?.salesByUser;
+        const dataDB = getOrderList.data.data?.data?.sales;
         setSales(
           dataDB.filter(
             (res) =>
@@ -360,12 +409,33 @@ const ReportsList2 = (props) => {
   }, [getOrderList.data, getOrderList.isLoading]);
 
   useEffect(() => {
+    if (getOrderList2.isSuccess) {
+      if (
+        !getOrderList2.data.data?.errors &&
+        getOrderList2.data.data?.data?.salesByUser
+      ) {
+        const dataDB = getOrderList2.data.data?.data?.salesByUser;
+        setSales(
+          dataDB.filter(
+            (res) =>
+              parseInt(res.createdAt) > parseInt(dateFrom) &&
+              parseInt(res.createdAt) < parseInt(dateTo)
+          )
+        );
+      }
+    }
+    if (getOrderList2.isError) {
+      triggerTopAlert(true, getOrderList2.error.message, "warning");
+    }
+  }, [getOrderList2.data, getOrderList2.isLoading]);
+
+  useEffect(() => {
     if (getExpenseList.isSuccess) {
       if (
         !getExpenseList.data.data?.errors &&
-        getExpenseList.data.data?.data?.expenseByUser
+        getExpenseList.data.data?.data?.expenses
       ) {
-        const dataDB = getExpenseList.data.data?.data?.expenseByUser;
+        const dataDB = getExpenseList.data.data?.data?.expenses;
         setExpenses(
           dataDB.filter(
             (res) =>
@@ -375,7 +445,31 @@ const ReportsList2 = (props) => {
         );
       }
     }
+    if (getExpenseList.isError) {
+      triggerTopAlert(true, getExpenseList.error.message, "warning");
+    }
   }, [getExpenseList.data]);
+
+  useEffect(() => {
+    if (getExpenseList2.isSuccess) {
+      if (
+        !getExpenseList2.data.data?.errors &&
+        getExpenseList2.data.data?.data?.expenseByUser
+      ) {
+        const dataDB = getExpenseList2.data.data?.data?.expenseByUser;
+        setExpenses(
+          dataDB.filter(
+            (res) =>
+              parseInt(res.createdAt) > parseInt(dateFrom) &&
+              parseInt(res.createdAt) < parseInt(dateTo)
+          )
+        );
+      }
+    }
+    if (getExpenseList2.isError) {
+      triggerTopAlert(true, getExpenseList2.error.message, "warning");
+    }
+  }, [getExpenseList2.data]);
 
   useEffect(() => {
     if (getProductList.isSuccess) {
