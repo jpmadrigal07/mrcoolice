@@ -223,8 +223,9 @@ const ReportsList2 = (props) => {
     "",
   ];
   const tableHeader2 = ["DR", "RECEIPT #", "SALES INV", "DESC.", "PARTICULARS"];
-  const fixedProduct = [{ iceType: "tube", weight: 50 }, { iceType: "tube", weight: 30 }, { iceType: "tube", weight: 5 }, { iceType: "tube", weight: 4 }, { iceType: "tube", weight: 2 }, { iceType: "crushed", weight: 30 }, { iceType: "crushed", weight: 4 }]
-  const fixedProductText = ["Tube (50 kg)", "Tube (30 kg)", "Tube (5 kg)", "Tube (4 kg)", "Tube (2 kg)", "Crushed (30 kg)", "Crushed (4 kg)"]
+  // Note: Add value to both fixedProduct and fixedProductText for new scale record
+  const fixedProduct = [{ iceType: "tube", weight: 50 }, { iceType: "tube", weight: 30 }, { iceType: "tube", weight: 25 }, { iceType: "tube", weight: 15 }, { iceType: "tube", weight: 5 }, { iceType: "tube", weight: 4 }, { iceType: "tube", weight: 2 }, { iceType: "crushed", weight: 30 }, { iceType: "crushed", weight: 15 }, { iceType: "crushed", weight: 4 }]
+  const fixedProductText = ["Tube (50 kg)", "Tube (30 kg)", "Tube (25 kg)", "Tube (15 kg)", "Tube (5 kg)", "Tube (4 kg)", "Tube (2 kg)", "Crushed (30 kg)", "Crushed (15 kg)", "Crushed (4 kg)"]
 
   const tableCombined = [
     ...tableHeader2,
