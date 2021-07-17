@@ -76,16 +76,22 @@ const Navigation = (props) => {
             Expenses
           </Nav.Item>
           <Nav.Item
-            active={currentPage === "reports"}
-            onClick={() => history.push("/reports")}
-          >
-            Reports
-          </Nav.Item>
-          <Nav.Item
               active={currentPage === "product"}
               onClick={() => history.push("/product")}
             >
               Product
+          </Nav.Item>
+          <Nav.Item
+              active={currentPage === "cash"}
+              onClick={() => history.push("/cash")}
+            >
+              Cash
+          </Nav.Item>
+          <Nav.Item
+            active={currentPage === "reports"}
+            onClick={() => history.push("/reports")}
+          >
+            Reports
           </Nav.Item>
           {isAdmin ? (
             <Nav.Item
