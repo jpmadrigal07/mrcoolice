@@ -6,6 +6,7 @@ const { getAllUser, getUser } = require("./Query/User");
 const { getAllSale, getSale, getAllSaleByReceiptNumber, getAllSaleByUser } = require("./Query/Sale");
 const { getAllCustomer, getCustomer } = require("./Query/Customer");
 const { getAllExpense, getExpense, getAllExpenseByUser } = require("./Query/Expense");
+const { getAllCash, getCash, getAllCashByUser } = require("./Query/Cash");
 const { verifyToken } = require("./Query/Authentication");
 const { updateCode } = require("./Query/UpdateCode");
 const { getAllProduct, getProduct } = require("./Query/Product");
@@ -17,6 +18,11 @@ const {
   updateExpense,
   deleteExpense,
 } = require("./Mutation/Expense");
+const {
+  createCash,
+  updateCash,
+  deleteCash,
+} = require("./Mutation/Cash");
 const {
   createProduct,
   updateProduct,
@@ -40,6 +46,9 @@ const Query = new GraphQLObjectType({
     expenses: getAllExpense,
     expense: getExpense,
     expenseByUser: getAllExpenseByUser,
+    cashes: getAllCash,
+    cash: getCash,
+    cashByUser: getAllCashByUser,
     sales: getAllSale,
     salesByUser: getAllSaleByUser,
     salesByReceiptNumber: getAllSaleByReceiptNumber,
@@ -57,6 +66,9 @@ const Mutation = new GraphQLObjectType({
     createExpense,
     updateExpense,
     deleteExpense,
+    createCash,
+    updateCash,
+    deleteCash,
     createCustomer,
     updateCustomer,
     deleteCustomer,
