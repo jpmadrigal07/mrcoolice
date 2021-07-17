@@ -1,9 +1,16 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
-import { Table, Button, ControlLabel, Panel, DateRangePicker } from "rsuite";
+import {
+  Table,
+  Button,
+  ControlLabel,
+  Panel,
+  DateRangePicker,
+  CheckPicker,
+} from "rsuite";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { graphqlUrl } from "../../services/constants";
+import { graphqlUrl, REPORTS_ITEMS } from "../../services/constants";
 import Cookies from "js-cookie";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
@@ -20,6 +27,7 @@ function ReportsList(props) {
   const [expenseFilteredByDate, setExpenseFilteredByDate] = useState([]);
   const [salesFilteredByDate, setSalesFilteredByDate] = useState([]);
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
+  const [reportInclusion, setReportInclusion] = useState(null);
 
   const [totalSales, setTotalSales] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -33,8 +41,10 @@ function ReportsList(props) {
     return await axios.post(graphqlUrl, { query });
   });
 
-  const getExpenseList = useQuery("getExpenseList", async () => {
-    const query = `{
+  const getExpenseList = useQuery(
+    "getExpenseList",
+    async () => {
+      const query = `{
                 expenseByUser(userId: "${autheticatedUserId}") {
                     _id,
                     name,
@@ -43,13 +53,17 @@ function ReportsList(props) {
                     createdAt,
                 }
               }`;
-    return await axios.post(graphqlUrl, { query });
-  },{
-    enabled: false,
-  });
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
 
-  const getSalesList = useQuery("getSalesList", async () => {
-    const query = `{
+  const getSalesList = useQuery(
+    "getSalesList",
+    async () => {
+      const query = `{
             salesByUser(userId: "${autheticatedUserId}") {
               customerId {
                   _id
@@ -72,10 +86,12 @@ function ReportsList(props) {
               createdAt,
             }
           }`;
-    return await axios.post(graphqlUrl, { query });
-  },{
-    enabled: false,
-  });
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
 
   useEffect(() => {
     if (getExpenseList.isSuccess) {
@@ -170,7 +186,8 @@ function ReportsList(props) {
       ?.reverse()
       .map((res) => {
         return res.cost;
-      }).reduce(function (a, b) {
+      })
+      .reduce(function (a, b) {
         return a + b;
       }, 0);
     setTotalSales(total);
@@ -191,7 +208,12 @@ function ReportsList(props) {
   return (
     <>
       <Panel bordered style={{ margin: 10 }}>
-        <i style={{fontSize: 11, color: 'gray'}}>The data that will be shown on this page will only be the records of the staff that is currently logged in.</i><br/><br/>
+        <i style={{ fontSize: 11, color: "gray" }}>
+          The data that will be shown on this page will only be the records of
+          the staff that is currently logged in.
+        </i>
+        <br />
+        <br />
         <ControlLabel>Sort by Date </ControlLabel>
         <DateRangePicker
           onChange={([date1, date2]) => {
@@ -199,15 +221,23 @@ function ReportsList(props) {
             setSelectedDateTo(moment(date2).endOf("day").unix() * 1000);
           }}
           placeholder="Select Date Range"
+          onClean={() => setSelectedDateFrom(null)}
+        />{" "}
+        <CheckPicker
+          data={REPORTS_ITEMS}
+          onChange={(e) => setReportInclusion(e)}
+          searchable={false}
+          placeholder="Select Included"
+          onClean={() => setReportInclusion(null)}
         />{" "}
         <Button
           appearance="primary"
           type="submit"
           style={{ marginRight: 10 }}
-          disabled={!selectedDateFrom}
+          disabled={!selectedDateFrom || !reportInclusion}
           onClick={() =>
             window.open(
-              `/print-report?dateFrom=${selectedDateFrom}&dateTo=${selectedDateTo}`,
+              `/print-report?dateFrom=${selectedDateFrom}&dateTo=${selectedDateTo}&inclusion=${reportInclusion}`,
               "_blank"
             )
           }
