@@ -27,3 +27,8 @@ export const REPORTS_ITEMS = [
   { value: "Expenses", label: "Expenses" },
   { value: "Total Kilogram", label: "Total Kilogram" },
 ];
+
+export const DATA_OWNER_ITEMS = [
+  { value: "My Records", label: "My Records" },
+  { value: "All", label: "All" },
+];
