@@ -1,11 +1,21 @@
 const Expense = require("../../models/expense");
 const ExpenseType = require("../typeDefs/Expense");
-const { GraphQLID, GraphQLList } = require("graphql");
+const { GraphQLID, GraphQLList, GraphQLString } = require("graphql");
 
 module.exports.getAllExpense = {
   type: GraphQLList(ExpenseType),
   resolve: () => {
     return Expense.find();
+  },
+};
+
+module.exports.getAllExpenseByUser = {
+  type: GraphQLList(ExpenseType),
+  args: {
+    userId: { type: GraphQLString },
+  },
+  resolve: (parent, { userId }) => {
+    return Expense.find({ userId });
   },
 };
 

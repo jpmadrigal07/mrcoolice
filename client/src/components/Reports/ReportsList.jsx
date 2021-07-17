@@ -1,11 +1,23 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
-import { Table, Button, ControlLabel, Panel, DateRangePicker } from "rsuite";
+import {
+  Table,
+  Button,
+  ControlLabel,
+  Panel,
+  DateRangePicker,
+  CheckPicker,
+} from "rsuite";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { graphqlUrl } from "../../services/constants";
+import { graphqlUrl, REPORTS_ITEMS } from "../../services/constants";
+import Cookies from "js-cookie";
+import { triggerTopAlert } from "../../actions/topAlertActions";
+import { connect } from "react-redux";
 
-function ReportsList() {
+function ReportsList(props) {
+  const { triggerTopAlert } = props;
+  const token = Cookies.get("sessionToken");
   const { Column, HeaderCell, Cell } = Table;
   const [expenseList, setExpenseList] = useState([]);
   const [salesList, setSalesList] = useState([]);
@@ -14,25 +26,45 @@ function ReportsList() {
   const [selectedDateTo, setSelectedDateTo] = useState(null);
   const [expenseFilteredByDate, setExpenseFilteredByDate] = useState([]);
   const [salesFilteredByDate, setSalesFilteredByDate] = useState([]);
+  const [autheticatedUserId, setAutheticatedUserId] = useState(null);
+  const [reportInclusion, setReportInclusion] = useState(null);
 
   const [totalSales, setTotalSales] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
 
-  const getExpenseList = useQuery("getExpenseList", async () => {
+  const getAutheticatedUserId = useQuery("getAutheticatedUserId", async () => {
     const query = `{
-                expenses {
-                    _id
-                    name
-                    cost
-                    createdAt
-                }
-              }`;
+            verifyToken(token: "${token}") {
+                userId
+            }
+      }`;
     return await axios.post(graphqlUrl, { query });
   });
 
-  const getSalesList = useQuery("getSalesList", async () => {
-    const query = `{
-            sales {
+  const getExpenseList = useQuery(
+    "getExpenseList",
+    async () => {
+      const query = `{
+                expenseByUser(userId: "${autheticatedUserId}") {
+                    _id,
+                    name,
+                    cost,
+                    vendor,
+                    createdAt,
+                }
+              }`;
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
+
+  const getSalesList = useQuery(
+    "getSalesList",
+    async () => {
+      const query = `{
+            salesByUser(userId: "${autheticatedUserId}") {
               customerId {
                   _id
                   description
@@ -46,26 +78,35 @@ function ReportsList() {
                 weight,
                 createdAt
               },
-              createdAt
+              receiptNumber,
+              birNumber,
+              drNumber,
+              location,
+              vehicleType,
+              createdAt,
             }
           }`;
-    return await axios.post(graphqlUrl, { query });
-  });
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
 
   useEffect(() => {
     if (getExpenseList.isSuccess) {
       if (
         !getExpenseList.data.data?.errors &&
-        getExpenseList.data.data?.data?.expenses
+        getExpenseList.data.data?.data?.expenseByUser
       ) {
-        const expenses = getExpenseList.data.data?.data?.expenses;
-        const expensesWithNumber = expenses?.reverse().map((res, index) => {
+        const expenses = getExpenseList.data.data?.data?.expenseByUser;
+        const expensesWithNumber = expenses?.map((res, index) => {
           return {
             id: index + 1,
             ...res,
           };
         });
-        setExpenseList(expensesWithNumber);
+        setExpenseList(expensesWithNumber.reverse());
       }
     }
   }, [getExpenseList.data]);
@@ -74,10 +115,10 @@ function ReportsList() {
     if (getSalesList.isSuccess) {
       if (
         !getSalesList.data.data?.errors &&
-        getSalesList.data.data?.data?.sales
+        getSalesList.data.data?.data?.salesByUser
       ) {
-        const sales = getSalesList.data.data?.data?.sales;
-        const salesWithNumber = sales?.reverse().map((res, index) => {
+        const sales = getSalesList.data.data?.data?.salesByUser;
+        const salesWithNumber = sales?.map((res, index) => {
           return {
             id: index + 1,
             description: res.customerId?.description,
@@ -85,10 +126,15 @@ function ReportsList() {
             weight: res.productId?.weight,
             cost: res.productId?.cost,
             scaleType: res.productId?.scaleType,
+            drNumber: res?.drNumber,
+            birNumber: res?.birNumber,
+            receiptNumber: res?.receiptNumber,
+            location: res?.location,
+            vehicleType: res?.vehicleType,
             createdAt: res.createdAt,
           };
         });
-        setSalesList(salesWithNumber);
+        setSalesList(salesWithNumber.reverse());
       }
     }
   }, [getSalesList.data]);
@@ -113,11 +159,35 @@ function ReportsList() {
   }, [selectedDateFrom, selectedDateTo]);
 
   useEffect(() => {
+    if (getAutheticatedUserId.isSuccess) {
+      if (
+        !getAutheticatedUserId.data.data?.errors &&
+        getAutheticatedUserId.data.data?.data?.verifyToken
+      ) {
+        setAutheticatedUserId(
+          getAutheticatedUserId.data.data?.data?.verifyToken?.userId
+        );
+      }
+    }
+    if (getAutheticatedUserId.isError) {
+      triggerTopAlert(true, getAutheticatedUserId.error.message, "warning");
+    }
+  }, [getAutheticatedUserId.data]);
+
+  useEffect(() => {
+    if (autheticatedUserId) {
+      getSalesList.refetch();
+      getExpenseList.refetch();
+    }
+  }, [autheticatedUserId]);
+
+  useEffect(() => {
     const total = salesFilteredByDate
       ?.reverse()
       .map((res) => {
         return res.cost;
-      }).reduce(function (a, b) {
+      })
+      .reduce(function (a, b) {
         return a + b;
       }, 0);
     setTotalSales(total);
@@ -138,6 +208,12 @@ function ReportsList() {
   return (
     <>
       <Panel bordered style={{ margin: 10 }}>
+        <i style={{ fontSize: 11, color: "gray" }}>
+          The data that will be shown on this page will only be the records of
+          the staff that is currently logged in.
+        </i>
+        <br />
+        <br />
         <ControlLabel>Sort by Date </ControlLabel>
         <DateRangePicker
           onChange={([date1, date2]) => {
@@ -145,15 +221,23 @@ function ReportsList() {
             setSelectedDateTo(moment(date2).endOf("day").unix() * 1000);
           }}
           placeholder="Select Date Range"
+          onClean={() => setSelectedDateFrom(null)}
+        />{" "}
+        <CheckPicker
+          data={REPORTS_ITEMS}
+          onChange={(e) => setReportInclusion(e)}
+          searchable={false}
+          placeholder="Select Included"
+          onClean={() => setReportInclusion(null)}
         />{" "}
         <Button
           appearance="primary"
           type="submit"
           style={{ marginRight: 10 }}
-          disabled={!selectedDateFrom}
+          disabled={!selectedDateFrom || !reportInclusion}
           onClick={() =>
             window.open(
-              `/print-report?dateFrom=${selectedDateFrom}&dateTo=${selectedDateTo}`,
+              `/print-report?dateFrom=${selectedDateFrom}&dateTo=${selectedDateTo}&inclusion=${reportInclusion}`,
               "_blank"
             )
           }
@@ -176,6 +260,26 @@ function ReportsList() {
           <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Customer</HeaderCell>
             <Cell dataKey="description" />
+          </Column>
+          <Column flexGrow={100} minWidth={100}>
+            <HeaderCell>Receipt #</HeaderCell>
+            <Cell dataKey="receiptNumber" />
+          </Column>
+          <Column flexGrow={100} minWidth={100}>
+            <HeaderCell>BIR #</HeaderCell>
+            <Cell dataKey="birNumber" />
+          </Column>
+          <Column flexGrow={100} minWidth={100}>
+            <HeaderCell>DR #</HeaderCell>
+            <Cell dataKey="drNumber" />
+          </Column>
+          <Column flexGrow={100} minWidth={100}>
+            <HeaderCell>Location</HeaderCell>
+            <Cell dataKey="location" />
+          </Column>
+          <Column flexGrow={100} minWidth={100}>
+            <HeaderCell>Vehicle Type</HeaderCell>
+            <Cell dataKey="vehicleType" />
           </Column>
           <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Ice Type</HeaderCell>
@@ -213,6 +317,10 @@ function ReportsList() {
             <Cell dataKey="name" />
           </Column>
           <Column flexGrow={100} minWidth={100}>
+            <HeaderCell>Vendor/Client</HeaderCell>
+            <Cell dataKey="vendor" />
+          </Column>
+          <Column flexGrow={100} minWidth={100}>
             <HeaderCell>Cost (Pesos)</HeaderCell>
             <Cell dataKey="cost" />
           </Column>
@@ -222,4 +330,6 @@ function ReportsList() {
   );
 }
 
-export default ReportsList;
+const mapStateToProps = (global) => ({});
+
+export default connect(mapStateToProps, { triggerTopAlert })(ReportsList);

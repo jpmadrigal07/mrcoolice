@@ -18,15 +18,23 @@ const ReportsList2 = (props) => {
   const [totalResult, setTotalResult] = useState([]);
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
   const [products, setProducts] = useState([]);
+  const [totalKiloGram, setTotalKiloGram] = useState([]);
+  const [totalKiloGrandTotal, setTotalKiloGrandTotal] = useState([]);
   const [autheticatedUserFullName, setAutheticatedUserFullName] =
     useState(null);
   const [expenses, setExpenses] = useState([]);
   const [sales, setSales] = useState([]);
   const { triggerTopAlert } = props;
   const { search } = useLocation();
-  const dates = search.split("&");
+  const dates = search.split("&");  
   const dateFrom = dates[0]?.replace("?dateFrom=", "");
   const dateTo = dates[1]?.replace("dateTo=", "");
+  const inclusion = dates[2]?.replace("inclusion=", "");
+  const inclusions = inclusion?.split(",");
+  const isAllIncluded = inclusions?.includes("All");
+  const isSalesIncluded = inclusions?.includes("Sales");
+  const isExpensesIncluded = inclusions?.includes("Expenses");
+  const isTotalKilogramIncluded = inclusions?.includes("Total%20Kilogram");
 
   useEffect(() => {
     setTimeout(() => {
@@ -62,7 +70,7 @@ const ReportsList2 = (props) => {
 
   const getOrderList = useQuery("OrderList", async () => {
     const query = `{
-        sales {
+      salesByUser(userId: "${autheticatedUserId}") {
           customerId {
               _id
               description
@@ -78,18 +86,18 @@ const ReportsList2 = (props) => {
           receiptNumber,
           vehicleType,
           birNumber,
-          drNumber
+          drNumber,
           createdAt
         }
       }`;
     return await axios.post(graphqlUrl, { query });
   },{
-    refetchInterval: 3000
+    enabled: false,
   });
 
   const getExpenseList = useQuery("getExpenseList", async () => {
     const query = `{
-        expenses {
+        expenseByUser(userId: "${autheticatedUserId}") {
             _id,
             name,
             cost,
@@ -98,6 +106,8 @@ const ReportsList2 = (props) => {
         }
       }`;
     return await axios.post(graphqlUrl, { query });
+  },{
+    enabled: false,
   });
 
   const getProductList = useQuery("getProductList", async () => {
@@ -126,12 +136,7 @@ const ReportsList2 = (props) => {
   ];
   const tableHeader2 = ["DR", "RECEIPT #", "SALES INV", "DESC.", "PARTICULARS"];
   const fixedProduct = [{ iceType: "tube", weight: 50 }, { iceType: "tube", weight: 30 }, { iceType: "tube", weight: 5 }, { iceType: "tube", weight: 4 }, { iceType: "tube", weight: 2 }, { iceType: "crushed", weight: 30 }, { iceType: "crushed", weight: 4 }]
-  const fixedProductText = ["Tube (50 kgs)", "Tube (30 kgs)", "Tube (5 kgs)", "Tube (4 kgs)", "Tube (2 kgs)", "Crushed (30 kgs)", "Crushed (4 kgs)"]
-  const tableHeader3 = products.map((res, i) => {
-    if(i < 6) {
-      return `${capitalize(res.iceType)} (${res.weight} ${res.scaleType})`;
-    }
-  }).filter(res => res);
+  const fixedProductText = ["Tube (50 kg)", "Tube (30 kg)", "Tube (5 kg)", "Tube (4 kg)", "Tube (2 kg)", "Crushed (30 kg)", "Crushed (4 kg)"]
 
   const tableCombined = [
     ...tableHeader2,
@@ -218,6 +223,25 @@ const ReportsList2 = (props) => {
         ];
       });
       setTableSales(tableWithValues);
+      const salesProducts = sales.map((res) => res.productId);
+      const totalKiloGramData = fixedProductText.map((res) => {
+        const totalData = salesProducts.filter((res2) => `${res2?.iceType} (${res2?.weight} ${res2?.scaleType})` === res.toLocaleLowerCase());
+        return {
+          particulars: res,
+          totalQty: totalData?.length > 0 ? totalData?.length : "---",
+          totalKgs: totalData[0]?.weight ? totalData[0]?.weight : "---",
+          total: totalData[0]?.weight ? totalData?.length * totalData[0]?.weight : "---",
+        };
+      });
+      setTotalKiloGram(totalKiloGramData)
+      const totalKiloGrandTotalData = totalKiloGramData
+        .map((res) => res?.total)
+        .reduce(function (a, b) {
+          const num1 = a === "" || a === "---" ? 0 : a;
+          const num2 = b === "" || b === "---" ? 0 : b;
+          return num1 + num2;
+        }, 0);
+      setTotalKiloGrandTotal(totalKiloGrandTotalData)
     }
   }, [sales]);
 
@@ -273,34 +297,6 @@ const ReportsList2 = (props) => {
     "Total Kgs",
   ];
 
-  const salesProducts = sales.map((res) => res.productId);
-  const uniqSales = uniqBy(salesProducts, "_id");
-  const totalKiloGramData = uniqSales.map((res) => {
-    const totalData = salesProducts.filter((res2) => res2?._id === res?._id);
-    const totalDataCost = totalData
-      .map((res2) => res2?.cost)
-      .reduce(function (a, b) {
-        const num1 = a === "" ? 0 : a;
-        const num2 = b === "" ? 0 : b;
-        return num1 + num2;
-      }, 0);
-    return {
-      particulars: `${capitalize(res?.iceType)} (${res?.weight} ${
-        res?.scaleType
-      })`,
-      totalQty: totalData?.length,
-      totalKgs: res?.weight,
-      total: totalData?.length * res?.weight,
-    };
-  });
-  const totalKiloGrandTotal = totalKiloGramData
-    .map((res) => res?.total)
-    .reduce(function (a, b) {
-      const num1 = a === "" ? 0 : a;
-      const num2 = b === "" ? 0 : b;
-      return num1 + num2;
-    }, 0);
-
   useEffect(() => {
     if (getAutheticatedUserId.isSuccess) {
       if (
@@ -320,6 +316,8 @@ const ReportsList2 = (props) => {
   useEffect(() => {
     if (autheticatedUserId) {
       getAutheticatedUserData.refetch();
+      getOrderList.refetch();
+      getExpenseList.refetch();
     }
   }, [autheticatedUserId]);
 
@@ -344,9 +342,9 @@ const ReportsList2 = (props) => {
     if (getOrderList.isSuccess) {
       if (
         !getOrderList.data.data?.errors &&
-        getOrderList.data.data?.data?.sales
+        getOrderList.data.data?.data?.salesByUser
       ) {
-        const dataDB = getOrderList.data.data?.data?.sales;
+        const dataDB = getOrderList.data.data?.data?.salesByUser;
         setSales(
           dataDB.filter(
             (res) =>
@@ -365,9 +363,9 @@ const ReportsList2 = (props) => {
     if (getExpenseList.isSuccess) {
       if (
         !getExpenseList.data.data?.errors &&
-        getExpenseList.data.data?.data?.expenses
+        getExpenseList.data.data?.data?.expenseByUser
       ) {
-        const dataDB = getExpenseList.data.data?.data?.expenses;
+        const dataDB = getExpenseList.data.data?.data?.expenseByUser;
         setExpenses(
           dataDB.filter(
             (res) =>
@@ -414,184 +412,192 @@ const ReportsList2 = (props) => {
       <p style={{ fontSize: 12, marginTop: 0, marginBottom: 15 }}>
         <strong>CASHIER: {autheticatedUserFullName}</strong>
       </p>
-      <table
-        border="1"
-        style={{ width: "100%", fontSize: 10, textAlign: "center" }}
-      >
-        <tr>
-          {tableHeader1.map((res) => {
-            if (res !== "") {
-              return (
-                <td colSpan={fixedProduct.length}>
-                  <strong>{res}</strong>
-                </td>
-              );
-            } else {
-              return (
-                <td>
-                  <span style={{ color: "transparent" }}>
-                    test test test test
-                  </span>
-                </td>
-              );
-            }
-          })}
-        </tr>
-        <tr>
-          {tableCombined.map((res) => {
-            return (
-              <td>
-                <strong>{res}</strong>
-              </td>
-            );
-          })}
-        </tr>
-        {tableSales.map((res) => {
-          const columns = res.map((res2) => <td>{res2}</td>);
-          return <tr>{columns}</tr>;
-        })}
-        <tr>
-          <td colSpan={tableCombined.length}>
-            <span style={{ color: "transparent" }}>test test test test</span>
-          </td>
-        </tr>
-        <tr>
-          {totalResult.map((res, i) => {
-            if (i === 0) {
-              return (
-                <td>
-                  <strong>Grand Total</strong>
-                </td>
-              );
-            } else {
+      {isAllIncluded || isSalesIncluded ? (
+        <table
+          border="1"
+          style={{ width: "100%", fontSize: 10, textAlign: "center" }}
+        >
+          <tr>
+            {tableHeader1.map((res) => {
+              if (res !== "") {
+                return (
+                  <td colSpan={fixedProduct.length}>
+                    <strong>{res}</strong>
+                  </td>
+                );
+              } else {
+                return (
+                  <td>
+                    <span style={{ color: "transparent" }}>
+                      test test test test
+                    </span>
+                  </td>
+                );
+              }
+            })}
+          </tr>
+          <tr>
+            {tableCombined.map((res) => {
               return (
                 <td>
                   <strong>{res}</strong>
                 </td>
               );
-            }
+            })}
+          </tr>
+          {tableSales.map((res) => {
+            const columns = res.map((res2) => <td>{res2}</td>);
+            return <tr>{columns}</tr>;
           })}
-        </tr>
-      </table>
+          <tr>
+            <td colSpan={tableCombined.length}>
+              <span style={{ color: "transparent" }}>test test test test</span>
+            </td>
+          </tr>
+          <tr>
+            {totalResult.map((res, i) => {
+              if (i === 0) {
+                return (
+                  <td>
+                    <strong>Grand Total</strong>
+                  </td>
+                );
+              } else {
+                return (
+                  <td>
+                    <strong>{res}</strong>
+                  </td>
+                );
+              }
+            })}
+          </tr>
+        </table>
+      ) : null}
       <br />
-      <table
-        border="1"
-        style={{ width: "100%", fontSize: 10, textAlign: "center" }}
-      >
-        <tr>
-          <td colSpan={tableHeaderExpense.length}>
-            <strong>EXPENSE DETAILS</strong>
-          </td>
-        </tr>
-        <tr>
-          {tableHeaderExpense.map((res) => {
+      {isAllIncluded || isExpensesIncluded ? (
+        <table
+          border="1"
+          style={{ width: "100%", fontSize: 10, textAlign: "center" }}
+        >
+          <tr>
+            <td colSpan={tableHeaderExpense.length}>
+              <strong>EXPENSE DETAILS</strong>
+            </td>
+          </tr>
+          <tr>
+            {tableHeaderExpense.map((res) => {
+              return (
+                <td>
+                  <strong>{res}</strong>
+                </td>
+              );
+            })}
+          </tr>
+          {expenses.map((res) => {
             return (
-              <td>
-                <strong>{res}</strong>
-              </td>
+              <tr>
+                {tableHeaderExpense.map((res2, i) => {
+                  if (i === 0) {
+                    return <td>{moment.unix(res.createdAt / 1000).format("MM/DD/YYYY")}</td>;
+                  } else if (i === 2) {
+                    return <td>{res.vendor ? res.vendor : "---"}</td>;
+                  } else if (i === 5) {
+                    return <td>{res.name}</td>;
+                  } else if (i === 6) {
+                    return <td>{res.cost}</td>;
+                  } else {
+                    return <td style={{ color: "transparent" }}>asdasdasd</td>;
+                  }
+                })}
+              </tr>
             );
           })}
-        </tr>
-        {expenses.map((res) => {
-          return (
-            <tr>
-              {tableHeaderExpense.map((res2, i) => {
-                if (i === 2) {
-                  return <td>{res.vendor ? res.vendor : "---"}</td>;
-                } else if (i === 5) {
-                  return <td>{res.name}</td>;
-                } else if (i === 6) {
-                  return <td>{res.cost}</td>;
-                } else {
-                  return <td style={{ color: "transparent" }}>asdasdasd</td>;
-                }
-              })}
-            </tr>
-          );
-        })}
-        <tr>
-          <td colSpan={tableCombined.length}>
-            <span style={{ color: "transparent" }}>test test test test</span>
-          </td>
-        </tr>
-        <tr>
-          {tableHeaderExpense.map((res, i) => {
-            if (i === 0) {
-              return (
-                <td>
-                  <strong>Grant Total</strong>
-                </td>
-              );
-            } else if (i === 6) {
-              return (
-                <td>
-                  <strong>{expensesCostTotal}</strong>
-                </td>
-              );
-            } else {
-              return <td style={{ color: "transparent" }}>asdasdasd</td>;
-            }
-          })}
-        </tr>
-      </table>
+          <tr>
+            <td colSpan={tableCombined.length}>
+              <span style={{ color: "transparent" }}>test test test test</span>
+            </td>
+          </tr>
+          <tr>
+            {tableHeaderExpense.map((res, i) => {
+              if (i === 0) {
+                return (
+                  <td>
+                    <strong>Grant Total</strong>
+                  </td>
+                );
+              } else if (i === 6) {
+                return (
+                  <td>
+                    <strong>{expensesCostTotal}</strong>
+                  </td>
+                );
+              } else {
+                return <td style={{ color: "transparent" }}>asdasdasd</td>;
+              }
+            })}
+          </tr>
+        </table>
+      ) : null}
       <br />
-      <table
-        border="1"
-        style={{ width: "50%", fontSize: 10, textAlign: "center" }}
-      >
-        <tr>
-          {tableHeaderTotalKilogram.map((res) => {
+      {isAllIncluded || isTotalKilogramIncluded ? (
+        <table
+          border="1"
+          style={{ width: "50%", fontSize: 10, textAlign: "center" }}
+        >
+          <tr>
+            {tableHeaderTotalKilogram.map((res) => {
+              return (
+                <td>
+                  <strong>{res}</strong>
+                </td>
+              );
+            })}
+          </tr>
+          {totalKiloGram.map((res) => {
             return (
-              <td>
-                <strong>{res}</strong>
-              </td>
+              <tr>
+                {tableHeaderTotalKilogram.map((res2, i) => {
+                  if (i === 0) {
+                    return <td>{res.particulars}</td>;
+                  } else if (i === 1) {
+                    return <td>{res.totalQty}</td>;
+                  } else if (i === 2) {
+                    return <td>{res.totalKgs}</td>;
+                  } else if (i === 3) {
+                    return <td>{res.total}</td>;
+                  } else {
+                    return <td style={{ color: "transparent" }}>asdasdasd</td>;
+                  }
+                })}
+              </tr>
             );
           })}
-        </tr>
-        {totalKiloGramData.map((res) => {
-          return (
-            <tr>
-              {tableHeaderTotalKilogram.map((res2, i) => {
-                if (i === 0) {
-                  return <td>{res.particulars}</td>;
-                } else if (i === 1) {
-                  return <td>{res.totalQty}</td>;
-                } else if (i === 2) {
-                  return <td>{res.totalKgs}</td>;
-                } else if (i === 3) {
-                  return <td>{res.total}</td>;
-                } else {
-                  return <td style={{ color: "transparent" }}>asdasdasd</td>;
-                }
-              })}
-            </tr>
-          );
-        })}
-        <tr>
-          <td colSpan={tableCombined.length}>
-            <span style={{ color: "transparent" }}>test test test test</span>
-          </td>
-        </tr>
-        <tr>
-          {tableHeaderTotalKilogram.map((res, i) => {
-            if (i === 0) {
-              return (
-                <td>
-                  <strong>Grand Total</strong>
-                </td>
-              );
-            } else if (i === 3) {
-              return (
-                <td>
-                  <strong>{totalKiloGrandTotal}</strong>
-                </td>
-              );
-            } else {
-              return <td style={{ color: "transparent" }}>asdasdasd</td>;
-            }
-          })}
-        </tr>
-      </table>
+          <tr>
+            <td colSpan={tableCombined.length}>
+              <span style={{ color: "transparent" }}>test test test test</span>
+            </td>
+          </tr>
+          <tr>
+            {tableHeaderTotalKilogram.map((res, i) => {
+              if (i === 0) {
+                return (
+                  <td>
+                    <strong>Grand Total</strong>
+                  </td>
+                );
+              } else if (i === 3) {
+                return (
+                  <td>
+                    <strong>{totalKiloGrandTotal}</strong>
+                  </td>
+                );
+              } else {
+                return <td style={{ color: "transparent" }}>asdasdasd</td>;
+              }
+            })}
+          </tr>
+        </table>
+      ) : null}
     </div>
   );
 };

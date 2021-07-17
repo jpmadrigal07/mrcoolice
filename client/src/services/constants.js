@@ -20,3 +20,10 @@ export const YES_NO_ITEMS = [
   { value: false, label: "No" },
   { value: true, label: "Yes" },
 ];
+
+export const REPORTS_ITEMS = [
+  { value: "All", label: "All" },
+  { value: "Sales", label: "Sales" },
+  { value: "Expenses", label: "Expenses" },
+  { value: "Total Kilogram", label: "Total Kilogram" },
+];
