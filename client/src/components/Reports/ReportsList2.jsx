@@ -24,6 +24,7 @@ const ReportsList2 = (props) => {
     useState(null);
   const [expenses, setExpenses] = useState([]);
   const [sales, setSales] = useState([]);
+  const [cashes, setCashes] = useState([]);
   const { triggerTopAlert } = props;
   const { search } = useLocation();
   const dates = search.split("&");  
@@ -35,6 +36,7 @@ const ReportsList2 = (props) => {
   const isSalesIncluded = inclusions?.includes("Sales");
   const isExpensesIncluded = inclusions?.includes("Expenses");
   const isTotalKilogramIncluded = inclusions?.includes("Total%20Kilogram");
+  const isCashBreakdownIncluded = inclusions?.includes("Cash%20Breakdown");
   const dataOwner = dates[3]?.replace("dataOwner=", "");
   const isDataOwnerUser = dataOwner === "My%20Records";
 
@@ -146,6 +148,48 @@ const ReportsList2 = (props) => {
             name,
             cost,
             vendor,
+            createdAt
+        }
+      }`;
+    return await axios.post(graphqlUrl, { query });
+  },{
+    enabled: false,
+  });
+
+  const getCashList = useQuery("getCashList", async () => {
+    const query = `{
+        cashes {
+            _id,
+            onePeso,
+            fivePeso,
+            tenPeso,
+            twentyPeso,
+            fiftyPeso,
+            oneHundredPeso,
+            twoHundredPeso,
+            fiveHundredPeso,
+            oneThousandPeso,
+            createdAt
+        }
+      }`;
+    return await axios.post(graphqlUrl, { query });
+  },{
+    enabled: false,
+  });
+
+  const getCashList2 = useQuery("getCashList2", async () => {
+    const query = `{
+        cashByUser(userId: "${autheticatedUserId}") {
+            _id,
+            onePeso,
+            fivePeso,
+            tenPeso,
+            twentyPeso,
+            fiftyPeso,
+            oneHundredPeso,
+            twoHundredPeso,
+            fiveHundredPeso,
+            oneThousandPeso,
             createdAt
         }
       }`;
@@ -341,6 +385,23 @@ const ReportsList2 = (props) => {
     "Total Kgs",
   ];
 
+  const tableCashHeader = [
+    "Bill",
+    "Count",
+  ];
+
+  const tableCash = [
+    "One Peso",
+    "Five Peso",
+    "Ten Peso",
+    "Twenty Peso",
+    "Fifty Peso",
+    "One Hundred Peso",
+    "Two Hundred Peso",
+    "Five Hundred Peso",
+    "One Thousand Peso",
+  ];
+
   useEffect(() => {
     if (getAutheticatedUserId.isSuccess) {
       if (
@@ -363,9 +424,11 @@ const ReportsList2 = (props) => {
       if(isDataOwnerUser) {
         getOrderList2.refetch(); 
         getExpenseList2.refetch();
+        getCashList2.refetch();
       } else {
         getOrderList.refetch(); 
         getExpenseList.refetch();
+        getCashList.refetch();
       }
     }
   }, [autheticatedUserId]);
@@ -470,6 +533,104 @@ const ReportsList2 = (props) => {
       triggerTopAlert(true, getExpenseList2.error.message, "warning");
     }
   }, [getExpenseList2.data]);
+
+  useEffect(() => {
+    if (getCashList.isSuccess) {
+      if (
+        !getCashList.data.data?.errors &&
+        getCashList.data.data?.data?.cashes
+      ) {
+        const dataDB = getCashList.data.data?.data?.cashes;
+        const dataDBFiltered = dataDB.filter(
+          (res) =>
+            parseInt(res.createdAt) > parseInt(dateFrom) &&
+            parseInt(res.createdAt) < parseInt(dateTo)
+        )
+        const onePesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.onePeso;
+        }, 0);
+        const fivePesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.fivePeso;
+        }, 0);
+        const tenPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.tenPeso;
+        }, 0);
+        const twentyPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.twentyPeso;
+        }, 0);
+        const fiftyPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.fiftyPeso;
+        }, 0);
+        const oneHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.oneHundredPeso;
+        }, 0);
+        const twoHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.twoHundredPeso;
+        }, 0);
+        const fiveHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.fiveHundredPeso;
+        }, 0);
+        const oneThousandPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.oneThousandPeso;
+        }, 0);
+      
+
+        setCashes([onePesoTotal, fivePesoTotal, tenPesoTotal, twentyPesoTotal, fiftyPesoTotal, oneHundredPesoTotal, twoHundredPesoTotal, fiveHundredPesoTotal, oneThousandPesoTotal]);
+      }
+    }
+    if (getCashList.isError) {
+      triggerTopAlert(true, getCashList.error.message, "warning");
+    }
+  }, [getCashList.data, getCashList.isLoading]);
+
+  useEffect(() => {
+    if (getCashList2.isSuccess) {
+      if (
+        !getCashList2.data.data?.errors &&
+        getCashList2.data.data?.data?.cashByUser
+      ) {
+        const dataDB = getCashList2.data.data?.data?.cashByUser;
+        const dataDBFiltered = dataDB.filter(
+          (res) =>
+            parseInt(res.createdAt) > parseInt(dateFrom) &&
+            parseInt(res.createdAt) < parseInt(dateTo)
+        )
+        const onePesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.onePeso;
+        }, 0);
+        const fivePesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.fivePeso;
+        }, 0);
+        const tenPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.tenPeso;
+        }, 0);
+        const twentyPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.twentyPeso;
+        }, 0);
+        const fiftyPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.fiftyPeso;
+        }, 0);
+        const oneHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.oneHundredPeso;
+        }, 0);
+        const twoHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.twoHundredPeso;
+        }, 0);
+        const fiveHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.fiveHundredPeso;
+        }, 0);
+        const oneThousandPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+          return sum + current.oneThousandPeso;
+        }, 0);
+      
+
+        setCashes([onePesoTotal, fivePesoTotal, tenPesoTotal, twentyPesoTotal, fiftyPesoTotal, oneHundredPesoTotal, twoHundredPesoTotal, fiveHundredPesoTotal, oneThousandPesoTotal]);
+      }
+    }
+    if (getCashList2.isError) {
+      triggerTopAlert(true, getCashList2.error.message, "warning");
+    }
+  }, [getCashList2.data, getCashList2.isLoading]);
 
   useEffect(() => {
     if (getProductList.isSuccess) {
@@ -690,6 +851,31 @@ const ReportsList2 = (props) => {
               }
             })}
           </tr>
+        </table>
+      ) : null}
+      <br />
+      {isAllIncluded || isCashBreakdownIncluded ? (
+        <table
+          border="1"
+          style={{ width: "50%", fontSize: 10, textAlign: "center" }}
+        >
+          <tr>
+            {tableCashHeader.map((res) => {
+              return (
+                <td>
+                  <strong>{res}</strong>
+                </td>
+              );
+            })}
+          </tr>
+          {tableCash.map((res, i) => {
+            return (
+              <tr>
+                <td>{res}</td>
+                <td>{cashes[i] === 0 ? "---" : cashes[i]}</td>
+              </tr>
+            );
+          })}
         </table>
       ) : null}
     </div>
