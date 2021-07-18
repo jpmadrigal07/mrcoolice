@@ -298,9 +298,9 @@ const AddOrder2 = (props) => {
     if (foundCustomerId) {
       const newOrder = order
         .map((res) => {
-          if (res.productId) {
-            const newOrderArr = Array(res.quantity);
-            newOrderArr.fill({ productId: res.productId });
+          if (res.productId && res.quantity) {
+            const newOrderArr = Array(res?.quantity);
+            newOrderArr.fill({ productId: res?.productId });
             return newOrderArr;
           }
         })
@@ -316,8 +316,8 @@ const AddOrder2 = (props) => {
               ...res,
               customerId: foundCustomerId,
               userId: autheticatedUserId,
-              birNumber: birNumber,
-              drNumber: drNumber,
+              birNumber: birNumber ? birNumber : null,
+              drNumber: drNumber ? drNumber : null,
               location: location,
               vehicleType: vehicleType,
               receiptNumber,
