@@ -9,6 +9,7 @@ import {
   Button,
   Row,
   SelectPicker,
+  InputNumber,
 } from "rsuite";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
@@ -18,7 +19,8 @@ import { connect } from "react-redux";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 
 const ExpenseForm = (props) => {
-  const { isEditActive, setIsEditActive, toUpdateProduct, triggerTopAlert } = props;
+  const { isEditActive, setIsEditActive, toUpdateProduct, triggerTopAlert } =
+    props;
   const [iceType, setIceType] = useState("tube");
   const [weight, setWeight] = useState(null);
   const [scaleType, setScaleType] = useState("kg");
@@ -151,12 +153,18 @@ const ExpenseForm = (props) => {
               data={iceTypes}
               block
               onChange={(e) => setIceType(e)}
+              disabled={createProduct.isLoading || updateProduct.isLoading}
             />
           </FormGroup>
-          <FormGroup>
-            <ControlLabel>Weight</ControlLabel>
-            <Input type="number" block value={weight} onChange={(e) => setWeight(e)} />
-          </FormGroup>
+          <ControlLabel>Weight</ControlLabel>
+          <InputNumber
+            scrollable={false}
+            block
+            value={weight}
+            onChange={(e) => setWeight(e)}
+            disabled={createProduct.isLoading || updateProduct.isLoading}
+          />
+          <br/>
           <FormGroup>
             <ControlLabel>Scale Type</ControlLabel>
             <SelectPicker
@@ -165,12 +173,18 @@ const ExpenseForm = (props) => {
               value={scaleType}
               block
               onChange={(e) => setScaleType(e)}
+              disabled={createProduct.isLoading || updateProduct.isLoading}
             />
           </FormGroup>
-          <FormGroup>
-            <ControlLabel>Cost (Pesos)</ControlLabel>
-            <Input type="number" block value={cost} onChange={(e) => setCost(e)} />
-          </FormGroup>
+          <ControlLabel>Cost (Pesos)</ControlLabel>
+          <InputNumber
+            scrollable={false}
+            block
+            value={cost}
+            onChange={(e) => setCost(e)}
+            disabled={createProduct.isLoading || updateProduct.isLoading}
+          />
+          <br/>
           <FormGroup>
             <ButtonToolbar>
               {isEditActive ? (

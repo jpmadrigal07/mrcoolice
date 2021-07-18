@@ -423,7 +423,7 @@ const AddOrder2 = (props) => {
                 <ControlLabel>BIR Receipt #</ControlLabel>
                 <InputNumber
                   block
-                  type="number"
+                  scrollable={false}
                   value={birNumber}
                   onChange={(e) => setBirNumber(e)}
                   disabled={createSales.isLoading}
@@ -476,8 +476,9 @@ const AddOrder2 = (props) => {
                       </FormGroup>
                       <ControlLabel>Quantity<span style={{ color: "red" }}>*</span></ControlLabel>
                       <InputNumber
+                        scrollable={false}
                         onChange={(e) => updateProductQuantity(e, i)}
-                        value={res.quantity}
+                        value={res.quantity ? res.quantity : null}
                         disabled={createSales.isLoading}
                       />
                       <hr />

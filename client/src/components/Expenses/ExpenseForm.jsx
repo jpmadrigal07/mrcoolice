@@ -7,7 +7,8 @@ import {
   Input,
   ButtonToolbar,
   Button,
-  Row
+  Row,
+  InputNumber
 } from "rsuite";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
@@ -152,23 +153,25 @@ const ExpenseForm = (props) => {
               block
               onChange={(e) => setExpenseName(e)}
               value={expenseName}
+              disabled={createExpense.isLoading || updateExpense.isLoading}
             />
           </FormGroup>
-          <FormGroup>
-            <ControlLabel>Cost (Pesos)<Asterisk/></ControlLabel>
-            <Input
-              block
-              type="number"
-              onChange={(e) => setExpenseCost(e)}
-              value={expenseCost}
-            />
-          </FormGroup>
+          <ControlLabel>Cost (Pesos)<Asterisk/></ControlLabel>
+          <InputNumber
+            block
+            scrollable={false}
+            onChange={(e) => setExpenseCost(e)}
+            value={expenseCost}
+            disabled={createExpense.isLoading || updateExpense.isLoading}
+          />
+          <br/>
           <FormGroup>
             <ControlLabel>Vendor/Client</ControlLabel>
             <Input
               block
               onChange={(e) => setVendor(e)}
               value={vendor}
+              disabled={createExpense.isLoading || updateExpense.isLoading}
             />
           </FormGroup>
           <FormGroup>
