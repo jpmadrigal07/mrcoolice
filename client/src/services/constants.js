@@ -1,8 +1,13 @@
 export const graphqlUrl = "/mrcoolice";
 
 export const LOCATION_ITEMS = [
+  { value: "Walk-in", label: "Walk-in" },
   { value: "Sta. Cruz", label: "Sta. Cruz" },
   { value: "Nagcarlan", label: "Nagcarlan" },
+  { value: "Pagsanjan", label: "Pagsanjan" },
+  { value: "Cavinti", label: "Cavinti" },
+  { value: "Magdalena", label: "Magdalena" },
+  { value: "Liliw", label: "Liliw" },
 ];
 
 export const CUSTOMER_TYPE_ITEMS = [

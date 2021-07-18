@@ -446,7 +446,6 @@ const AddOrder2 = (props) => {
                     block
                     onChange={(e) => setLocation(e)}
                     disabled={createSales.isLoading}
-                    searchable={false}
                   />
                 </FormGroup>
                 <FormGroup>
