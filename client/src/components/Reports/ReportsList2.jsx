@@ -27,7 +27,7 @@ const ReportsList2 = (props) => {
   const [cashes, setCashes] = useState([]);
   const { triggerTopAlert } = props;
   const { search } = useLocation();
-  const dates = search.split("&");  
+  const dates = search.split("&");
   const dateFrom = dates[0]?.replace("?dateFrom=", "");
   const dateTo = dates[1]?.replace("dateTo=", "");
   const inclusion = dates[2]?.replace("inclusion=", "");
@@ -72,8 +72,10 @@ const ReportsList2 = (props) => {
     }
   );
 
-  const getOrderList = useQuery("OrderList", async () => {
-    const query = `{
+  const getOrderList = useQuery(
+    "OrderList",
+    async () => {
+      const query = `{
       sales {
           customerId {
               _id
@@ -94,13 +96,17 @@ const ReportsList2 = (props) => {
           createdAt
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
-  },{
-    enabled: false,
-  });
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
 
-  const getOrderList2 = useQuery("OrderList2", async () => {
-    const query = `{
+  const getOrderList2 = useQuery(
+    "OrderList2",
+    async () => {
+      const query = `{
       salesByUser(userId: "${autheticatedUserId}") {
           customerId {
               _id
@@ -121,13 +127,17 @@ const ReportsList2 = (props) => {
           createdAt
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
-  },{
-    enabled: false,
-  });
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
 
-  const getExpenseList = useQuery("getExpenseList", async () => {
-    const query = `{
+  const getExpenseList = useQuery(
+    "getExpenseList",
+    async () => {
+      const query = `{
         expenses {
             _id,
             name,
@@ -136,13 +146,17 @@ const ReportsList2 = (props) => {
             createdAt
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
-  },{
-    enabled: false,
-  });
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
 
-  const getExpenseList2 = useQuery("getExpenseList2", async () => {
-    const query = `{
+  const getExpenseList2 = useQuery(
+    "getExpenseList2",
+    async () => {
+      const query = `{
         expenseByUser(userId: "${autheticatedUserId}") {
             _id,
             name,
@@ -151,13 +165,17 @@ const ReportsList2 = (props) => {
             createdAt
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
-  },{
-    enabled: false,
-  });
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
 
-  const getCashList = useQuery("getCashList", async () => {
-    const query = `{
+  const getCashList = useQuery(
+    "getCashList",
+    async () => {
+      const query = `{
         cashes {
             _id,
             onePeso,
@@ -172,13 +190,17 @@ const ReportsList2 = (props) => {
             createdAt
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
-  },{
-    enabled: false,
-  });
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
 
-  const getCashList2 = useQuery("getCashList2", async () => {
-    const query = `{
+  const getCashList2 = useQuery(
+    "getCashList2",
+    async () => {
+      const query = `{
         cashByUser(userId: "${autheticatedUserId}") {
             _id,
             onePeso,
@@ -193,10 +215,12 @@ const ReportsList2 = (props) => {
             createdAt
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
-  },{
-    enabled: false,
-  });
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
 
   const getProductList = useQuery("getProductList", async () => {
     const query = `{
@@ -224,8 +248,30 @@ const ReportsList2 = (props) => {
   ];
   const tableHeader2 = ["DR", "RECEIPT #", "SALES INV", "DESC.", "PARTICULARS"];
   // Note: Add value to both fixedProduct and fixedProductText for new scale record
-  const fixedProduct = [{ iceType: "tube", weight: 50 }, { iceType: "tube", weight: 30 }, { iceType: "tube", weight: 25 }, { iceType: "tube", weight: 15 }, { iceType: "tube", weight: 5 }, { iceType: "tube", weight: 4 }, { iceType: "tube", weight: 2 }, { iceType: "crushed", weight: 30 }, { iceType: "crushed", weight: 15 }, { iceType: "crushed", weight: 4 }]
-  const fixedProductText = ["Tube (50 kg)", "Tube (30 kg)", "Tube (25 kg)", "Tube (15 kg)", "Tube (5 kg)", "Tube (4 kg)", "Tube (2 kg)", "Crushed (30 kg)", "Crushed (15 kg)", "Crushed (4 kg)"]
+  const fixedProduct = [
+    { iceType: "tube", weight: 50 },
+    { iceType: "tube", weight: 30 },
+    { iceType: "tube", weight: 25 },
+    { iceType: "tube", weight: 15 },
+    { iceType: "tube", weight: 5 },
+    { iceType: "tube", weight: 4 },
+    { iceType: "tube", weight: 2 },
+    { iceType: "crushed", weight: 30 },
+    { iceType: "crushed", weight: 15 },
+    { iceType: "crushed", weight: 4 },
+  ];
+  const fixedProductText = [
+    "Tube (50 kg)",
+    "Tube (30 kg)",
+    "Tube (25 kg)",
+    "Tube (15 kg)",
+    "Tube (5 kg)",
+    "Tube (4 kg)",
+    "Tube (2 kg)",
+    "Crushed (30 kg)",
+    "Crushed (15 kg)",
+    "Crushed (4 kg)",
+  ];
 
   const tableCombined = [
     ...tableHeader2,
@@ -234,10 +280,6 @@ const ReportsList2 = (props) => {
     ...fixedProductText,
     "TOTAL AMNT",
   ];
-
-  function capitalize(string) {
-    return string?.charAt(0).toUpperCase() + string?.slice(1).toLowerCase();
-  }
 
   useEffect(() => {
     if (sales.length > 0) {
@@ -273,31 +315,39 @@ const ReportsList2 = (props) => {
             return "";
           }
         });
-        const rowValuesSecondPart = fixedProduct.map((res3) => {
-          const foundProducts = res.filter(
-            (res4) => res4.productId?.weight === res3?.weight && res4.productId?.iceType === res3?.iceType
-          );
-          return foundProducts.length > 0 ? foundProducts.length : "---";
-        }).filter(res => res);
+        const rowValuesSecondPart = fixedProduct
+          .map((res3) => {
+            const foundProducts = res.filter(
+              (res4) =>
+                res4.productId?.weight === res3?.weight &&
+                res4.productId?.iceType === res3?.iceType
+            );
+            return foundProducts.length > 0 ? foundProducts.length : "---";
+          })
+          .filter((res) => res);
         const totalSecondPart = rowValuesSecondPart.reduce(function (a, b) {
           const num1 = a === "" || a === "---" ? 0 : a;
           const num2 = b === "" || b === "---" ? 0 : b;
           return num1 + num2;
         }, 0);
-        const rowValuesThirdPart = fixedProduct.map((res5, i) => {
-          const foundProducts = res.filter(
-            (res6) => res6.productId?.weight === res5?.weight && res6.productId?.iceType === res5?.iceType
-          );
-          const costsValue = foundProducts
-            .map((res) => res.productId?.cost)
-            .filter((res2) => res2);
-          const sum = costsValue.reduce(function (a, b) {
-            const num1 = a === "" || a === "---" ? 0 : a;
-            const num2 = b === "" || b === "---" ? 0 : b;
-            return num1 + num2;
-          }, 0);
-          return foundProducts.length > 0 ? sum : "---";
-        }).filter(res => res);
+        const rowValuesThirdPart = fixedProduct
+          .map((res5, i) => {
+            const foundProducts = res.filter(
+              (res6) =>
+                res6.productId?.weight === res5?.weight &&
+                res6.productId?.iceType === res5?.iceType
+            );
+            const costsValue = foundProducts
+              .map((res) => res.productId?.cost)
+              .filter((res2) => res2);
+            const sum = costsValue.reduce(function (a, b) {
+              const num1 = a === "" || a === "---" ? 0 : a;
+              const num2 = b === "" || b === "---" ? 0 : b;
+              return num1 + num2;
+            }, 0);
+            return foundProducts.length > 0 ? sum : "---";
+          })
+          .filter((res) => res);
         const totalThirdPart = rowValuesThirdPart.reduce(function (a, b) {
           const num1 = isNaN(a) ? 0 : a;
           const num2 = isNaN(b) ? 0 : b;
@@ -314,15 +364,21 @@ const ReportsList2 = (props) => {
       setTableSales(tableWithValues);
       const salesProducts = sales.map((res) => res.productId);
       const totalKiloGramData = fixedProductText.map((res) => {
-        const totalData = salesProducts.filter((res2) => `${res2?.iceType} (${res2?.weight} ${res2?.scaleType})` === res.toLocaleLowerCase());
+        const totalData = salesProducts.filter(
+          (res2) =>
+            `${res2?.iceType} (${res2?.weight} ${res2?.scaleType})` ===
+            res.toLocaleLowerCase()
+        );
         return {
           particulars: res,
           totalQty: totalData?.length > 0 ? totalData?.length : "---",
           totalKgs: totalData[0]?.weight ? totalData[0]?.weight : "---",
-          total: totalData[0]?.weight ? totalData?.length * totalData[0]?.weight : "---",
+          total: totalData[0]?.weight
+            ? totalData?.length * totalData[0]?.weight
+            : "---",
         };
       });
-      setTotalKiloGram(totalKiloGramData)
+      setTotalKiloGram(totalKiloGramData);
       const totalKiloGrandTotalData = totalKiloGramData
         .map((res) => res?.total)
         .reduce(function (a, b) {
@@ -330,7 +386,7 @@ const ReportsList2 = (props) => {
           const num2 = b === "" || b === "---" ? 0 : b;
           return num1 + num2;
         }, 0);
-      setTotalKiloGrandTotal(totalKiloGrandTotalData)
+      setTotalKiloGrandTotal(totalKiloGrandTotalData);
     }
   }, [sales]);
 
@@ -386,10 +442,7 @@ const ReportsList2 = (props) => {
     "Total Kgs",
   ];
 
-  const tableCashHeader = [
-    "Bill",
-    "Count",
-  ];
+  const tableCashHeader = ["Cash Breakdown"];
 
   const tableCash = [
     "One Peso",
@@ -422,12 +475,12 @@ const ReportsList2 = (props) => {
   useEffect(() => {
     if (autheticatedUserId) {
       getAutheticatedUserData.refetch();
-      if(isDataOwnerUser) {
-        getOrderList2.refetch(); 
+      if (isDataOwnerUser) {
+        getOrderList2.refetch();
         getExpenseList2.refetch();
         getCashList2.refetch();
       } else {
-        getOrderList.refetch(); 
+        getOrderList.refetch();
         getExpenseList.refetch();
         getCashList.refetch();
       }
@@ -546,37 +599,62 @@ const ReportsList2 = (props) => {
           (res) =>
             parseInt(res.createdAt) > parseInt(dateFrom) &&
             parseInt(res.createdAt) < parseInt(dateTo)
-        )
-        const onePesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        );
+        const onePesoTotal = dataDBFiltered.reduce(function (sum, current) {
           return sum + current.onePeso;
         }, 0);
-        const fivePesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        const fivePesoTotal = dataDBFiltered.reduce(function (sum, current) {
           return sum + current.fivePeso;
         }, 0);
-        const tenPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        const tenPesoTotal = dataDBFiltered.reduce(function (sum, current) {
           return sum + current.tenPeso;
         }, 0);
-        const twentyPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        const twentyPesoTotal = dataDBFiltered.reduce(function (sum, current) {
           return sum + current.twentyPeso;
         }, 0);
-        const fiftyPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        const fiftyPesoTotal = dataDBFiltered.reduce(function (sum, current) {
           return sum + current.fiftyPeso;
         }, 0);
-        const oneHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        const oneHundredPesoTotal = dataDBFiltered.reduce(function (
+          sum,
+          current
+        ) {
           return sum + current.oneHundredPeso;
-        }, 0);
-        const twoHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        },
+        0);
+        const twoHundredPesoTotal = dataDBFiltered.reduce(function (
+          sum,
+          current
+        ) {
           return sum + current.twoHundredPeso;
-        }, 0);
-        const fiveHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        },
+        0);
+        const fiveHundredPesoTotal = dataDBFiltered.reduce(function (
+          sum,
+          current
+        ) {
           return sum + current.fiveHundredPeso;
-        }, 0);
-        const oneThousandPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        },
+        0);
+        const oneThousandPesoTotal = dataDBFiltered.reduce(function (
+          sum,
+          current
+        ) {
           return sum + current.oneThousandPeso;
-        }, 0);
-      
+        },
+        0);
 
-        setCashes([onePesoTotal, fivePesoTotal, tenPesoTotal, twentyPesoTotal, fiftyPesoTotal, oneHundredPesoTotal, twoHundredPesoTotal, fiveHundredPesoTotal, oneThousandPesoTotal]);
+        setCashes([
+          onePesoTotal,
+          fivePesoTotal,
+          tenPesoTotal,
+          twentyPesoTotal,
+          fiftyPesoTotal,
+          oneHundredPesoTotal,
+          twoHundredPesoTotal,
+          fiveHundredPesoTotal,
+          oneThousandPesoTotal,
+        ]);
       }
     }
     if (getCashList.isError) {
@@ -595,37 +673,62 @@ const ReportsList2 = (props) => {
           (res) =>
             parseInt(res.createdAt) > parseInt(dateFrom) &&
             parseInt(res.createdAt) < parseInt(dateTo)
-        )
-        const onePesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        );
+        const onePesoTotal = dataDBFiltered.reduce(function (sum, current) {
           return sum + current.onePeso;
         }, 0);
-        const fivePesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        const fivePesoTotal = dataDBFiltered.reduce(function (sum, current) {
           return sum + current.fivePeso;
         }, 0);
-        const tenPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        const tenPesoTotal = dataDBFiltered.reduce(function (sum, current) {
           return sum + current.tenPeso;
         }, 0);
-        const twentyPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        const twentyPesoTotal = dataDBFiltered.reduce(function (sum, current) {
           return sum + current.twentyPeso;
         }, 0);
-        const fiftyPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        const fiftyPesoTotal = dataDBFiltered.reduce(function (sum, current) {
           return sum + current.fiftyPeso;
         }, 0);
-        const oneHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        const oneHundredPesoTotal = dataDBFiltered.reduce(function (
+          sum,
+          current
+        ) {
           return sum + current.oneHundredPeso;
-        }, 0);
-        const twoHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        },
+        0);
+        const twoHundredPesoTotal = dataDBFiltered.reduce(function (
+          sum,
+          current
+        ) {
           return sum + current.twoHundredPeso;
-        }, 0);
-        const fiveHundredPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        },
+        0);
+        const fiveHundredPesoTotal = dataDBFiltered.reduce(function (
+          sum,
+          current
+        ) {
           return sum + current.fiveHundredPeso;
-        }, 0);
-        const oneThousandPesoTotal = dataDBFiltered.reduce(function(sum, current) {
+        },
+        0);
+        const oneThousandPesoTotal = dataDBFiltered.reduce(function (
+          sum,
+          current
+        ) {
           return sum + current.oneThousandPeso;
-        }, 0);
-      
+        },
+        0);
 
-        setCashes([onePesoTotal, fivePesoTotal, tenPesoTotal, twentyPesoTotal, fiftyPesoTotal, oneHundredPesoTotal, twoHundredPesoTotal, fiveHundredPesoTotal, oneThousandPesoTotal]);
+        setCashes([
+          onePesoTotal,
+          fivePesoTotal,
+          tenPesoTotal,
+          twentyPesoTotal,
+          fiftyPesoTotal,
+          oneHundredPesoTotal,
+          twoHundredPesoTotal,
+          fiveHundredPesoTotal,
+          oneThousandPesoTotal,
+        ]);
       }
     }
     if (getCashList2.isError) {
@@ -754,7 +857,11 @@ const ReportsList2 = (props) => {
               <tr>
                 {tableHeaderExpense.map((res2, i) => {
                   if (i === 0) {
-                    return <td>{moment.unix(res.createdAt / 1000).format("MM/DD/YYYY")}</td>;
+                    return (
+                      <td>
+                        {moment.unix(res.createdAt / 1000).format("MM/DD/YYYY")}
+                      </td>
+                    );
                   } else if (i === 2) {
                     return <td>{res.vendor ? res.vendor : "---"}</td>;
                   } else if (i === 5) {
@@ -863,7 +970,7 @@ const ReportsList2 = (props) => {
           <tr>
             {tableCashHeader.map((res) => {
               return (
-                <td>
+                <td colSpan={4}>
                   <strong>{res}</strong>
                 </td>
               );
@@ -874,9 +981,68 @@ const ReportsList2 = (props) => {
               <tr>
                 <td>{res}</td>
                 <td>{cashes[i] === 0 ? "---" : cashes[i]}</td>
+                <td>x</td>
+                <td>
+                  {i === 0 ? cashes[i] * 1 !== 0 ? cashes[i] * 1 : "---" : null}
+                  {i === 1 ? cashes[i] * 5 !== 0 ? cashes[i] * 5 : "---" : null}
+                  {i === 2 ? cashes[i] * 10 !== 0 ? cashes[i] * 10 : "---" : null}
+                  {i === 3 ? cashes[i] * 20 !== 0 ? cashes[i] * 20 : "---" : null}
+                  {i === 4 ? cashes[i] * 50 !== 0 ? cashes[i] * 50 : "---" : null}
+                  {i === 5 ? cashes[i] * 100 !== 0 ? cashes[i] * 100 : "---" : null}
+                  {i === 6 ? cashes[i] * 200 !== 0 ? cashes[i] * 200 : "---" : null}
+                  {i === 7 ? cashes[i] * 500 !== 0 ? cashes[i] * 500 : "---" : null}
+                  {i === 8 ? cashes[i] * 1000 !== 0 ? cashes[i] * 1000 : "---" : null}
+                </td>
               </tr>
             );
           })}
+          <tr>
+            <td colSpan={4} style={{ color: "transparent" }}>
+              asdasdasd
+            </td>
+          </tr>
+          <tr>
+            <td>Total</td>
+            <td></td>
+            <td></td>
+            <td>
+              {cashes.reduce((prev, curr, index) => {
+                let multiply;
+                switch (index) {
+                  case 0:
+                    multiply = 1;
+                    break;
+                  case 1:
+                    multiply = 5;
+                    break;
+                  case 2:
+                    multiply = 10;
+                    break;
+                  case 3:
+                    multiply = 20;
+                    break;
+                  case 4:
+                    multiply = 50;
+                    break;
+                  case 5:
+                    multiply = 100;
+                    break;
+                  case 6:
+                    multiply = 200;
+                    break;
+                  case 7:
+                    multiply = 500;
+                    break;
+                  case 8:
+                    multiply = 1000;
+                    break;
+                  default:
+                  multiply = 0;
+                }
+                return prev + (curr*multiply);
+              }, 0)}
+            </td>
+          </tr>
         </table>
       ) : null}
     </div>
