@@ -15,6 +15,7 @@ import {
   Row,
   Grid,
   AutoComplete,
+  InputNumber
 } from "rsuite";
 import {
   graphqlUrl,
@@ -419,24 +420,24 @@ const AddOrder2 = (props) => {
                     disabled={createSales.isLoading}
                   />
                 </FormGroup>
-                <FormGroup>
-                  <ControlLabel>BIR Receipt #</ControlLabel>
-                  <Input
-                    block
-                    type="number"
-                    value={birNumber}
-                    onChange={(e) => setBirNumber(e)}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>DR Number</ControlLabel>
-                  <Input
-                    block
-                    type="number"
-                    value={drNumber}
-                    onChange={(e) => setDrNumber(e)}
-                  />
-                </FormGroup>
+                <ControlLabel>BIR Receipt #</ControlLabel>
+                <InputNumber
+                  block
+                  type="number"
+                  value={birNumber}
+                  onChange={(e) => setBirNumber(e)}
+                  disabled={createSales.isLoading}
+                />
+                <br/>
+                <ControlLabel>DR #</ControlLabel>
+                <InputNumber
+                  block
+                  scrollable={false}
+                  value={drNumber}
+                  onChange={(e) => setDrNumber(e)}
+                  disabled={createSales.isLoading}
+                />
+                <br/>
                 <FormGroup>
                   <ControlLabel>Location</ControlLabel>
                   <SelectPicker
@@ -445,6 +446,7 @@ const AddOrder2 = (props) => {
                     block
                     onChange={(e) => setLocation(e)}
                     disabled={createSales.isLoading}
+                    searchable={false}
                   />
                 </FormGroup>
                 <FormGroup>
@@ -455,6 +457,7 @@ const AddOrder2 = (props) => {
                     block
                     onChange={(e) => setVehicleType(e)}
                     disabled={createSales.isLoading}
+                    searchable={false}
                   />
                 </FormGroup>
                 <hr />
@@ -462,13 +465,7 @@ const AddOrder2 = (props) => {
                   return (
                     <>
                       <FormGroup>
-                        <ControlLabel>Product {i + 1}</ControlLabel>
-                        {/* <SelectPicker
-                          data={products}
-                          block
-                          onChange={(e) => updateProduct(e, i)}
-                          disabled={createSales.isLoading}
-                        /> */}
+                        <ControlLabel>Product {i + 1}<span style={{ color: "red" }}>*</span></ControlLabel>
                         <AutoComplete
                           type={"string"}
                           data={products}
@@ -477,12 +474,11 @@ const AddOrder2 = (props) => {
                           disabled={createSales.isLoading}
                         />
                       </FormGroup>
-                      <ControlLabel>Quantity</ControlLabel>
-                      <Input
-                        block
-                        type="number"
+                      <ControlLabel>Quantity<span style={{ color: "red" }}>*</span></ControlLabel>
+                      <InputNumber
                         onChange={(e) => updateProductQuantity(e, i)}
                         value={res.quantity}
+                        disabled={createSales.isLoading}
                       />
                       <hr />
                     </>
