@@ -10,3 +10,12 @@ html {
   display: inline-block;
   font-weight: bold;
 }
+
+.rs-input-number-btn-group-vertical {
+  display: none !important;
+}
+
+.rs-input-number > .rs-input {
+  border-bottom-right-radius: 6px !important;
+  border-top-right-radius: 6px !important;
+}
