@@ -9,6 +9,7 @@ import {
   Button,
   Row,
   DatePicker,
+  InputNumber,
 } from "rsuite";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
@@ -171,136 +172,125 @@ const CashForm = (props) => {
     <>
       <Panel bordered style={{ margin: "10px" }}>
         <Form onSubmit={isEditActive ? () => update() : () => create()}>
-          <FormGroup>
-            <ControlLabel>Date</ControlLabel>
-            <DatePicker
-              block
-              onChange={(e) => setDate(e)}
-              value={date}
-              disabled={createCash.isLoading || updateCash.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>One Peso</ControlLabel>
-            <Input
-              block
-              type={"number"}
-              onChange={(e) => setOnePeso(e)}
-              value={onePeso}
-              disabled={createCash.isLoading || updateCash.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Five Peso</ControlLabel>
-            <Input
-              block
-              type={"number"}
-              onChange={(e) => setFivePeso(e)}
-              value={fivePeso}
-              disabled={createCash.isLoading || updateCash.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Ten Peso</ControlLabel>
-            <Input
-              block
-              type={"number"}
-              onChange={(e) => setTenPeso(e)}
-              value={tenPeso}
-              disabled={createCash.isLoading || updateCash.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Twenty Peso</ControlLabel>
-            <Input
-              block
-              type={"number"}
-              onChange={(e) => setTwentyPeso(e)}
-              value={twentyPeso}
-              disabled={createCash.isLoading || updateCash.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Fifty Peso</ControlLabel>
-            <Input
-              block
-              type={"number"}
-              onChange={(e) => setFiftyPeso(e)}
-              value={fiftyPeso}
-              disabled={createCash.isLoading || updateCash.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>One Hundred Peso</ControlLabel>
-            <Input
-              block
-              type={"number"}
-              onChange={(e) => setOneHundredPeso(e)}
-              value={oneHundredPeso}
-              disabled={createCash.isLoading || updateCash.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Two Hundred Peso</ControlLabel>
-            <Input
-              block
-              type={"number"}
-              onChange={(e) => setTwoHundredPeso(e)}
-              value={twoHundredPeso}
-              disabled={createCash.isLoading || updateCash.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Five Hundred Peso</ControlLabel>
-            <Input
-              block
-              type={"number"}
-              onChange={(e) => setFiveHundredPeso(e)}
-              value={fiveHundredPeso}
-              disabled={createCash.isLoading || updateCash.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>One Thousand Peso</ControlLabel>
-            <Input
-              block
-              type={"number"}
-              onChange={(e) => setOneThousandPeso(e)}
-              value={oneThousandPeso}
-              disabled={createCash.isLoading || updateCash.isLoading}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ButtonToolbar>
-              {isEditActive ? (
-                <Row>
-                  <Button
-                    appearance="primary"
-                    type="submit"
-                    style={{ marginRight: 10 }}
-                    disabled={updateCash.isLoading}
-                  >
-                    Update
-                  </Button>
-                  <Button
-                    appearance="danger"
-                    onClick={() => setIsEditActive(false)}
-                    disabled={updateCash.isLoading}
-                  >
-                    Back to list
-                  </Button>
-                </Row>
-              ) : (
+          <ControlLabel>Date</ControlLabel>
+          <DatePicker
+            block
+            onChange={(e) => setDate(e)}
+            value={date}
+            disabled={createCash.isLoading || updateCash.isLoading}
+          />
+          <br />
+          <ControlLabel>One Peso</ControlLabel>
+          <InputNumber
+            block
+            scrollable={false}
+            onChange={(e) => setOnePeso(e)}
+            value={onePeso}
+            disabled={createCash.isLoading || updateCash.isLoading}
+          />
+          <br />
+          <ControlLabel>Five Peso</ControlLabel>
+          <InputNumber
+            block
+            scrollable={false}
+            onChange={(e) => setFivePeso(e)}
+            value={fivePeso}
+            disabled={createCash.isLoading || updateCash.isLoading}
+          />
+          <br />
+          <ControlLabel>Ten Peso</ControlLabel>
+          <InputNumber
+            block
+            scrollable={false}
+            onChange={(e) => setTenPeso(e)}
+            value={tenPeso}
+            disabled={createCash.isLoading || updateCash.isLoading}
+          />
+          <br />
+          <ControlLabel>Twenty Peso</ControlLabel>
+          <InputNumber
+            block
+            scrollable={false}
+            onChange={(e) => setTwentyPeso(e)}
+            value={twentyPeso}
+            disabled={createCash.isLoading || updateCash.isLoading}
+          />
+          <br />
+          <ControlLabel>Fifty Peso</ControlLabel>
+          <InputNumber
+            block
+            scrollable={false}
+            onChange={(e) => setFiftyPeso(e)}
+            value={fiftyPeso}
+            disabled={createCash.isLoading || updateCash.isLoading}
+          />
+          <br />
+          <ControlLabel>One Hundred Peso</ControlLabel>
+          <InputNumber
+            block
+            scrollable={false}
+            onChange={(e) => setOneHundredPeso(e)}
+            value={oneHundredPeso}
+            disabled={createCash.isLoading || updateCash.isLoading}
+          />
+          <br />
+          <ControlLabel>Two Hundred Peso</ControlLabel>
+          <InputNumber
+            block
+            scrollable={false}
+            onChange={(e) => setTwoHundredPeso(e)}
+            value={twoHundredPeso}
+            disabled={createCash.isLoading || updateCash.isLoading}
+          />
+          <br />
+          <ControlLabel>Five Hundred Peso</ControlLabel>
+          <InputNumber
+            block
+            scrollable={false}
+            onChange={(e) => setFiveHundredPeso(e)}
+            value={fiveHundredPeso}
+            disabled={createCash.isLoading || updateCash.isLoading}
+          />
+          <br />
+          <ControlLabel>One Thousand Peso</ControlLabel>
+          <InputNumber
+            block
+            scrollable={false}
+            onChange={(e) => setOneThousandPeso(e)}
+            value={oneThousandPeso}
+            disabled={createCash.isLoading || updateCash.isLoading}
+          />
+          <br />
+          <ButtonToolbar>
+            {isEditActive ? (
+              <Row>
                 <Button
                   appearance="primary"
                   type="submit"
-                  disabled={createCash.isLoading}
+                  style={{ marginRight: 10 }}
+                  disabled={updateCash.isLoading}
                 >
-                  Add
+                  Update
                 </Button>
-              )}
-            </ButtonToolbar>
-          </FormGroup>
+                <Button
+                  appearance="danger"
+                  onClick={() => setIsEditActive(false)}
+                  disabled={updateCash.isLoading}
+                >
+                  Back to list
+                </Button>
+              </Row>
+            ) : (
+              <Button
+                appearance="primary"
+                type="submit"
+                disabled={createCash.isLoading}
+              >
+                Add
+              </Button>
+            )}
+          </ButtonToolbar>
+          <br />
         </Form>
       </Panel>
     </>
