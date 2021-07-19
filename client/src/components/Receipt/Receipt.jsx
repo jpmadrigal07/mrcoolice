@@ -25,6 +25,7 @@ function Receipt(props) {
   const [drNumber, setDrNumber] = useState("---");
   const [location, setLocation] = useState("---");
   const [vehicleType, setVehicleType] = useState("---");
+  const [remarks, setRemarks] = useState("---");
 
   const getOrders = useQuery("getOrders", async () => {
     const query = `{
@@ -47,6 +48,7 @@ function Receipt(props) {
                 drNumber,
                 location,
                 vehicleType,
+                remarks,
                 createdAt
             }
         }`;
@@ -68,6 +70,7 @@ function Receipt(props) {
           setDrNumber(firstValue.drNumber ? firstValue.drNumber : "---");
           setLocation(firstValue.location ? firstValue.location : "---");
           setVehicleType(firstValue.vehicleType ? firstValue.vehicleType : "---");
+          setRemarks(firstValue.remarks ? firstValue.remarks : "---");
           const uniqOrder = uniqBy(orders, "productId._id");
           const newData = uniqOrder.map((res) => {
             const foundOrder = orders.filter(
@@ -156,6 +159,8 @@ function Receipt(props) {
                     <span style={{ fontWeight: "700" }}>CUST:</span> {cust}
                     <br />
                     <span style={{ fontWeight: "700" }}>STAFF:</span> {staff}
+                    <br />
+                    <span style={{ fontWeight: "700" }}>RMRKS:</span> {remarks}
                   </p>
                   <br />
                 </div>

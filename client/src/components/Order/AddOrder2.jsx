@@ -53,6 +53,7 @@ const AddOrder2 = (props) => {
   const [receiptNumber, setReceiptNumber] = useState(null);
   const [location, setLocation] = useState(null);
   const [vehicleType, setVehicleType] = useState(null);
+  const [remarks, setRemarks] = useState(null);
   const [orderList, setOrderList] = useState([]);
 
   const getOrderList = useQuery("OrderList", async () => {
@@ -254,6 +255,7 @@ const AddOrder2 = (props) => {
         setDrNumber("");
         setLocation(null);
         setVehicleType(null);
+        setRemarks("");
         setInputCustomerDescription("");
         const toUpdate = [];
         setOrder(toUpdate);
@@ -320,6 +322,7 @@ const AddOrder2 = (props) => {
               drNumber: drNumber ? drNumber : null,
               location: location,
               vehicleType: vehicleType,
+              remarks: remarks,
               receiptNumber,
             };
           }
@@ -337,6 +340,7 @@ const AddOrder2 = (props) => {
                 location: "${res.location}",
                 drNumber: ${res.drNumber},
                 vehicleType: "${res.vehicleType}",
+                remarks: "${res.remarks}",
               ) 
               {
                 receiptNumber
@@ -459,6 +463,14 @@ const AddOrder2 = (props) => {
                     searchable={false}
                   />
                 </FormGroup>
+                <FormGroup>
+                  <ControlLabel>Remarks</ControlLabel>
+                  <Input
+                    block
+                    onChange={(e) => setRemarks(e)}
+                    disabled={createSales.isLoading}
+                  />
+                </FormGroup>
                 <hr />
                 {order.map((res, i) => {
                   return (
@@ -522,6 +534,7 @@ const AddOrder2 = (props) => {
                 location={location ? location : "---"}
                 vehicleType={vehicleType ? vehicleType : "---"}
                 drNumber={drNumber ? drNumber : "---"}
+                remarks={remarks ? remarks : "---"}
               />
             </Panel>
           </Col>
