@@ -39,6 +39,7 @@ const SaleType = new GraphQLObjectType({
     drNumber: { type: GraphQLInt },
     location: { type: GraphQLString },
     vehicleType: { type: GraphQLString },
+    remarks: { type: GraphQLString },
     createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
     deletedAt: { type: GraphQLString },
