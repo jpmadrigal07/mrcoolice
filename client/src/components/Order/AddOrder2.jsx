@@ -15,7 +15,7 @@ import {
   Row,
   Grid,
   AutoComplete,
-  InputNumber
+  InputNumber,
 } from "rsuite";
 import {
   graphqlUrl,
@@ -28,6 +28,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useHistory } from "react-router-dom";
 import ReceiptNew from "../Receipt/ReceiptNew";
+import moment from "moment";
 
 const AddOrder2 = (props) => {
   const history = useHistory();
@@ -73,7 +74,8 @@ const AddOrder2 = (props) => {
           },
           receiptNumber,
           birNumber,
-          drNumber
+          drNumber,
+          createdAt
         }
       }`;
     return await axios.post(graphqlUrl, { query });
@@ -95,9 +97,17 @@ const AddOrder2 = (props) => {
     if (order.length === 0) {
       addNewProduct();
     }
-    if (orderList.length > 0) {
+    const startDay = moment().startOf("day").unix() * 1000;
+    const endDay = moment().endOf("day").unix() * 1000;
+    const orderListFilteredByCurrentDay = orderList.filter(
+      (res) =>
+        parseInt(res.createdAt) > parseInt(startDay) &&
+        parseInt(res.createdAt) < parseInt(endDay)
+    );
+    if (orderListFilteredByCurrentDay.length > 0) {
       const receiptIncrement =
-        orderList[orderList?.length - 1]?.receiptNumber + 1;
+        orderListFilteredByCurrentDay[orderListFilteredByCurrentDay?.length - 1]
+          ?.receiptNumber + 1;
       setReceiptNumber(receiptIncrement);
     } else {
       setReceiptNumber(1);
@@ -362,7 +372,7 @@ const AddOrder2 = (props) => {
   };
 
   const updateProduct = (value, index) => {
-    const product = productsWithId.find(res => res.label === value);
+    const product = productsWithId.find((res) => res.label === value);
     const toUpdate = order;
     toUpdate[index].productId = product?.id;
     setOrder([...toUpdate]);
@@ -432,7 +442,7 @@ const AddOrder2 = (props) => {
                   onChange={(e) => setBirNumber(e)}
                   disabled={createSales.isLoading}
                 />
-                <br/>
+                <br />
                 <ControlLabel>DR #</ControlLabel>
                 <InputNumber
                   block
@@ -441,7 +451,7 @@ const AddOrder2 = (props) => {
                   onChange={(e) => setDrNumber(e)}
                   disabled={createSales.isLoading}
                 />
-                <br/>
+                <br />
                 <FormGroup>
                   <ControlLabel>Location</ControlLabel>
                   <SelectPicker
@@ -467,6 +477,7 @@ const AddOrder2 = (props) => {
                   <ControlLabel>Remarks</ControlLabel>
                   <Input
                     block
+                    value={remarks}
                     onChange={(e) => setRemarks(e)}
                     disabled={createSales.isLoading}
                   />
@@ -476,7 +487,10 @@ const AddOrder2 = (props) => {
                   return (
                     <>
                       <FormGroup>
-                        <ControlLabel>Product {i + 1}<span style={{ color: "red" }}>*</span></ControlLabel>
+                        <ControlLabel>
+                          Product {i + 1}
+                          <span style={{ color: "red" }}>*</span>
+                        </ControlLabel>
                         <AutoComplete
                           type={"string"}
                           data={products}
@@ -485,7 +499,9 @@ const AddOrder2 = (props) => {
                           disabled={createSales.isLoading}
                         />
                       </FormGroup>
-                      <ControlLabel>Quantity<span style={{ color: "red" }}>*</span></ControlLabel>
+                      <ControlLabel>
+                        Quantity<span style={{ color: "red" }}>*</span>
+                      </ControlLabel>
                       <InputNumber
                         scrollable={false}
                         onChange={(e) => updateProductQuantity(e, i)}
