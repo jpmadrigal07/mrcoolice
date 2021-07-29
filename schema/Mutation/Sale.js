@@ -14,6 +14,7 @@ module.exports.createSale = {
     customerId: { type: GraphQLNonNull(GraphQLID) },
     productId: { type: GraphQLNonNull(GraphQLID) },
     receiptNumber: { type: GraphQLInt },
+    dayCount: { type: GraphQLInt },
     birNumber: { type: GraphQLInt },
     drNumber: { type: GraphQLInt },
     location: { type: GraphQLString },
@@ -34,6 +35,7 @@ module.exports.createSale = {
       customerId: args.customerId,
       productId: args.productId,
       receiptNumber: args.receiptNumber,
+      dayCount: args.dayCount,
       birNumber: args.birNumber,
       drNumber: args.drNumber,
       location: args.location,
@@ -51,6 +53,7 @@ module.exports.updateSale = {
     customerId: { type: GraphQLID },
     productId: { type: GraphQLID },
     receiptNumber: { type: GraphQLInt },
+    dayCount: { type: GraphQLInt },
     birNumber: { type: GraphQLInt },
     drNumber: { type: GraphQLInt },
     location: { type: GraphQLString },
@@ -63,6 +66,7 @@ module.exports.updateSale = {
     args.customerId ? (toUpdate.customerId = args.customerId) : null;
     args.productId ? (toUpdate.productId = args.productId) : null;
     args.receiptNumber ? (toUpdate.receiptNumber = args.receiptNumber) : null;
+    args.dayCount ? (toUpdate.dayCount = args.dayCount) : null;
     args.birNumber ? (toUpdate.birNumber = args.birNumber) : null;
     args.location ? (toUpdate.drNumber = args.drNumber) : null;
     args.birNumber ? (toUpdate.location = args.location) : null;

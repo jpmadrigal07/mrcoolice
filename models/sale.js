@@ -12,6 +12,7 @@ const sale = new Schema({
     ref: "Customer",
   },
   receiptNumber: Number,
+  dayCount: Number,
   productId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Customer",
