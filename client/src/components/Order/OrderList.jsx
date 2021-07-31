@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { Table, Panel } from "rsuite";
+import { Table, Panel, InputGroup, Input, Icon } from "rsuite";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import EditOrder from "./EditOrder";
@@ -21,6 +21,8 @@ const OrderList = (props) => {
   const [orderId, setOrderId] = useState("");
   const [orderList, setOrderList] = useState([]);
   const [products, setProducts] = useState([]);
+  const [searchProducts, setSearchProducts] = useState([]);
+  const [searchPhrase, setSearchPhrase] = useState("");
   useEffect(() => {
     if (!isEditActive) {
       getOrderList.refetch();
@@ -45,6 +47,7 @@ const OrderList = (props) => {
             cost
           },
           receiptNumber,
+          dayCount,
           birNumber,
           drNumber
         }
@@ -72,6 +75,15 @@ const OrderList = (props) => {
   }, [getOrderList.data]);
 
   useEffect(() => {
+    if (searchPhrase !== "") {
+      const searchOrderList = products.filter((res) => {
+        return res.description?.toLowerCase()?.includes(searchPhrase.toLowerCase())
+      });
+      setSearchProducts(searchOrderList);
+    }
+  }, [searchPhrase]);
+
+  useEffect(() => {
     const newProduct = orderList?.reverse().map((res, i) => {
       return {
         number: i+1,
@@ -81,6 +93,7 @@ const OrderList = (props) => {
         scaleType: res.productId?.scaleType,
         cost: res.productId?.cost,
         receiptNumber: res.receiptNumber,
+        count: res.dayCount,
         birNumber: res.birNumber ? res.birNumber : "---",
         drNumber: res.drNumber ? res.drNumber : "---"
       }
@@ -92,7 +105,13 @@ const OrderList = (props) => {
     if (!isEditActive) {
       return (
         <Panel bordered style={{ margin: "10px" }}>
-          <Table height={400} data={products}>
+          <InputGroup>
+            <Input placeholder="Search customer" onChange={(e) => setSearchPhrase(e)} />
+            <InputGroup.Button>
+              <Icon icon="search" />
+            </InputGroup.Button>
+          </InputGroup>
+          <Table height={400} data={searchPhrase !== "" ? searchProducts : products}>
             <Column flexGrow={100} minWidth={50}>
               <HeaderCell>#</HeaderCell>
               <Cell dataKey="number" />
@@ -124,6 +143,10 @@ const OrderList = (props) => {
             <Column flexGrow={100} minWidth={50}>
               <HeaderCell>Receipt #</HeaderCell>
               <Cell dataKey="receiptNumber" />
+            </Column>
+            <Column flexGrow={100} minWidth={50}>
+              <HeaderCell>Count #</HeaderCell>
+              <Cell dataKey="count" />
             </Column>
             <Column flexGrow={100} minWidth={50}>
               <HeaderCell>BIR Receipt #</HeaderCell>

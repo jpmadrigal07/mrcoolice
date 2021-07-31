@@ -62,8 +62,15 @@ function Receipt(props) {
         triggerTopAlert(true, "Unknown error occured", "danger");
       } else {
         const orders = getOrders.data.data?.data?.salesByReceiptNumber;
-        if (orders.length > 0) {
-          const firstValue = orders[0];
+        const startDay = moment().startOf("day").unix() * 1000;
+        const endDay = moment().endOf("day").unix() * 1000;
+        const ordersFilteredByCurrentDay = orders.filter(
+          (res) =>
+            parseInt(res.createdAt) > parseInt(startDay) &&
+            parseInt(res.createdAt) < parseInt(endDay)
+        );
+        if (ordersFilteredByCurrentDay.length > 0) {
+          const firstValue = ordersFilteredByCurrentDay[0];
           setCust(firstValue.customerId?.description);
           setStaff(
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
@@ -74,9 +81,9 @@ function Receipt(props) {
           setLocation(firstValue.location ? firstValue.location : "---");
           setVehicleType(firstValue.vehicleType ? firstValue.vehicleType : "---");
           setRemarks(firstValue.remarks ? firstValue.remarks : "---");
-          const uniqOrder = uniqBy(orders, "productId._id");
+          const uniqOrder = uniqBy(ordersFilteredByCurrentDay, "productId._id");
           const newData = uniqOrder.map((res) => {
-            const foundOrder = orders.filter(
+            const foundOrder = ordersFilteredByCurrentDay.filter(
               (res2) => res2.productId?._id === res.productId?._id
             );
             return {
@@ -91,7 +98,7 @@ function Receipt(props) {
             };
           });
 
-          const total = orders
+          const total = ordersFilteredByCurrentDay
             .map((res) => {
               return res.productId?.cost;
             })

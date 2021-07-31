@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Loader } from "rsuite";
+import { Loader, Grid, Col, Row } from "rsuite";
 import uniqBy from "lodash/uniqBy";
 import { graphqlUrl } from "../../services/constants";
 import { useQuery } from "react-query";
@@ -25,6 +25,9 @@ const ReportsList2 = (props) => {
   const [expenses, setExpenses] = useState([]);
   const [sales, setSales] = useState([]);
   const [cashes, setCashes] = useState([]);
+  const [credits, setCredits] = useState([]);
+  const [creditPaymentTotal, setCreditPaymentTotal] = useState(0);
+  const [creditBorrowTotal, setCreditBorrowTotal] = useState(0);
   const { triggerTopAlert } = props;
   const { search } = useLocation();
   const dates = search.split("&");
@@ -37,13 +40,15 @@ const ReportsList2 = (props) => {
   const isExpensesIncluded = inclusions?.includes("Expenses");
   const isTotalKilogramIncluded = inclusions?.includes("Total%20Kilogram");
   const isCashBreakdownIncluded = inclusions?.includes("Cash%20Breakdown");
+  const isCustomerCreditsIncluded = inclusions?.includes("Customer%20Credits");
+  const isTotalSalesIncluded = inclusions?.includes("Total%20Sales");
   const dataOwner = dates[3]?.replace("dataOwner=", "");
   const isDataOwnerUser = dataOwner === "My%20Records";
 
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-      window.print();
+      // window.print();
     }, 5000);
   }, []);
 
@@ -93,6 +98,28 @@ const ReportsList2 = (props) => {
           vehicleType,
           birNumber,
           drNumber,
+          createdAt
+        }
+      }`;
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
+
+  const getCreditList = useQuery(
+    "CreditList",
+    async () => {
+      const query = `{
+      credits {
+          customerId {
+              _id
+              description
+          },
+          _id,
+          amount,
+          isIn,
           createdAt
         }
       }`;
@@ -443,6 +470,7 @@ const ReportsList2 = (props) => {
   ];
 
   const tableCashHeader = ["Cash Breakdown"];
+  const tableTotalSalesHeader = ["Total Sales"];
 
   const tableCash = [
     "One Peso",
@@ -475,6 +503,7 @@ const ReportsList2 = (props) => {
   useEffect(() => {
     if (autheticatedUserId) {
       getAutheticatedUserData.refetch();
+      getCreditList.refetch();
       if (isDataOwnerUser) {
         getOrderList2.refetch();
         getExpenseList2.refetch();
@@ -524,6 +553,36 @@ const ReportsList2 = (props) => {
       triggerTopAlert(true, getOrderList.error.message, "warning");
     }
   }, [getOrderList.data, getOrderList.isLoading]);
+
+  useEffect(() => {
+    if (getCreditList.isSuccess) {
+      if (
+        !getCreditList.data.data?.errors &&
+        getCreditList.data.data?.data?.credits
+      ) {
+        const dataDB = getCreditList.data.data?.data?.credits;
+        const dataDBFiltered = dataDB.filter(
+          (res) =>
+            parseInt(res.createdAt) > parseInt(dateFrom) &&
+            parseInt(res.createdAt) < parseInt(dateTo)
+        )
+        setCredits(dataDBFiltered);
+        const dataPayment = dataDBFiltered.reduce(function (sum, current) {
+          const total = current.isIn === true ? sum + current.amount : 0;
+          return sum + total;
+        }, 0);
+        setCreditPaymentTotal(dataPayment);
+        const dataBorrow = dataDBFiltered.reduce(function (sum, current) {
+          const total = current.isIn === false ? sum + current.amount : 0;
+          return sum + total;
+        }, 0);
+        setCreditBorrowTotal(dataBorrow);
+      }
+    }
+    if (getCreditList.isError) {
+      triggerTopAlert(true, getCreditList.error.message, "warning");
+    }
+  }, [getCreditList.data, getCreditList.isLoading]);
 
   useEffect(() => {
     if (getOrderList2.isSuccess) {
@@ -771,280 +830,415 @@ const ReportsList2 = (props) => {
       <p style={{ fontSize: 12, marginTop: 0, marginBottom: 15 }}>
         <strong>CASHIER: {autheticatedUserFullName}</strong>
       </p>
-      {isAllIncluded || isSalesIncluded ? (
-        <table
-          border="1"
-          style={{ width: "100%", fontSize: 10, textAlign: "center" }}
-        >
-          <tr>
-            {tableHeader1.map((res) => {
-              if (res !== "") {
-                return (
-                  <td colSpan={fixedProduct.length}>
-                    <strong>{res}</strong>
-                  </td>
-                );
-              } else {
-                return (
-                  <td>
+      <Grid fluid style={{ padding: 0 }}>
+        <Row>
+          <Col xs={24}>
+            {isAllIncluded || isSalesIncluded ? (
+              <table
+                border="1"
+                style={{ width: "100%", fontSize: 10, textAlign: "center" }}
+              >
+                <tr>
+                  {tableHeader1.map((res) => {
+                    if (res !== "") {
+                      return (
+                        <td colSpan={fixedProduct.length}>
+                          <strong>{res}</strong>
+                        </td>
+                      );
+                    } else {
+                      return (
+                        <td>
+                          <span style={{ color: "transparent" }}>
+                            test test test test
+                          </span>
+                        </td>
+                      );
+                    }
+                  })}
+                </tr>
+                <tr>
+                  {tableCombined.map((res) => {
+                    return (
+                      <td>
+                        <strong>{res}</strong>
+                      </td>
+                    );
+                  })}
+                </tr>
+                {tableSales.map((res) => {
+                  const columns = res.map((res2) => <td>{res2}</td>);
+                  return <tr>{columns}</tr>;
+                })}
+                <tr>
+                  <td colSpan={tableCombined.length}>
                     <span style={{ color: "transparent" }}>
                       test test test test
                     </span>
                   </td>
-                );
-              }
-            })}
-          </tr>
-          <tr>
-            {tableCombined.map((res) => {
-              return (
-                <td>
-                  <strong>{res}</strong>
-                </td>
-              );
-            })}
-          </tr>
-          {tableSales.map((res) => {
-            const columns = res.map((res2) => <td>{res2}</td>);
-            return <tr>{columns}</tr>;
-          })}
-          <tr>
-            <td colSpan={tableCombined.length}>
-              <span style={{ color: "transparent" }}>test test test test</span>
-            </td>
-          </tr>
-          <tr>
-            {totalResult.map((res, i) => {
-              if (i === 0) {
-                return (
-                  <td>
-                    <strong>Grand Total</strong>
-                  </td>
-                );
-              } else {
-                return (
-                  <td>
-                    <strong>{res}</strong>
-                  </td>
-                );
-              }
-            })}
-          </tr>
-        </table>
-      ) : null}
+                </tr>
+                <tr>
+                  {totalResult.map((res, i) => {
+                    if (i === 0) {
+                      return (
+                        <td>
+                          <strong>Grand Total</strong>
+                        </td>
+                      );
+                    } else {
+                      return (
+                        <td>
+                          <strong>{res}</strong>
+                        </td>
+                      );
+                    }
+                  })}
+                </tr>
+              </table>
+            ) : null}
+          </Col>
+        </Row>
+      </Grid>
       <br />
-      {isAllIncluded || isExpensesIncluded ? (
-        <table
-          border="1"
-          style={{ width: "100%", fontSize: 10, textAlign: "center" }}
-        >
-          <tr>
-            <td colSpan={tableHeaderExpense.length}>
-              <strong>EXPENSE DETAILS</strong>
-            </td>
-          </tr>
-          <tr>
-            {tableHeaderExpense.map((res) => {
-              return (
-                <td>
-                  <strong>{res}</strong>
-                </td>
-              );
-            })}
-          </tr>
-          {expenses.map((res) => {
-            return (
-              <tr>
-                {tableHeaderExpense.map((res2, i) => {
-                  if (i === 0) {
+      <Grid fluid style={{ padding: 0 }}>
+        <Row>
+          <Col xs={24}>
+            {isAllIncluded || isExpensesIncluded ? (
+              <table
+                border="1"
+                style={{ width: "100%", fontSize: 10, textAlign: "center" }}
+              >
+                <tr>
+                  <td colSpan={tableHeaderExpense.length}>
+                    <strong>EXPENSE DETAILS</strong>
+                  </td>
+                </tr>
+                <tr>
+                  {tableHeaderExpense.map((res) => {
                     return (
                       <td>
-                        {moment.unix(res.createdAt / 1000).format("MM/DD/YYYY")}
+                        <strong>{res}</strong>
                       </td>
                     );
-                  } else if (i === 2) {
-                    return <td>{res.vendor ? res.vendor : "---"}</td>;
-                  } else if (i === 5) {
-                    return <td>{res.name}</td>;
-                  } else if (i === 6) {
-                    return <td>{res.cost}</td>;
-                  } else {
-                    return <td style={{ color: "transparent" }}>asdasdasd</td>;
-                  }
+                  })}
+                </tr>
+                {expenses.map((res) => {
+                  return (
+                    <tr>
+                      {tableHeaderExpense.map((res2, i) => {
+                        if (i === 0) {
+                          return (
+                            <td>
+                              {moment
+                                .unix(res.createdAt / 1000)
+                                .format("MM/DD/YYYY")}
+                            </td>
+                          );
+                        } else if (i === 2) {
+                          return <td>{res.vendor ? res.vendor : "---"}</td>;
+                        } else if (i === 5) {
+                          return <td>{res.name}</td>;
+                        } else if (i === 6) {
+                          return <td>{res.cost}</td>;
+                        } else {
+                          return (
+                            <td style={{ color: "transparent" }}>asdasdasd</td>
+                          );
+                        }
+                      })}
+                    </tr>
+                  );
                 })}
-              </tr>
-            );
-          })}
-          <tr>
-            <td colSpan={tableCombined.length}>
-              <span style={{ color: "transparent" }}>test test test test</span>
-            </td>
-          </tr>
-          <tr>
-            {tableHeaderExpense.map((res, i) => {
-              if (i === 0) {
-                return (
-                  <td>
-                    <strong>Grant Total</strong>
+                <tr>
+                  <td colSpan={tableCombined.length}>
+                    <span style={{ color: "transparent" }}>
+                      test test test test
+                    </span>
                   </td>
-                );
-              } else if (i === 6) {
-                return (
-                  <td>
-                    <strong>{expensesCostTotal}</strong>
-                  </td>
-                );
-              } else {
-                return <td style={{ color: "transparent" }}>asdasdasd</td>;
-              }
-            })}
-          </tr>
-        </table>
-      ) : null}
+                </tr>
+                <tr>
+                  {tableHeaderExpense.map((res, i) => {
+                    if (i === 0) {
+                      return (
+                        <td>
+                          <strong>Grant Total</strong>
+                        </td>
+                      );
+                    } else if (i === 6) {
+                      return (
+                        <td>
+                          <strong>{expensesCostTotal}</strong>
+                        </td>
+                      );
+                    } else {
+                      return (
+                        <td style={{ color: "transparent" }}>asdasdasd</td>
+                      );
+                    }
+                  })}
+                </tr>
+              </table>
+            ) : null}
+          </Col>
+        </Row>
+      </Grid>
       <br />
-      {isAllIncluded || isTotalKilogramIncluded ? (
-        <table
-          border="1"
-          style={{ width: "50%", fontSize: 10, textAlign: "center" }}
-        >
-          <tr>
-            {tableHeaderTotalKilogram.map((res) => {
-              return (
-                <td>
-                  <strong>{res}</strong>
-                </td>
-              );
-            })}
-          </tr>
-          {totalKiloGram.map((res) => {
-            return (
-              <tr>
-                {tableHeaderTotalKilogram.map((res2, i) => {
-                  if (i === 0) {
-                    return <td>{res.particulars}</td>;
-                  } else if (i === 1) {
-                    return <td>{res.totalQty}</td>;
-                  } else if (i === 2) {
-                    return <td>{res.totalKgs}</td>;
-                  } else if (i === 3) {
-                    return <td>{res.total}</td>;
-                  } else {
-                    return <td style={{ color: "transparent" }}>asdasdasd</td>;
-                  }
+      <Grid fluid style={{ padding: 0 }}>
+        <Row>
+          <Col xs={12}>
+            {isAllIncluded || isTotalKilogramIncluded ? (
+              <table
+                border="1"
+                style={{  width: "100%", fontSize: 10, textAlign: "center" }}
+              >
+                <tr>
+                  {tableHeaderTotalKilogram.map((res) => {
+                    return (
+                      <td>
+                        <strong>{res}</strong>
+                      </td>
+                    );
+                  })}
+                </tr>
+                {totalKiloGram.map((res) => {
+                  return (
+                    <tr>
+                      {tableHeaderTotalKilogram.map((res2, i) => {
+                        if (i === 0) {
+                          return <td>{res.particulars}</td>;
+                        } else if (i === 1) {
+                          return <td>{res.totalQty}</td>;
+                        } else if (i === 2) {
+                          return <td>{res.totalKgs}</td>;
+                        } else if (i === 3) {
+                          return <td>{res.total}</td>;
+                        } else {
+                          return (
+                            <td style={{ color: "transparent" }}>asdasdasd</td>
+                          );
+                        }
+                      })}
+                    </tr>
+                  );
                 })}
-              </tr>
-            );
-          })}
-          <tr>
-            <td colSpan={tableCombined.length}>
-              <span style={{ color: "transparent" }}>test test test test</span>
-            </td>
-          </tr>
-          <tr>
-            {tableHeaderTotalKilogram.map((res, i) => {
-              if (i === 0) {
-                return (
-                  <td>
-                    <strong>Grand Total</strong>
+                <tr>
+                  <td colSpan={tableCombined.length}>
+                    <span style={{ color: "transparent" }}>
+                      test test test test
+                    </span>
                   </td>
-                );
-              } else if (i === 3) {
-                return (
-                  <td>
-                    <strong>{totalKiloGrandTotal}</strong>
+                </tr>
+                <tr>
+                  {tableHeaderTotalKilogram.map((res, i) => {
+                    if (i === 0) {
+                      return (
+                        <td>
+                          <strong>Grand Total</strong>
+                        </td>
+                      );
+                    } else if (i === 3) {
+                      return (
+                        <td>
+                          <strong>{totalKiloGrandTotal}</strong>
+                        </td>
+                      );
+                    } else {
+                      return (
+                        <td style={{ color: "transparent" }}>asdasdasd</td>
+                      );
+                    }
+                  })}
+                </tr>
+              </table>
+            ) : null}
+          </Col>
+          <Col xs={12}>
+            {isAllIncluded || isCashBreakdownIncluded ? (
+              <table
+                border="1"
+                style={{ width: "100%", fontSize: 10, textAlign: "center" }}
+              >
+                <tr>
+                  {tableCashHeader.map((res) => {
+                    return (
+                      <td colSpan={4}>
+                        <strong>{res}</strong>
+                      </td>
+                    );
+                  })}
+                </tr>
+                {tableCash.map((res, i) => {
+                  return (
+                    <tr>
+                      <td>{res}</td>
+                      <td>{cashes[i] === 0 ? "---" : cashes[i]}</td>
+                      <td>x</td>
+                      <td>
+                        {i === 0
+                          ? cashes[i] * 1 !== 0
+                            ? cashes[i] * 1
+                            : "---"
+                          : null}
+                        {i === 1
+                          ? cashes[i] * 5 !== 0
+                            ? cashes[i] * 5
+                            : "---"
+                          : null}
+                        {i === 2
+                          ? cashes[i] * 10 !== 0
+                            ? cashes[i] * 10
+                            : "---"
+                          : null}
+                        {i === 3
+                          ? cashes[i] * 20 !== 0
+                            ? cashes[i] * 20
+                            : "---"
+                          : null}
+                        {i === 4
+                          ? cashes[i] * 50 !== 0
+                            ? cashes[i] * 50
+                            : "---"
+                          : null}
+                        {i === 5
+                          ? cashes[i] * 100 !== 0
+                            ? cashes[i] * 100
+                            : "---"
+                          : null}
+                        {i === 6
+                          ? cashes[i] * 200 !== 0
+                            ? cashes[i] * 200
+                            : "---"
+                          : null}
+                        {i === 7
+                          ? cashes[i] * 500 !== 0
+                            ? cashes[i] * 500
+                            : "---"
+                          : null}
+                        {i === 8
+                          ? cashes[i] * 1000 !== 0
+                            ? cashes[i] * 1000
+                            : "---"
+                          : null}
+                      </td>
+                    </tr>
+                  );
+                })}
+                <tr>
+                  <td colSpan={4} style={{ color: "transparent" }}>
+                    asdasdasd
                   </td>
-                );
-              } else {
-                return <td style={{ color: "transparent" }}>asdasdasd</td>;
-              }
-            })}
-          </tr>
-        </table>
-      ) : null}
-      <br />
-      {isAllIncluded || isCashBreakdownIncluded ? (
-        <table
-          border="1"
-          style={{ width: "50%", fontSize: 10, textAlign: "center" }}
-        >
-          <tr>
-            {tableCashHeader.map((res) => {
-              return (
-                <td colSpan={4}>
-                  <strong>{res}</strong>
-                </td>
-              );
-            })}
-          </tr>
-          {tableCash.map((res, i) => {
-            return (
-              <tr>
-                <td>{res}</td>
-                <td>{cashes[i] === 0 ? "---" : cashes[i]}</td>
-                <td>x</td>
-                <td>
-                  {i === 0 ? cashes[i] * 1 !== 0 ? cashes[i] * 1 : "---" : null}
-                  {i === 1 ? cashes[i] * 5 !== 0 ? cashes[i] * 5 : "---" : null}
-                  {i === 2 ? cashes[i] * 10 !== 0 ? cashes[i] * 10 : "---" : null}
-                  {i === 3 ? cashes[i] * 20 !== 0 ? cashes[i] * 20 : "---" : null}
-                  {i === 4 ? cashes[i] * 50 !== 0 ? cashes[i] * 50 : "---" : null}
-                  {i === 5 ? cashes[i] * 100 !== 0 ? cashes[i] * 100 : "---" : null}
-                  {i === 6 ? cashes[i] * 200 !== 0 ? cashes[i] * 200 : "---" : null}
-                  {i === 7 ? cashes[i] * 500 !== 0 ? cashes[i] * 500 : "---" : null}
-                  {i === 8 ? cashes[i] * 1000 !== 0 ? cashes[i] * 1000 : "---" : null}
-                </td>
-              </tr>
-            );
-          })}
-          <tr>
-            <td colSpan={4} style={{ color: "transparent" }}>
-              asdasdasd
-            </td>
-          </tr>
-          <tr>
-            <td>Total</td>
-            <td></td>
-            <td></td>
-            <td>
-              {cashes.reduce((prev, curr, index) => {
-                let multiply;
-                switch (index) {
-                  case 0:
-                    multiply = 1;
-                    break;
-                  case 1:
-                    multiply = 5;
-                    break;
-                  case 2:
-                    multiply = 10;
-                    break;
-                  case 3:
-                    multiply = 20;
-                    break;
-                  case 4:
-                    multiply = 50;
-                    break;
-                  case 5:
-                    multiply = 100;
-                    break;
-                  case 6:
-                    multiply = 200;
-                    break;
-                  case 7:
-                    multiply = 500;
-                    break;
-                  case 8:
-                    multiply = 1000;
-                    break;
-                  default:
-                  multiply = 0;
-                }
-                return prev + (curr*multiply);
-              }, 0)}
-            </td>
-          </tr>
-        </table>
-      ) : null}
+                </tr>
+                <tr>
+                  <td><strong>Total</strong></td>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    {cashes.reduce((prev, curr, index) => {
+                      let multiply;
+                      switch (index) {
+                        case 0:
+                          multiply = 1;
+                          break;
+                        case 1:
+                          multiply = 5;
+                          break;
+                        case 2:
+                          multiply = 10;
+                          break;
+                        case 3:
+                          multiply = 20;
+                          break;
+                        case 4:
+                          multiply = 50;
+                          break;
+                        case 5:
+                          multiply = 100;
+                          break;
+                        case 6:
+                          multiply = 200;
+                          break;
+                        case 7:
+                          multiply = 500;
+                          break;
+                        case 8:
+                          multiply = 1000;
+                          break;
+                        default:
+                          multiply = 0;
+                      }
+                      return prev + curr * multiply;
+                    }, 0)}
+                  </td>
+                </tr>
+              </table>
+            ) : null}
+          </Col>
+        </Row>
+      </Grid>
+      <br/>
+      <Grid fluid  style={{ padding: 0 }}>
+      <Row>
+      <Col xs={12}>
+            {isAllIncluded || isTotalSalesIncluded ? (
+              <table
+                border="1"
+                style={{ width: "100%", fontSize: 10, textAlign: "center" }}
+              >
+                <tr>
+                  <td><strong>TOTAL PAID CREDIT</strong></td>
+                  <td><strong>{isCustomerCreditsIncluded ? creditPaymentTotal : 0}</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>TOTAL CREDIT BORROW</strong></td>
+                  <td><strong>{isCustomerCreditsIncluded ? creditBorrowTotal : 0}</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>TOTAL CASH</strong></td>
+                  <td><strong>{parseInt(isSalesIncluded && totalResult.slice(-1) > 0 ? totalResult.slice(-1) : 0) + parseInt(isCustomerCreditsIncluded ? creditPaymentTotal : 0)}</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>TOTAL EXPENSES</strong></td>
+                  <td><strong>{isExpensesIncluded ? expensesCostTotal : 0}</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>CASH ON HAND</strong></td>
+                  <td><strong>{(parseInt(isSalesIncluded && totalResult.slice(-1) > 0 ? totalResult.slice(-1) : 0) + parseInt(isCustomerCreditsIncluded ? creditPaymentTotal : 0)) - parseInt(isCustomerCreditsIncluded ? creditBorrowTotal : 0)}</strong></td>
+                </tr>
+              </table>
+            ) : null}
+          </Col>
+          <Col xs={12}>
+            {isAllIncluded || isCustomerCreditsIncluded ? (
+              <table
+                border="1"
+                style={{ width: "100%", fontSize: 10, textAlign: "center" }}
+              >
+                <tr>
+                  <td colSpan={4}>
+                    <strong>Customer Credits</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Date</strong></td>
+                  <td><strong>Name</strong></td>
+                  <td><strong>Amount</strong></td>
+                  <td><strong>Type</strong></td>
+                </tr>
+                {credits?.map((res, i) => {
+                    return (
+                      <tr>
+                        <td>{moment.unix(res.createdAt / 1000).format("MM/DD/YYYY")}</td>
+                        <td>{res.customerId?.description}</td>
+                        <td>{res.amount}</td>
+                        <td>{res.isIn ? "Payment" : "Borrow"}</td>
+                      </tr>
+                    );
+                  })}
+              </table>
+            ) : null}
+          </Col>
+        </Row>
+      </Grid>
     </div>
   );
 };

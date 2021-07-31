@@ -9,6 +9,7 @@ import Expenses from "./pages/Expenses/Expenses";
 import Staff from "./pages/Staff/Staff";
 import Reports from "./pages/Reports/Reports";
 import Reports2 from "./pages/Reports/Reports2";
+import Credit from "./pages/Credit/Credit";
 import Receipt from "./pages/Receipt/Receipt";
 import Product from "./pages/Product/Product";
 import Cash from "./pages/Cash/Cash";
@@ -44,6 +45,7 @@ function App(props) {
         <Route path="/cash" exact render={() => <Cash />} />
         <Route path="/reports" exact render={() => <Reports />} />
         <Route path="/receipt" exact render={() => <Receipt />} />
+        <Route path="/credit" exact render={() => <Credit />} />
         <Route path="/print-report" exact render={() => <Reports2 />} />
       </>
     );
