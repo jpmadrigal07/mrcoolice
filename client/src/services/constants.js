@@ -32,9 +32,17 @@ export const REPORTS_ITEMS = [
   { value: "Expenses", label: "Expenses" },
   { value: "Total Kilogram", label: "Total Kilogram" },
   { value: "Cash Breakdown", label: "Cash Breakdown" },
+  { value: "Customer Credits", label: "Customer Credits" },
+  { value: "Total Sales", label: "Total Sales" },
 ];
 
 export const DATA_OWNER_ITEMS = [
   { value: "My Records", label: "My Records" },
   { value: "All", label: "All" },
 ];
+
+export const CREDIT_TYPE = [
+  { value: false, label: "Borrow" },
+  { value: true, label: "Payment" },
+];
+
