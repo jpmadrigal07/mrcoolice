@@ -29,6 +29,7 @@ const SaleType = new GraphQLObjectType({
       },
     },
     receiptNumber: { type: GraphQLInt },
+    dayCount: { type: GraphQLInt },
     productId: {
       type: ProductType,
       resolve: async (sale) => {
