@@ -11,7 +11,7 @@ import {
 } from "rsuite";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { graphqlUrl, REPORTS_ITEMS, DATA_OWNER_ITEMS } from "../../services/constants";
+import { graphqlUrl, REPORTS_ITEMS, DATA_OWNER_ITEMS, VEHICLE_TYPE_ITEMS } from "../../services/constants";
 import Cookies from "js-cookie";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
@@ -30,6 +30,7 @@ function ReportsList(props) {
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
   const [reportInclusion, setReportInclusion] = useState(null);
   const [dataOwner, setDataOwner] = useState(null);
+  const [salesOption, setSalesOption] = useState(null);
 
   const [totalSales, setTotalSales] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -239,6 +240,13 @@ function ReportsList(props) {
           placeholder="Select Data Owner"
           onClean={() => setDataOwner(null)}
         />{" "}
+        <SelectPicker
+          data={VEHICLE_TYPE_ITEMS}
+          onChange={(e) => setSalesOption(e)}
+          searchable={false}
+          placeholder="Filter Sales By"
+          onClean={() => setSalesOption(null)}
+        />{" "}
         <Button
           appearance="primary"
           type="submit"
@@ -246,7 +254,7 @@ function ReportsList(props) {
           disabled={!selectedDateFrom || !reportInclusion || !dataOwner}
           onClick={() =>
             window.open(
-              `/print-report?dateFrom=${selectedDateFrom}&dateTo=${selectedDateTo}&inclusion=${reportInclusion}&dataOwner=${dataOwner}`,
+              `/print-report?dateFrom=${selectedDateFrom}&dateTo=${selectedDateTo}&inclusion=${reportInclusion}&dataOwner=${dataOwner}&filterSalesBy=${salesOption}`,
               "_blank"
             )
           }
