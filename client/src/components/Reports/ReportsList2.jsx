@@ -39,6 +39,7 @@ const ReportsList2 = (props) => {
   const isCashBreakdownIncluded = inclusions?.includes("Cash%20Breakdown");
   const dataOwner = dates[3]?.replace("dataOwner=", "");
   const isDataOwnerUser = dataOwner === "My%20Records";
+  const filterSalesBy = dates[4]?.replace("filterSalesBy=", "");
 
   useEffect(() => {
     setTimeout(() => {
@@ -511,13 +512,15 @@ const ReportsList2 = (props) => {
         getOrderList.data.data?.data?.sales
       ) {
         const dataDB = getOrderList.data.data?.data?.sales;
-        setSales(
-          dataDB.filter(
-            (res) =>
-              parseInt(res.createdAt) > parseInt(dateFrom) &&
-              parseInt(res.createdAt) < parseInt(dateTo)
-          )
+        const dataDBFilteredByDate = dataDB.filter(
+          (res) =>
+            parseInt(res.createdAt) > parseInt(dateFrom) &&
+            parseInt(res.createdAt) < parseInt(dateTo)
         );
+        const dataDBFinal = filterSalesBy !== "null" ? dataDBFilteredByDate.filter(
+          (res) => res.vehicleType === filterSalesBy
+        ) : dataDBFilteredByDate;
+        setSales(dataDBFinal);
       }
     }
     if (getOrderList.isError) {
@@ -532,13 +535,15 @@ const ReportsList2 = (props) => {
         getOrderList2.data.data?.data?.salesByUser
       ) {
         const dataDB = getOrderList2.data.data?.data?.salesByUser;
-        setSales(
-          dataDB.filter(
-            (res) =>
-              parseInt(res.createdAt) > parseInt(dateFrom) &&
-              parseInt(res.createdAt) < parseInt(dateTo)
-          )
+        const dataDBFilteredByDate = dataDB.filter(
+          (res) =>
+            parseInt(res.createdAt) > parseInt(dateFrom) &&
+            parseInt(res.createdAt) < parseInt(dateTo)
         );
+        const dataDBFinal = filterSalesBy !== "null" ? dataDBFilteredByDate.filter(
+          (res) => res.vehicleType === filterSalesBy
+        ) : dataDBFilteredByDate;
+        setSales(dataDBFinal);
       }
     }
     if (getOrderList2.isError) {
