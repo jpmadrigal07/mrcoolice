@@ -19,6 +19,7 @@ export const VEHICLE_TYPE_ITEMS = [
   { value: "H100", label: "H100" },
   { value: "Truck", label: "Truck" },
   { value: "Tricycle", label: "Tricycle" },
+  { value: "Planta", label: "Planta" },
 ];
 
 export const YES_NO_ITEMS = [
