@@ -1190,24 +1190,32 @@ const ReportsList2 = (props) => {
                 style={{ width: "100%", fontSize: 10, textAlign: "center" }}
               >
                 <tr>
+                  <td><strong>TOTAL SALES</strong></td>
+                  <td><strong>{parseInt((isAllIncluded || isSalesIncluded) && totalResult.slice(-1) > 0 ? totalResult.slice(-1) : 0)}</strong></td>
+                </tr>
+                <tr>
                   <td><strong>TOTAL PAID CREDIT</strong></td>
-                  <td><strong>{isCustomerCreditsIncluded ? creditPaymentTotal : 0}</strong></td>
+                  <td><strong>{isAllIncluded || isCustomerCreditsIncluded ? creditPaymentTotal : 0}</strong></td>
                 </tr>
                 <tr>
-                  <td><strong>TOTAL CREDIT BORROW</strong></td>
-                  <td><strong>{isCustomerCreditsIncluded ? creditBorrowTotal : 0}</strong></td>
+                  <td><strong>GRAND TOTAL SALES</strong></td>
+                  <td><strong>{parseInt((isAllIncluded || isSalesIncluded) && totalResult.slice(-1) > 0 ? totalResult.slice(-1) : 0) + (isAllIncluded || isCustomerCreditsIncluded ? creditPaymentTotal : 0)}</strong></td>
                 </tr>
                 <tr>
-                  <td><strong>TOTAL CASH</strong></td>
-                  <td><strong>{parseInt(isSalesIncluded && totalResult.slice(-1) > 0 ? totalResult.slice(-1) : 0) + parseInt(isCustomerCreditsIncluded ? creditPaymentTotal : 0)}</strong></td>
+                  <td><strong>TOTAL CREDIT</strong></td>
+                  <td><strong>{isAllIncluded || isCustomerCreditsIncluded ? creditBorrowTotal : 0}</strong></td>
                 </tr>
                 <tr>
                   <td><strong>TOTAL EXPENSES</strong></td>
-                  <td><strong>{isExpensesIncluded ? expensesCostTotal : 0}</strong></td>
+                  <td><strong>{isAllIncluded || isExpensesIncluded ? expensesCostTotal : 0}</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>TOTAL CASH SALES</strong></td>
+                  <td><strong>{(parseInt((isSalesIncluded || isAllIncluded) && totalResult.slice(-1) > 0 ? totalResult.slice(-1) : 0) + parseInt(isAllIncluded || isCustomerCreditsIncluded ? creditPaymentTotal : 0)) - parseInt(isAllIncluded || isCustomerCreditsIncluded ? creditBorrowTotal : 0) - (isAllIncluded || isExpensesIncluded ? expensesCostTotal : 0)}</strong></td>
                 </tr>
                 <tr>
                   <td><strong>CASH ON HAND</strong></td>
-                  <td><strong>{(parseInt(isSalesIncluded && totalResult.slice(-1) > 0 ? totalResult.slice(-1) : 0) + parseInt(isCustomerCreditsIncluded ? creditPaymentTotal : 0)) - parseInt(isCustomerCreditsIncluded ? creditBorrowTotal : 0)}</strong></td>
+                  <td><strong></strong></td>
                 </tr>
               </table>
             ) : null}
