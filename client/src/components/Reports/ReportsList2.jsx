@@ -26,6 +26,7 @@ const ReportsList2 = (props) => {
   const [sales, setSales] = useState([]);
   const [cashes, setCashes] = useState([]);
   const [credits, setCredits] = useState([]);
+  const [cashOnHandTotal, setCashOnHandTotal] = useState(0);
   const [creditPaymentTotal, setCreditPaymentTotal] = useState(0);
   const [creditBorrowTotal, setCreditBorrowTotal] = useState(0);
   const { triggerTopAlert } = props;
@@ -262,6 +263,40 @@ const ReportsList2 = (props) => {
       }`;
     return await axios.post(graphqlUrl, { query });
   });
+
+  const getCashOnHandList = useQuery(
+    "cashOnHand",
+    async () => {
+      const query = `{
+      cashOnHands {
+          _id,
+          amount,
+          createdAt
+        }
+      }`;
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
+
+  const getCashOnHandList2 = useQuery(
+    "cashOnHand2",
+    async () => {
+      const query = `{
+      cashOnHandByUser(userId: "${autheticatedUserId}") {
+          _id,
+          amount,
+          createdAt
+        }
+      }`;
+      return await axios.post(graphqlUrl, { query });
+    },
+    {
+      enabled: false,
+    }
+  );
 
   const tableHeader1 = [
     "",
@@ -509,10 +544,12 @@ const ReportsList2 = (props) => {
         getOrderList2.refetch();
         getExpenseList2.refetch();
         getCashList2.refetch();
+        getCashOnHandList2.refetch();
       } else {
         getOrderList.refetch();
         getExpenseList.refetch();
         getCashList.refetch();
+        getCashOnHandList.refetch();
       }
     }
   }, [autheticatedUserId]);
@@ -811,6 +848,52 @@ const ReportsList2 = (props) => {
       }
     }
   }, [getProductList.data]);
+
+  useEffect(() => {
+    if (getCashOnHandList.isSuccess) {
+      if (
+        !getCashOnHandList.data.data?.errors &&
+        getCashOnHandList.data.data?.data?.cashOnHands
+      ) {
+        const dataDB = getCashOnHandList.data.data?.data?.cashOnHands;
+        const dataDBFiltered = dataDB.filter(
+          (res) =>
+            parseInt(res.createdAt) > parseInt(dateFrom) &&
+            parseInt(res.createdAt) < parseInt(dateTo)
+        )
+        const total = dataDBFiltered.reduce(function (sum, current) {
+          return sum + current.amount;
+        }, 0);
+        setCashOnHandTotal(total);
+      }
+    }
+    if (getCashOnHandList.isError) {
+      triggerTopAlert(true, getCashOnHandList.error.message, "warning");
+    }
+  }, [getCashOnHandList.data, getCashOnHandList.isLoading]);
+
+  useEffect(() => {
+    if (getCashOnHandList2.isSuccess) {
+      if (
+        !getCashOnHandList2.data.data?.errors &&
+        getCashOnHandList2.data.data?.data?.cashOnHandByUser
+      ) {
+        const dataDB = getCashOnHandList2.data.data?.data?.cashOnHandByUser;
+        const dataDBFiltered = dataDB.filter(
+          (res) =>
+            parseInt(res.createdAt) > parseInt(dateFrom) &&
+            parseInt(res.createdAt) < parseInt(dateTo)
+        )
+        const total = dataDBFiltered.reduce(function (sum, current) {
+          return sum + current.amount;
+        }, 0);
+        setCashOnHandTotal(total);
+      }
+    }
+    if (getCashOnHandList2.isError) {
+      triggerTopAlert(true, getCashOnHandList2.error.message, "warning");
+    }
+  }, [getCashOnHandList2.data, getCashOnHandList2.isLoading]);
 
   return (
     <div style={{ margin: 15 }}>
@@ -1215,7 +1298,7 @@ const ReportsList2 = (props) => {
                 </tr>
                 <tr>
                   <td><strong>CASH ON HAND</strong></td>
-                  <td><strong></strong></td>
+                  <td><strong>{cashOnHandTotal}</strong></td>
                 </tr>
               </table>
             ) : null}

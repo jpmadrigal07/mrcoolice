@@ -94,6 +94,12 @@ const Navigation = (props) => {
               Credit
           </Nav.Item>
           <Nav.Item
+              active={currentPage === "cashOnHand"}
+              onClick={() => history.push("/cash-on-hand")}
+            >
+              Cash On Hand
+          </Nav.Item>
+          <Nav.Item
             active={currentPage === "reports"}
             onClick={() => history.push("/reports")}
           >
