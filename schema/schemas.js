@@ -4,6 +4,7 @@ const { GraphQLSchema, GraphQLObjectType } = require("graphql");
 // Query Functions
 const { getAllUser, getUser } = require("./Query/User");
 const { getAllSale, getSale, getAllSaleByReceiptNumber, getAllSaleByUser } = require("./Query/Sale");
+const { getAllCashOnHand, getCashOnHand, getAllCashOnHandByUser } = require("./Query/CashOnHand");
 const { getAllCredit, getCredit, getAllCreditByCustomer } = require("./Query/Credit");
 const { getAllCustomer, getCustomer } = require("./Query/Customer");
 const { getAllExpense, getExpense, getAllExpenseByUser } = require("./Query/Expense");
@@ -24,6 +25,11 @@ const {
   updateCredit,
   deleteCredit,
 } = require("./Mutation/Credit");
+const {
+  createCashOnHand,
+  updateCashOnHand,
+  deleteCashOnHand,
+} = require("./Mutation/CashOnHand");
 const {
   createCash,
   updateCash,
@@ -58,6 +64,9 @@ const Query = new GraphQLObjectType({
     credits: getAllCredit,
     credit: getCredit,
     creditByCustomer: getAllCreditByCustomer,
+    cashOnHands: getAllCashOnHand,
+    cashOnHand: getCashOnHand,
+    cashOnHandByUser: getAllCashOnHandByUser,
     sales: getAllSale,
     salesByUser: getAllSaleByUser,
     salesByReceiptNumber: getAllSaleByReceiptNumber,
@@ -84,6 +93,9 @@ const Mutation = new GraphQLObjectType({
     createCredit,
     updateCredit,
     deleteCredit,
+    createCashOnHand,
+    updateCashOnHand,
+    deleteCashOnHand,
     createSale,
     updateSale,
     deleteSale,
