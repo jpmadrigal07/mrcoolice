@@ -50,7 +50,7 @@ const ReportsList2 = (props) => {
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-      // window.print();
+      window.print();
     }, 5000);
   }, []);
 
