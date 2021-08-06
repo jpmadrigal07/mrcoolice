@@ -129,6 +129,10 @@ const CreditList = (props) => {
               <HeaderCell>Type</HeaderCell>
               <Cell dataKey="type" />
             </Column>
+            <Column flexGrow={100} minWidth={50}>
+              <HeaderCell>Date Created</HeaderCell>
+              <Cell dataKey="createdAtFormatted" />
+            </Column>
             <Column flexGrow={100} minWidth={50} fixed="right">
               <HeaderCell>Action</HeaderCell>
               <Cell>

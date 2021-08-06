@@ -4,7 +4,7 @@ import moment from "moment";
 import "./Receipt.css";
 import uniqBy from 'lodash/uniqBy'
 
-const ReceiptNew = ({ cust, staff, orders, birNumber, dayCount, drNumber, location, vehicleType, remarks }) => {
+const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber, dayCount, drNumber, location, vehicleType, remarks }) => {
   const [remappedOrders, setRemappedOrders] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
   useEffect(() => {
@@ -57,7 +57,9 @@ const ReceiptNew = ({ cust, staff, orders, birNumber, dayCount, drNumber, locati
           </p>
           <hr id="lineDivider" />
           <p style={{ fontSize: "10px", lineHeight: "13px" }}>
-            <span style={{ fontWeight: "700" }}>CNT#:</span> {dayCount}
+            <span style={{ fontWeight: "700" }}>ITM#:</span> {dayCount}
+            <br />
+            <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
             <br />
             <span style={{ fontWeight: "700" }}>DR:</span> {drNumber}
             <br />
