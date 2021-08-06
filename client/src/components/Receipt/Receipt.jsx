@@ -62,15 +62,8 @@ function Receipt(props) {
         triggerTopAlert(true, "Unknown error occured", "danger");
       } else {
         const orders = getOrders.data.data?.data?.salesByReceiptNumber;
-        const startDay = moment().startOf("day").unix() * 1000;
-        const endDay = moment().endOf("day").unix() * 1000;
-        const ordersFilteredByCurrentDay = orders.filter(
-          (res) =>
-            parseInt(res.createdAt) > parseInt(startDay) &&
-            parseInt(res.createdAt) < parseInt(endDay)
-        );
-        if (ordersFilteredByCurrentDay.length > 0) {
-          const firstValue = ordersFilteredByCurrentDay[0];
+        if (orders.length > 0) {
+          const firstValue = orders[0];
           setCust(firstValue.customerId?.description);
           setStaff(
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
@@ -81,9 +74,9 @@ function Receipt(props) {
           setLocation(firstValue.location ? firstValue.location : "---");
           setVehicleType(firstValue.vehicleType ? firstValue.vehicleType : "---");
           setRemarks(firstValue.remarks ? firstValue.remarks : "---");
-          const uniqOrder = uniqBy(ordersFilteredByCurrentDay, "productId._id");
+          const uniqOrder = uniqBy(orders, "productId._id");
           const newData = uniqOrder.map((res) => {
-            const foundOrder = ordersFilteredByCurrentDay.filter(
+            const foundOrder = orders.filter(
               (res2) => res2.productId?._id === res.productId?._id
             );
             return {
@@ -98,7 +91,7 @@ function Receipt(props) {
             };
           });
 
-          const total = ordersFilteredByCurrentDay
+          const total = orders
             .map((res) => {
               return res.productId?.cost;
             })
@@ -152,8 +145,11 @@ function Receipt(props) {
                   </p>
                   <hr id="lineDivider" />
                   <p style={{ fontSize: "10px", lineHeight: "13px" }}>
-                    <span style={{ fontWeight: "700" }}>CNT#:</span>{" "}
+                    <span style={{ fontWeight: "700" }}>ITM#:</span>{" "}
                     {dayCount}
+                    <br />
+                    <span style={{ fontWeight: "700" }}>RCPT#:</span>{" "}
+                    {receiptNumber}
                     <br />
                     <span style={{ fontWeight: "700" }}>DR:</span> {drNumber}
                     <br />

@@ -568,6 +568,7 @@ const AddOrder2 = (props) => {
                 location={location ? location : "---"}
                 vehicleType={vehicleType ? vehicleType : "---"}
                 drNumber={drNumber ? drNumber : "---"}
+                receiptNumber={receiptNumber ? receiptNumber : "---"}
                 remarks={remarks ? remarks : "---"}
               />
             </Panel>

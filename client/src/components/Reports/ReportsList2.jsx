@@ -96,6 +96,7 @@ const ReportsList2 = (props) => {
             scaleType,
             cost
           },
+          dayCount,
           receiptNumber,
           vehicleType,
           birNumber,
@@ -309,7 +310,7 @@ const ReportsList2 = (props) => {
     "SALES AMOUNT",
     "",
   ];
-  const tableHeader2 = ["DR", "RECEIPT #", "SALES INV", "DESC.", "PARTICULARS"];
+  const tableHeader2 = ["ITEM #", "DR", "RECEIPT #", "SALES INV", "DESC.", "PARTICULARS"];
   // Note: Add value to both fixedProduct and fixedProductText for new scale record
   const fixedProduct = [
     { iceType: "tube", weight: 50 },
@@ -359,12 +360,15 @@ const ReportsList2 = (props) => {
 
       const tableWithValues = chunkArr.map((res) => {
         const rowValuesFirstPart = tableHeader2.map((res2) => {
+          const itemNumber = res[0]?.dayCount;
           const customer = res[0]?.customerId;
           const receiptNumber = res[0]?.receiptNumber;
           const drNumber = res[0]?.drNumber;
           const birNumber = res[0]?.birNumber;
           const vehicleType = res[0]?.vehicleType;
-          if (res2 === "RECEIPT #") {
+          if (res2 === "ITEM #") {
+            return itemNumber ? itemNumber : `---`;
+          } else if (res2 === "RECEIPT #") {
             return receiptNumber ? receiptNumber : `---`;
           } else if (res2 === "DR") {
             return drNumber ? drNumber : `---`;
@@ -608,13 +612,11 @@ const ReportsList2 = (props) => {
         )
         setCredits(dataDBFiltered);
         const dataPayment = dataDBFiltered.reduce(function (sum, current) {
-          const total = current.isIn === true ? sum + current.amount : 0;
-          return sum + total;
+          return current.isIn === true ? sum + current.amount : sum;
         }, 0);
         setCreditPaymentTotal(dataPayment);
         const dataBorrow = dataDBFiltered.reduce(function (sum, current) {
-          const total = current.isIn === false ? sum + current.amount : 0;
-          return sum + total;
+          return current.isIn === false ? sum + current.amount : sum;
         }, 0);
         setCreditBorrowTotal(dataBorrow);
       }
