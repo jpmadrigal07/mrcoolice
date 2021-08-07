@@ -43,7 +43,7 @@ export const DATA_OWNER_ITEMS = [
 ];
 
 export const CREDIT_TYPE = [
-  { value: false, label: "Borrow" },
+  { value: false, label: "Credit" },
   { value: true, label: "Payment" },
 ];
 
