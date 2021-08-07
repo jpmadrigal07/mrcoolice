@@ -51,7 +51,7 @@ const CreditList = (props) => {
             id: index + 1,
             description: res.customerId?.description,
             createdAtFormatted: moment.unix(res.createdAt / 1000).format("MM/DD/YYYY"),
-            type: res.isIn ? "Payment" : "Borrow",
+            type: res.isIn ? "Payment" : "Credit",
             ...res,
           };
         });

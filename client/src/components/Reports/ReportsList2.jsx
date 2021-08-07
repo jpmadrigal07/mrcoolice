@@ -1328,7 +1328,7 @@ const ReportsList2 = (props) => {
                         <td>{moment.unix(res.createdAt / 1000).format("MM/DD/YYYY")}</td>
                         <td>{res.customerId?.description}</td>
                         <td>{res.amount}</td>
-                        <td>{res.isIn ? "Payment" : "Borrow"}</td>
+                        <td>{res.isIn ? "Payment" : "Credit"}</td>
                       </tr>
                     );
                   })}
