@@ -88,6 +88,13 @@ const AddOrder2 = (props) => {
         getOrderList.data.data?.data?.sales
       ) {
         const sales = getOrderList.data.data?.data?.sales;
+        if (sales.length > 0) {
+          const receiptIncrement =
+            sales[0]?.receiptNumber + 1;
+          setReceiptNumber(receiptIncrement);
+        } else {
+          setReceiptNumber(1);
+        }
         setOrderList(sales);
       }
     }
@@ -96,13 +103,6 @@ const AddOrder2 = (props) => {
   useEffect(() => {
     if (order.length === 0) {
       addNewProduct();
-    }
-    if (orderList.length > 0) {
-      const receiptIncrement =
-        orderList[0]?.receiptNumber + 1;
-      setReceiptNumber(receiptIncrement);
-    } else {
-      setReceiptNumber(1);
     }
   }, [orderList]);
 
