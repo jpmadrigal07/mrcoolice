@@ -53,6 +53,13 @@ module.exports.getSaleSearchCount = {
   },
 };
 
+module.exports.getLastSale = {
+  type: GraphQLList(SalesType),
+  resolve: (parent) => {
+    return Sales.find().sort( { createdAt : -1 } ).limit(1);
+  },
+};
+
 module.exports.getAllSaleByUser = {
   type: GraphQLList(SalesType),
   args: {

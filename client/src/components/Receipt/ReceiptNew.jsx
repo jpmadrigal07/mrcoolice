@@ -30,6 +30,7 @@ const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber, drNumber, l
       setRemappedOrders(newOrders)
     } else {
       setTotalSales(0);
+      setRemappedOrders([]);
     }
   }, [orders]);
   return (

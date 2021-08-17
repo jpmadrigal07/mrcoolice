@@ -55,56 +55,37 @@ const AddOrder2 = (props) => {
   const [location, setLocation] = useState(null);
   const [vehicleType, setVehicleType] = useState(null);
   const [remarks, setRemarks] = useState(null);
-  const [orderList, setOrderList] = useState([]);
 
-  const getOrderList = useQuery("OrderList", async () => {
+  useEffect(() => {
+    addNewProduct();
+  }, []);
+
+  const getLastSale = useQuery("LastSale", async () => {
     const query = `{
-        sales {
-          customerId {
-              _id
-              description
-            },
-          _id,
-          productId {
-            _id,
-            iceType,
-            weight,
-            scaleType,
-            cost
-          },
+        saleLast {
           receiptNumber,
-          birNumber,
-          drNumber,
-          createdAt
         }
       }`;
     return await axios.post(graphqlUrl, { query });
   });
 
   useEffect(() => {
-    if (getOrderList.isSuccess) {
+    if (getLastSale.isSuccess) {
       if (
-        !getOrderList.data.data?.errors &&
-        getOrderList.data.data?.data?.sales
+        !getLastSale.data.data?.errors &&
+        getLastSale.data.data?.data?.saleLast
       ) {
-        const sales = getOrderList.data.data?.data?.sales;
-        if (sales.length > 0) {
+        const lastSale = getLastSale.data.data?.data?.saleLast;
+        if (lastSale.length > 0) {
           const receiptIncrement =
-            sales[0]?.receiptNumber + 1;
+           lastSale[0]?.receiptNumber + 1;
           setReceiptNumber(receiptIncrement);
         } else {
           setReceiptNumber(1);
         }
-        setOrderList(sales);
       }
     }
-  }, [getOrderList.data]);
-
-  useEffect(() => {
-    if (order.length === 0) {
-      addNewProduct();
-    }
-  }, [orderList]);
+  }, [getLastSale.data]);
 
   const createSales = useMutation((query) => axios.post(graphqlUrl, { query }));
 
@@ -245,6 +226,7 @@ const AddOrder2 = (props) => {
         !createSales.data.data?.errors &&
         createSales.data.data?.data?.createSale
       ) {
+        createSales.reset();
         const receiptNumber =
           createSales.data.data?.data?.createSale?.receiptNumber;
         setSelectedCustomerId(null);
@@ -260,7 +242,6 @@ const AddOrder2 = (props) => {
         const toUpdate = [];
         setOrder(toUpdate);
         setOrders(toUpdate);
-        createSales.reset();
         window.open(`/receipt?receiptNumber=${receiptNumber}`, "_blank");
         triggerTopAlert(true, "Success creating orders", "success");
       } else {
