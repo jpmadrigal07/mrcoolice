@@ -1,11 +1,17 @@
 const Credit = require("../../models/credit");
 const CreditType = require("../typeDefs/Credit");
-const { GraphQLID, GraphQLList, GraphQLString } = require("graphql");
+const { GraphQLID, GraphQLList, GraphQLString, GraphQLInt } = require("graphql");
 
 module.exports.getAllCredit = {
   type: GraphQLList(CreditType),
-  resolve: () => {
-    return Credit.find();
+  args: {
+    first: { type: GraphQLInt },
+    after: { type: GraphQLInt },
+  },
+  resolve: (parent, { first, after }) => {
+    const skip = after ? after : null;
+    const limit = first ? first : null;
+    return Credit.find().skip( skip ).limit( limit );
   },
 };
 

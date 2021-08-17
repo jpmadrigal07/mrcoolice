@@ -21,7 +21,6 @@ function Receipt(props) {
   const { search } = useLocation();
   const forValues = ["Cashier", "Guard", "Customer", "Production"];
   const receiptNumber = search ? search.replace("?receiptNumber=", "") : "";
-  const [dayCount, setDayCount] = useState("---");
   const [birNumber, setBirNumber] = useState("---");
   const [drNumber, setDrNumber] = useState("---");
   const [location, setLocation] = useState("---");
@@ -45,7 +44,6 @@ function Receipt(props) {
                   scaleType,
                   cost
                 },
-                dayCount,
                 birNumber,
                 drNumber,
                 location,
@@ -68,7 +66,6 @@ function Receipt(props) {
           setStaff(
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
           );
-          setDayCount(firstValue.dayCount ? firstValue.dayCount : "---");
           setBirNumber(firstValue.birNumber ? firstValue.birNumber : "---");
           setDrNumber(firstValue.drNumber ? firstValue.drNumber : "---");
           setLocation(firstValue.location ? firstValue.location : "---");
@@ -145,9 +142,6 @@ function Receipt(props) {
                   </p>
                   <hr id="lineDivider" />
                   <p style={{ fontSize: "10px", lineHeight: "13px" }}>
-                    <span style={{ fontWeight: "700" }}>ITM#:</span>{" "}
-                    {dayCount}
-                    <br />
                     <span style={{ fontWeight: "700" }}>RCPT#:</span>{" "}
                     {receiptNumber}
                     <br />

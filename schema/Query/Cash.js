@@ -1,11 +1,17 @@
 const Cash = require("../../models/cash");
 const CashType = require("../typeDefs/Cash");
-const { GraphQLID, GraphQLList, GraphQLString } = require("graphql");
+const { GraphQLID, GraphQLList, GraphQLString, GraphQLInt } = require("graphql");
 
 module.exports.getAllCash = {
   type: GraphQLList(CashType),
-  resolve: () => {
-    return Cash.find();
+  args: {
+    first: { type: GraphQLInt },
+    after: { type: GraphQLInt },
+  },
+  resolve: (parent, { first, after }) => {
+    const skip = after ? after : null;
+    const limit = first ? first : null;
+    return Cash.find().skip( skip ).limit( limit );
   },
 };
 

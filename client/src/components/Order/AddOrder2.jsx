@@ -52,7 +52,6 @@ const AddOrder2 = (props) => {
   const [birNumber, setBirNumber] = useState(null);
   const token = Cookies.get("sessionToken");
   const [receiptNumber, setReceiptNumber] = useState(null);
-  const [dayCount, setDayCount] = useState(null);
   const [location, setLocation] = useState(null);
   const [vehicleType, setVehicleType] = useState(null);
   const [remarks, setRemarks] = useState(null);
@@ -74,7 +73,6 @@ const AddOrder2 = (props) => {
             cost
           },
           receiptNumber,
-          dayCount,
           birNumber,
           drNumber,
           createdAt
@@ -101,25 +99,10 @@ const AddOrder2 = (props) => {
     }
     if (orderList.length > 0) {
       const receiptIncrement =
-        orderList[orderList?.length - 1]?.receiptNumber + 1;
+        orderList[0]?.receiptNumber + 1;
       setReceiptNumber(receiptIncrement);
     } else {
       setReceiptNumber(1);
-    }
-    const startDay = moment().startOf("day").unix() * 1000;
-    const endDay = moment().endOf("day").unix() * 1000;
-    const orderListFilteredByCurrentDay = orderList.filter(
-      (res) =>
-        parseInt(res.createdAt) > parseInt(startDay) &&
-        parseInt(res.createdAt) < parseInt(endDay)
-    );
-    if (orderListFilteredByCurrentDay.length > 0) {
-      const receiptIncrement =
-        orderListFilteredByCurrentDay[orderListFilteredByCurrentDay?.length - 1]
-          ?.dayCount + 1;
-      setDayCount(receiptIncrement);
-    } else {
-      setDayCount(1);
     }
   }, [orderList]);
 
@@ -266,20 +249,7 @@ const AddOrder2 = (props) => {
           createSales.data.data?.data?.createSale?.receiptNumber;
         setSelectedCustomerId(null);
         setSelectedCustomerDescription(null);
-        const receiptIncrement =
-          orderList[orderList?.length - 1]?.receiptNumber;
-        setReceiptNumber(receiptIncrement);
-        const startDay = moment().startOf("day").unix() * 1000;
-        const endDay = moment().endOf("day").unix() * 1000;
-        const orderListFilteredByCurrentDay = orderList.filter(
-          (res) =>
-            parseInt(res.createdAt) > parseInt(startDay) &&
-            parseInt(res.createdAt) < parseInt(endDay)
-        );
-        const receiptIncrement2 =
-          orderListFilteredByCurrentDay[orderListFilteredByCurrentDay?.length - 1]
-            ?.dayCount;
-        setDayCount(receiptIncrement2);
+        setReceiptNumber(receiptNumber+1);
         setBirNumber("");
         setFoundCustomerId("");
         setDrNumber("");
@@ -354,7 +324,6 @@ const AddOrder2 = (props) => {
               vehicleType: vehicleType,
               remarks: remarks,
               receiptNumber,
-              dayCount,
             };
           }
         })
@@ -366,7 +335,6 @@ const AddOrder2 = (props) => {
                 customerId: "${res.customerId}", 
                 userId: "${res.userId}", 
                 receiptNumber: ${res.receiptNumber}, 
-                dayCount: ${res.dayCount}, 
                 productId: "${res.productId}", 
                 birNumber: ${res.birNumber},
                 location: "${res.location}",
@@ -375,8 +343,7 @@ const AddOrder2 = (props) => {
                 remarks: "${res.remarks}",
               ) 
               {
-                receiptNumber,
-                dayCount
+                receiptNumber
             }
           }
           `);
@@ -564,7 +531,6 @@ const AddOrder2 = (props) => {
                 }
                 orders={orders ? orders : updateProduct}
                 birNumber={birNumber ? birNumber : "---"}
-                dayCount={dayCount ? dayCount : "---"}
                 location={location ? location : "---"}
                 vehicleType={vehicleType ? vehicleType : "---"}
                 drNumber={drNumber ? drNumber : "---"}
