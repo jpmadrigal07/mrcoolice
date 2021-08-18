@@ -226,7 +226,6 @@ const AddOrder2 = (props) => {
         !createSales.data.data?.errors &&
         createSales.data.data?.data?.createSale
       ) {
-        createSales.reset();
         const receiptNumber =
           createSales.data.data?.data?.createSale?.receiptNumber;
         setSelectedCustomerId(null);
@@ -242,8 +241,9 @@ const AddOrder2 = (props) => {
         const toUpdate = [];
         setOrder(toUpdate);
         setOrders(toUpdate);
-        window.open(`/receipt?receiptNumber=${receiptNumber}`, "_blank");
         triggerTopAlert(true, "Success creating orders", "success");
+        window.open(`/receipt?receiptNumber=${receiptNumber}`, "_blank");
+        createSales.reset();
       } else {
         triggerTopAlert(true, "Server error", "warning");
       }
@@ -494,7 +494,7 @@ const AddOrder2 = (props) => {
                       style={{ marginRight: 10 }}
                       disabled={createSales.isLoading}
                     >
-                      Create
+                      {!createSales.isLoading ? "Create" : <Loader inverse />}
                     </Button>
                   </ButtonToolbar>
                 </FormGroup>
