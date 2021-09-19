@@ -15,7 +15,8 @@ import {
   Row,
   Grid,
   AutoComplete,
-  InputNumber
+  InputNumber,
+  DatePicker,
 } from "rsuite";
 import {
   graphqlUrl,
@@ -32,7 +33,7 @@ import moment from "moment";
 
 const AddOrder2 = (props) => {
   const history = useHistory();
-  const { triggerTopAlert } = props;
+  const { triggerTopAlert, userType } = props;
   const [order, setOrder] = useState([]);
   const [orders, setOrders] = useState([]);
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
@@ -55,6 +56,7 @@ const AddOrder2 = (props) => {
   const [location, setLocation] = useState(null);
   const [vehicleType, setVehicleType] = useState(null);
   const [remarks, setRemarks] = useState(null);
+  const [date, setDate] = useState(null);
 
   useEffect(() => {
     addNewProduct();
@@ -238,6 +240,7 @@ const AddOrder2 = (props) => {
         setVehicleType(null);
         setRemarks("");
         setInputCustomerDescription("");
+        setDate("");
         const toUpdate = [];
         setOrder(toUpdate);
         setOrders(toUpdate);
@@ -292,6 +295,9 @@ const AddOrder2 = (props) => {
         (acc, curVal) => acc.concat(curVal),
         []
       );
+      const timeElapsed = Date.now();
+      const today = new Date(timeElapsed);
+      const dateNow = today.toISOString();
       const toInsert = flattenNewOrder
         .map((res) => {
           if (res.productId) {
@@ -304,6 +310,7 @@ const AddOrder2 = (props) => {
               location: location,
               vehicleType: vehicleType,
               remarks: remarks,
+              createdAt: date ? date : dateNow,
               receiptNumber,
             };
           }
@@ -322,6 +329,7 @@ const AddOrder2 = (props) => {
                 drNumber: ${res.drNumber},
                 vehicleType: "${res.vehicleType}",
                 remarks: "${res.remarks}",
+                createdAt: "${res.createdAt}",
               ) 
               {
                 receiptNumber
@@ -390,6 +398,17 @@ const AddOrder2 = (props) => {
                     )}
                   </h4>
                 </FormGroup>
+                {userType === "Admin" ? (
+                  <>
+                    <ControlLabel>Date Created</ControlLabel>
+                    <DatePicker
+                      block
+                      onChange={(e) => setDate(e)}
+                      value={date}
+                    />
+                    <br />
+                  </>
+                ) : null}
                 <FormGroup>
                   <ControlLabel>
                     Customer<span style={{ color: "red" }}>*</span>
@@ -517,6 +536,7 @@ const AddOrder2 = (props) => {
                 drNumber={drNumber ? drNumber : "---"}
                 receiptNumber={receiptNumber ? receiptNumber : "---"}
                 remarks={remarks ? remarks : "---"}
+                dateCreated={date}
               />
             </Panel>
           </Col>
@@ -526,6 +546,8 @@ const AddOrder2 = (props) => {
   );
 };
 
-const mapStateToProps = (global) => ({});
+const mapStateToProps = (global) => ({
+  userType: global.loggedInUser.userType
+});
 
 export default connect(mapStateToProps, { triggerTopAlert })(AddOrder2);

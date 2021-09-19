@@ -20,6 +20,7 @@ module.exports.createSale = {
     location: { type: GraphQLString },
     vehicleType: { type: GraphQLString },
     remarks: { type: GraphQLString },
+    createdAt: { type: GraphQLString },
   },
   resolve: async (parent, args) => {
     if(args.location === "null") args.location = null
@@ -41,6 +42,7 @@ module.exports.createSale = {
       location: args.location,
       vehicleType: args.vehicleType,
       remarks: args.remarks,
+      createdAt: args.createdAt
     });
   },
 };

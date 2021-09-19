@@ -26,6 +26,7 @@ function Receipt(props) {
   const [location, setLocation] = useState("---");
   const [vehicleType, setVehicleType] = useState("---");
   const [remarks, setRemarks] = useState("---");
+  const [dateCreated, setDateCreated] = useState(null);
 
   const getOrders = useQuery("getOrders", async () => {
     const query = `{
@@ -71,6 +72,7 @@ function Receipt(props) {
           setLocation(firstValue.location ? firstValue.location : "---");
           setVehicleType(firstValue.vehicleType ? firstValue.vehicleType : "---");
           setRemarks(firstValue.remarks ? firstValue.remarks : "---");
+          setDateCreated(firstValue.createdAt ? firstValue.createdAt : "---")
           const uniqOrder = uniqBy(orders, "productId._id");
           const newData = uniqOrder.map((res) => {
             const foundOrder = orders.filter(
@@ -154,7 +156,7 @@ function Receipt(props) {
                     <span style={{ fontWeight: "700" }}>VEHICLE:</span> {vehicleType}
                     <br />
                     <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
-                    {moment().format("MM/DD/YYYY hh:mm A")}
+                    {dateCreated ? moment(parseInt(dateCreated)).format("MM/DD/YYYY hh:mm A") : moment().format("MM/DD/YYYY hh:mm A")}
                     <br />
                     <span style={{ fontWeight: "700" }}>CUST:</span> {cust}
                     <br />

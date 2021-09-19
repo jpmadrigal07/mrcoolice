@@ -12,7 +12,7 @@ module.exports.getAllSale = {
   resolve: (parent, { first, after }) => {
     const skip = after ? after : null;
     const limit = first ? first : null;
-    return Sales.find().sort({ createdAt: -1 }).skip( skip ).limit( limit );
+    return Sales.find().sort({ receiptNumber: -1 }).skip( skip ).limit( limit );
   },
 };
 
@@ -28,7 +28,7 @@ module.exports.getAllSaleSearch = {
       const skip = after ? after : null;
       const limit = first ? first : null;
       const descNumber = res.map(res => res._id);
-      return Sales.find({customerId: {$in: descNumber}}).sort({ createdAt: -1 }).skip( skip ).limit( limit );
+      return Sales.find({customerId: {$in: descNumber}}).sort({ receiptNumber: -1 }).skip( skip ).limit( limit );
     });
   },
 };
@@ -56,7 +56,7 @@ module.exports.getSaleSearchCount = {
 module.exports.getLastSale = {
   type: GraphQLList(SalesType),
   resolve: (parent) => {
-    return Sales.find().sort( { createdAt : -1 } ).limit(1);
+    return Sales.find().sort( { receiptNumber: -1 } ).limit(1);
   },
 };
 
