@@ -14,7 +14,7 @@ import {
   Loader,
   Alert,
 } from "rsuite";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 import axios from "axios";
 import { useMutation } from "react-query";
 import { triggerTopAlert } from "../../actions/topAlertActions";
@@ -29,7 +29,7 @@ const LoginForm = (props) => {
   const [password, setPassword] = useState("");
 
   const { isLoading, mutate, data, isError, isSuccess } = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const handleLogin = () => {

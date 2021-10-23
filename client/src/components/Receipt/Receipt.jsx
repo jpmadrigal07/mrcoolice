@@ -4,7 +4,7 @@ import Navigation from "../../components/Navigation/Navigation";
 import "./Receipt.css";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -53,7 +53,7 @@ function Receipt(props) {
                 createdAt
             }
         }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
   useEffect(() => {
     if (getOrders.isSuccess) {

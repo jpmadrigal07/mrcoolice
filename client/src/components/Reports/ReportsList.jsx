@@ -11,7 +11,7 @@ import {
 } from "rsuite";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { graphqlUrl, REPORTS_ITEMS, DATA_OWNER_ITEMS, VEHICLE_TYPE_ITEMS } from "../../services/constants";
+import { GRAPHQL_ENDPOINT, REPORTS_ITEMS, DATA_OWNER_ITEMS, VEHICLE_TYPE_ITEMS } from "../../services/constants";
 import Cookies from "js-cookie";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
@@ -41,7 +41,7 @@ function ReportsList(props) {
                 userId
             }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const getExpenseList = useQuery(
@@ -56,7 +56,7 @@ function ReportsList(props) {
                     createdAt,
                 }
               }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -89,7 +89,7 @@ function ReportsList(props) {
               createdAt,
             }
           }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,

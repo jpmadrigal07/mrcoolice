@@ -1,4 +1,4 @@
-export const graphqlUrl = "/mrcoolice";
+export const GRAPHQL_ENDPOINT = "/mrcoolice";
 
 export const LOCATION_ITEMS = [
   { value: "Walk-in", label: "Walk-in" },
@@ -47,3 +47,13 @@ export const CREDIT_TYPE = [
   { value: true, label: "Payment" },
 ];
 
+export const ICE_TYPES = [
+  { label: "Tube", value: "tube" },
+  { label: "Crushed", value: "crushed" },
+  { label: "Broken", value: "broken" },
+];
+
+export const SCALE_TYPES = [
+  { label: "Kilogram", value: "kg" },
+  { label: "Grams", value: "g" },
+];

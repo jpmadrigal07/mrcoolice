@@ -6,7 +6,7 @@ import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import axios from "axios";
 import EditCashOnHand from "./EditCashOnHand";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 import moment from "moment";
 
 const CashOnHandList = (props) => {
@@ -30,7 +30,7 @@ const CashOnHandList = (props) => {
             createdAt
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const CashOnHandList = (props) => {
   }, [getCashOnHandList.data]);
 
   const deleteCashOnHand = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const remove = (id) => {

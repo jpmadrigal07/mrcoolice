@@ -6,7 +6,7 @@ import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import axios from "axios";
 import EditCredit from "./EditCredit";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 import moment from "moment";
 
 const CreditList = (props) => {
@@ -36,7 +36,7 @@ const CreditList = (props) => {
             createdAt
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const CreditList = (props) => {
   }, [getCreditList.data]);
 
   const deleteCredit = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const remove = (id) => {

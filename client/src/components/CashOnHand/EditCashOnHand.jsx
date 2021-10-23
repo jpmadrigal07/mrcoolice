@@ -3,7 +3,7 @@ import { Loader } from "rsuite";
 import { useQuery } from "react-query";
 import axios from "axios";
 import CashOnHandForm from "./CashOnHandForm";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 const EditCashOnHand = (props) => {
   const { isEditActive, setIsEditActive, cashOnHandId } = props;
@@ -21,7 +21,7 @@ const EditCashOnHand = (props) => {
                 createdAt
             }
           }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {

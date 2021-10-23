@@ -19,7 +19,7 @@ import {
   DatePicker,
 } from "rsuite";
 import {
-  graphqlUrl,
+  GRAPHQL_ENDPOINT,
   LOCATION_ITEMS,
   VEHICLE_TYPE_ITEMS,
   YES_NO_ITEMS,
@@ -68,7 +68,7 @@ const AddOrder2 = (props) => {
           receiptNumber,
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const AddOrder2 = (props) => {
     }
   }, [getLastSale.data]);
 
-  const createSales = useMutation((query) => axios.post(graphqlUrl, { query }));
+  const createSales = useMutation((query) => axios.post(GRAPHQL_ENDPOINT, { query }));
 
   const getAutheticatedUserId = useQuery("getAutheticatedUserId", async () => {
     const query = `{
@@ -97,7 +97,7 @@ const AddOrder2 = (props) => {
                 userId
             }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const getAutheticatedUserData = useQuery(
@@ -109,7 +109,7 @@ const AddOrder2 = (props) => {
                 lastName
             }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -123,7 +123,7 @@ const AddOrder2 = (props) => {
           description
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const getProducts = useQuery("getProducts", async () => {
@@ -136,7 +136,7 @@ const AddOrder2 = (props) => {
           cost
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {

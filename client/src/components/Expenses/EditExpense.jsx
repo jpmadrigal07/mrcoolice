@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ExpenseForm from "./ExpenseForm";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 const EditExpense = (props) => {
   const { isEditActive, setIsEditActive, expenseId } = props;
@@ -16,7 +16,7 @@ const EditExpense = (props) => {
                 cost
             }
           }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {

@@ -10,7 +10,7 @@ import {
   Row,
   SelectPicker,
 } from "rsuite";
-import { CUSTOMER_TYPE_ITEMS, graphqlUrl } from "../../services/constants";
+import { CUSTOMER_TYPE_ITEMS, GRAPHQL_ENDPOINT } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -37,15 +37,15 @@ const CustomerForm = (props) => {
                 userId
             }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const createCustomer = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const updateCustomer = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const create = () => {

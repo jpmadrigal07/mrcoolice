@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Loader, Grid, Col, Row } from "rsuite";
 import uniqBy from "lodash/uniqBy";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 import { useQuery } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -60,7 +60,7 @@ const ReportsList2 = (props) => {
                 userId
             }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const getAutheticatedUserData = useQuery(
@@ -72,7 +72,7 @@ const ReportsList2 = (props) => {
                 lastName
             }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -103,7 +103,7 @@ const ReportsList2 = (props) => {
           createdAt
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -125,7 +125,7 @@ const ReportsList2 = (props) => {
           createdAt
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -156,7 +156,7 @@ const ReportsList2 = (props) => {
           createdAt
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -175,7 +175,7 @@ const ReportsList2 = (props) => {
             createdAt
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -194,7 +194,7 @@ const ReportsList2 = (props) => {
             createdAt
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -219,7 +219,7 @@ const ReportsList2 = (props) => {
             createdAt
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -244,7 +244,7 @@ const ReportsList2 = (props) => {
             createdAt
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -261,7 +261,7 @@ const ReportsList2 = (props) => {
             cost
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const getCashOnHandList = useQuery(
@@ -274,7 +274,7 @@ const ReportsList2 = (props) => {
           createdAt
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -291,7 +291,7 @@ const ReportsList2 = (props) => {
           createdAt
         }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -322,6 +322,9 @@ const ReportsList2 = (props) => {
     { iceType: "crushed", weight: 30 },
     { iceType: "crushed", weight: 15 },
     { iceType: "crushed", weight: 4 },
+    { iceType: "broken", weight: 50 },
+    { iceType: "broken", weight: 30 },
+    { iceType: "broken", weight: 15 },
   ];
   const fixedProductText = [
     "Tube (50 kg)",
@@ -334,6 +337,9 @@ const ReportsList2 = (props) => {
     "Crushed (30 kg)",
     "Crushed (15 kg)",
     "Crushed (4 kg)",
+    "Broken (50 kg)",
+    "Broken (30 kg)",
+    "Broken (15 kg)",
   ];
 
   const tableCombined = [

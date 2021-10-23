@@ -21,7 +21,7 @@ import {
   Tooltip,
 } from "rsuite";
 import { useHistory } from "react-router-dom";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 const AddOrder = (props) => {
   const {
@@ -42,7 +42,7 @@ const AddOrder = (props) => {
   const token = Cookies.get("sessionToken");
 
   const createSales = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
   const getId = useQuery(
     "getId",
@@ -52,7 +52,7 @@ const AddOrder = (props) => {
             userId
             }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     }
   );
 

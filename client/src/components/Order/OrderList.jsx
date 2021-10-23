@@ -14,7 +14,7 @@ import { connect } from "react-redux";
 import EditOrder from "./EditOrder";
 import { useQuery } from "react-query";
 import axios from "axios";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 const OrderList = (props) => {
   const {
@@ -61,7 +61,7 @@ const OrderList = (props) => {
     const query = `{
       salesCount 
     }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const getOrderSearchCount = useQuery(["OrderSearchCount", searchPhrase], async ({ pageParam, queryKey }) => {
@@ -69,7 +69,7 @@ const OrderList = (props) => {
     const query = `{
       salesSearchCount(searchPhrase: "${search}")
     }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   },
   {
     enabled: false,
@@ -77,7 +77,7 @@ const OrderList = (props) => {
 
   const getOrderList = useQuery(["OrderList", querySearch], async ({ pageParam, queryKey }) => {
     const query = queryKey[1];
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   },
   {
     enabled: false,
@@ -87,7 +87,7 @@ const OrderList = (props) => {
     ["OrderList2", query],
     async ({ pageParam, queryKey }) => {
       const query = queryKey[1];
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,

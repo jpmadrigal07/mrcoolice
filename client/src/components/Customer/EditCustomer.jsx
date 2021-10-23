@@ -3,7 +3,7 @@ import { Loader } from "rsuite";
 import { useQuery } from "react-query";
 import axios from "axios";
 import CustomerForm from "./CustomerForm";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 const EditCustomer = (props) => {
   const { isEditActive, setIsEditActive, customerId } = props;
@@ -17,7 +17,7 @@ const EditCustomer = (props) => {
                 description
             }
           }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {

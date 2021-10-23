@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import UserForm from "./StaffForm";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 function EditUser(props) {
   const { setIsEditActive, isEditActive, staffId } = props;
@@ -19,7 +19,7 @@ function EditUser(props) {
                 lastName
             }
           }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {

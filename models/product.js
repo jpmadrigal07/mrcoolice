@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const product = new Schema({
   iceType: {
     type: String,
-    enum: ["tube", "crushed"],
+    enum: ["tube", "crushed", "broken"],
   },
   weight: Number,
   scaleType: {

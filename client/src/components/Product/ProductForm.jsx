@@ -4,17 +4,15 @@ import {
   Form,
   FormGroup,
   ControlLabel,
-  Input,
   ButtonToolbar,
   Button,
   Row,
   SelectPicker,
   InputNumber,
 } from "rsuite";
-import { graphqlUrl } from "../../services/constants";
-import { useQuery, useMutation } from "react-query";
+import { GRAPHQL_ENDPOINT, ICE_TYPES, SCALE_TYPES } from "../../services/constants";
+import { useMutation } from "react-query";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { connect } from "react-redux";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 
@@ -27,11 +25,11 @@ const ExpenseForm = (props) => {
   const [cost, setCost] = useState(null);
 
   const createProduct = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const updateProduct = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const create = () => {
@@ -119,28 +117,6 @@ const ExpenseForm = (props) => {
     }
   }, [createProduct]);
 
-  const iceTypes = [
-    {
-      label: "Tube",
-      value: "tube",
-    },
-    {
-      label: "Crushed",
-      value: "crushed",
-    },
-  ];
-
-  const scaleTypes = [
-    {
-      label: "Kilogram",
-      value: "kg",
-    },
-    {
-      label: "Grams",
-      value: "g",
-    },
-  ];
-
   return (
     <>
       <Panel bordered style={{ margin: "10px" }}>
@@ -150,7 +126,7 @@ const ExpenseForm = (props) => {
             <SelectPicker
               defaultValue={"tube"}
               value={iceType}
-              data={iceTypes}
+              data={ICE_TYPES}
               block
               onChange={(e) => setIceType(e)}
               disabled={createProduct.isLoading || updateProduct.isLoading}
@@ -169,7 +145,7 @@ const ExpenseForm = (props) => {
             <ControlLabel>Scale Type</ControlLabel>
             <SelectPicker
               defaultValue={"kg"}
-              data={scaleTypes}
+              data={SCALE_TYPES}
               value={scaleType}
               block
               onChange={(e) => setScaleType(e)}

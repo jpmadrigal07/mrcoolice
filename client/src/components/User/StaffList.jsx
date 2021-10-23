@@ -5,7 +5,7 @@ import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import axios from "axios";
 import EditUser from "./EditStaff";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 const UserList = (props) => {
   const { triggerTopAlert, userType } = props;
@@ -25,7 +25,7 @@ const UserList = (props) => {
           lastName
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const UserList = (props) => {
   }, [getStaffList.data]);
 
   const deleteStaff = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const remove = (id) => {

@@ -11,7 +11,7 @@ import {
   InputNumber,
   AutoComplete,
 } from "rsuite";
-import { graphqlUrl, CREDIT_TYPE } from "../../services/constants";
+import { GRAPHQL_ENDPOINT, CREDIT_TYPE } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -45,15 +45,15 @@ const CreditForm = (props) => {
                 userId
             }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const createCredit = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const updateCredit = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const create = () => {
@@ -92,7 +92,7 @@ const CreditForm = (props) => {
           description
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {
