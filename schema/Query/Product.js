@@ -1,11 +1,17 @@
 const Product = require("../../models/product");
 const ProductType = require("../typeDefs/Product");
-const { GraphQLID, GraphQLList } = require("graphql");
+const { GraphQLID, GraphQLList, GraphQLInt } = require("graphql");
 
 module.exports.getAllProduct = {
   type: GraphQLList(ProductType),
-  resolve: () => {
-    return Product.find();
+  args: {
+    first: { type: GraphQLInt },
+    after: { type: GraphQLInt },
+  },
+  resolve: (parent, { first, after }) => {
+    const skip = after ? after : null;
+    const limit = first ? first : null;
+    return Product.find().skip( skip ).limit( limit );
   },
 };
 

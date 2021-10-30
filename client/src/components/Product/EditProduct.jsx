@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ProductForm from "./ProductForm";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 const EditProduct = (props) => {
   const { isEditActive, setIsEditActive, productId } = props;
@@ -18,7 +18,7 @@ const EditProduct = (props) => {
                 cost
             }
           }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {

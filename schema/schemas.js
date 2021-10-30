@@ -3,7 +3,7 @@ const { GraphQLSchema, GraphQLObjectType } = require("graphql");
 
 // Query Functions
 const { getAllUser, getUser } = require("./Query/User");
-const { getAllSale, getSale, getAllSaleByReceiptNumber, getAllSaleByUser } = require("./Query/Sale");
+const { getAllSale, getSale, getAllSaleByReceiptNumber, getAllSaleByUser, getSaleCount, getAllSaleSearch, getSaleSearchCount, getLastSale } = require("./Query/Sale");
 const { getAllCashOnHand, getCashOnHand, getAllCashOnHandByUser } = require("./Query/CashOnHand");
 const { getAllCredit, getCredit, getAllCreditByCustomer } = require("./Query/Credit");
 const { getAllCustomer, getCustomer } = require("./Query/Customer");
@@ -67,6 +67,10 @@ const Query = new GraphQLObjectType({
     cashOnHands: getAllCashOnHand,
     cashOnHand: getCashOnHand,
     cashOnHandByUser: getAllCashOnHandByUser,
+    saleLast: getLastSale,
+    salesCount: getSaleCount,
+    salesSearchCount: getSaleSearchCount,
+    salesSearch: getAllSaleSearch,
     sales: getAllSale,
     salesByUser: getAllSaleByUser,
     salesByReceiptNumber: getAllSaleByReceiptNumber,

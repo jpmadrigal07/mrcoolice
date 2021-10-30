@@ -10,7 +10,7 @@ import {
   Row,
   InputNumber
 } from "rsuite";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -33,15 +33,15 @@ const ExpenseForm = (props) => {
                     userId
                 }
           }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const createExpense = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
   
   const updateExpense = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
   const create = () => {
     if (expenseName && expenseCost) {

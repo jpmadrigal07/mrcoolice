@@ -11,7 +11,7 @@ import {
   DatePicker,
   InputNumber,
 } from "rsuite";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 import { useQuery, useMutation } from "react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -47,12 +47,12 @@ const CashForm = (props) => {
                 userId
             }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
-  const createCash = useMutation((query) => axios.post(graphqlUrl, { query }));
+  const createCash = useMutation((query) => axios.post(GRAPHQL_ENDPOINT, { query }));
 
-  const updateCash = useMutation((query) => axios.post(graphqlUrl, { query }));
+  const updateCash = useMutation((query) => axios.post(GRAPHQL_ENDPOINT, { query }));
 
   const create = () => {
     if (date) {

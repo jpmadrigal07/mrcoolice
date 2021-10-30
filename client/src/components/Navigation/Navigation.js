@@ -3,7 +3,7 @@ import { Navbar, Nav, Dropdown, Loader } from "rsuite";
 import { getToken, logOut } from "../../services/helper";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { updateLoggedInUser } from "../../actions/loggedInUserActions";
 import { connect } from "react-redux";
@@ -23,7 +23,7 @@ const Navigation = (props) => {
             userType
         }
     }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {

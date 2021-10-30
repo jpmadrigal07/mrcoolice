@@ -6,7 +6,7 @@ import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import axios from "axios";
 import EditCustomer from "./EditCustomer";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 const CustomerList = (props) => {
   const { triggerTopAlert, userType } = props;
@@ -29,7 +29,7 @@ const CustomerList = (props) => {
             type,
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {
@@ -51,7 +51,7 @@ const CustomerList = (props) => {
   }, [getCustomerList.data]);
 
   const deleteCustomer = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const remove = (id) => {

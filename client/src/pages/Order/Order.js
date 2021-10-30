@@ -6,7 +6,7 @@ import { Col, Nav, Row, Panel } from "rsuite";
 import { useQuery } from "react-query";
 import OrderList from "../../components/Order/OrderList";
 import axios from "axios";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 const Order = () => {
   const [activeTab, setActiveTab] = useState("addOrder");

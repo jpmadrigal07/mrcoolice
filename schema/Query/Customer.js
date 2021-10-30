@@ -1,11 +1,17 @@
 const Customer = require("../../models/customer");
 const CustomerType = require("../typeDefs/Customer");
-const { GraphQLID, GraphQLList } = require("graphql");
+const { GraphQLID, GraphQLList, GraphQLInt } = require("graphql");
 
 module.exports.getAllCustomer = {
   type: GraphQLList(CustomerType),
-  resolve: () => {
-    return Customer.find();
+  args: {
+    first: { type: GraphQLInt },
+    after: { type: GraphQLInt },
+  },
+  resolve: (parent, { first, after }) => {
+    const skip = after ? after : null;
+    const limit = first ? first : null;
+    return Customer.find().skip( skip ).limit( limit );
   },
 };
 

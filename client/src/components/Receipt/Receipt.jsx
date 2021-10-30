@@ -4,7 +4,7 @@ import Navigation from "../../components/Navigation/Navigation";
 import "./Receipt.css";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -21,12 +21,12 @@ function Receipt(props) {
   const { search } = useLocation();
   const forValues = ["Cashier", "Guard", "Customer", "Production"];
   const receiptNumber = search ? search.replace("?receiptNumber=", "") : "";
-  const [dayCount, setDayCount] = useState("---");
   const [birNumber, setBirNumber] = useState("---");
   const [drNumber, setDrNumber] = useState("---");
   const [location, setLocation] = useState("---");
   const [vehicleType, setVehicleType] = useState("---");
   const [remarks, setRemarks] = useState("---");
+  const [dateCreated, setDateCreated] = useState(null);
 
   const getOrders = useQuery("getOrders", async () => {
     const query = `{
@@ -45,7 +45,6 @@ function Receipt(props) {
                   scaleType,
                   cost
                 },
-                dayCount,
                 birNumber,
                 drNumber,
                 location,
@@ -54,7 +53,7 @@ function Receipt(props) {
                 createdAt
             }
         }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
   useEffect(() => {
     if (getOrders.isSuccess) {
@@ -68,12 +67,12 @@ function Receipt(props) {
           setStaff(
             `${firstValue.userId.firstName} ${firstValue.userId.lastName}`
           );
-          setDayCount(firstValue.dayCount ? firstValue.dayCount : "---");
           setBirNumber(firstValue.birNumber ? firstValue.birNumber : "---");
           setDrNumber(firstValue.drNumber ? firstValue.drNumber : "---");
           setLocation(firstValue.location ? firstValue.location : "---");
           setVehicleType(firstValue.vehicleType ? firstValue.vehicleType : "---");
           setRemarks(firstValue.remarks ? firstValue.remarks : "---");
+          setDateCreated(firstValue.createdAt ? firstValue.createdAt : "---")
           const uniqOrder = uniqBy(orders, "productId._id");
           const newData = uniqOrder.map((res) => {
             const foundOrder = orders.filter(
@@ -145,9 +144,6 @@ function Receipt(props) {
                   </p>
                   <hr id="lineDivider" />
                   <p style={{ fontSize: "10px", lineHeight: "13px" }}>
-                    <span style={{ fontWeight: "700" }}>ITM#:</span>{" "}
-                    {dayCount}
-                    <br />
                     <span style={{ fontWeight: "700" }}>RCPT#:</span>{" "}
                     {receiptNumber}
                     <br />
@@ -160,7 +156,7 @@ function Receipt(props) {
                     <span style={{ fontWeight: "700" }}>VEHICLE:</span> {vehicleType}
                     <br />
                     <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
-                    {moment().format("MM/DD/YYYY hh:mm A")}
+                    {dateCreated ? moment(parseInt(dateCreated)).format("MM/DD/YYYY hh:mm A") : moment().format("MM/DD/YYYY hh:mm A")}
                     <br />
                     <span style={{ fontWeight: "700" }}>CUST:</span> {cust}
                     <br />

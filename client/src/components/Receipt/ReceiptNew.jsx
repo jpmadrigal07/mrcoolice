@@ -4,7 +4,7 @@ import moment from "moment";
 import "./Receipt.css";
 import uniqBy from 'lodash/uniqBy'
 
-const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber, dayCount, drNumber, location, vehicleType, remarks }) => {
+const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber, drNumber, location, vehicleType, remarks, dateCreated }) => {
   const [remappedOrders, setRemappedOrders] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
   useEffect(() => {
@@ -30,6 +30,7 @@ const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber, dayCount, d
       setRemappedOrders(newOrders)
     } else {
       setTotalSales(0);
+      setRemappedOrders([]);
     }
   }, [orders]);
   return (
@@ -57,8 +58,6 @@ const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber, dayCount, d
           </p>
           <hr id="lineDivider" />
           <p style={{ fontSize: "10px", lineHeight: "13px" }}>
-            <span style={{ fontWeight: "700" }}>ITM#:</span> {dayCount}
-            <br />
             <span style={{ fontWeight: "700" }}>RCPT#:</span> {receiptNumber}
             <br />
             <span style={{ fontWeight: "700" }}>DR:</span> {drNumber}
@@ -70,7 +69,7 @@ const ReceiptNew = ({ cust, staff, orders, birNumber, receiptNumber, dayCount, d
             <span style={{ fontWeight: "700" }}>VEHICLE:</span> {vehicleType}
             <br />
             <span style={{ fontWeight: "700" }}>DATE:</span>{" "}
-            {moment().format("MM/DD/YYYY hh:mm A")}
+            {dateCreated ? moment(dateCreated).format("MM/DD/YYYY hh:mm A") : moment().format("MM/DD/YYYY hh:mm A")}
             <br />
             <span style={{ fontWeight: "700" }}>CUST:</span> {cust}
             <br />

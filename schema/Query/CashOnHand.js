@@ -1,11 +1,17 @@
 const CashOnHand = require("../../models/cashOnHand");
 const CashOnHandType = require("../typeDefs/CashOnHand");
-const { GraphQLID, GraphQLList, GraphQLString } = require("graphql");
+const { GraphQLID, GraphQLList, GraphQLString, GraphQLInt } = require("graphql");
 
 module.exports.getAllCashOnHand = {
   type: GraphQLList(CashOnHandType),
-  resolve: () => {
-    return CashOnHand.find();
+  args: {
+    first: { type: GraphQLInt },
+    after: { type: GraphQLInt },
+  },
+  resolve: (parent, { first, after }) => {
+    const skip = after ? after : null;
+    const limit = first ? first : null;
+    return CashOnHand.find().skip( skip ).limit( limit );
   },
 };
 

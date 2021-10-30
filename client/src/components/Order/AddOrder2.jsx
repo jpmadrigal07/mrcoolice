@@ -15,10 +15,11 @@ import {
   Row,
   Grid,
   AutoComplete,
-  InputNumber
+  InputNumber,
+  DatePicker,
 } from "rsuite";
 import {
-  graphqlUrl,
+  GRAPHQL_ENDPOINT,
   LOCATION_ITEMS,
   VEHICLE_TYPE_ITEMS,
   YES_NO_ITEMS,
@@ -32,7 +33,7 @@ import moment from "moment";
 
 const AddOrder2 = (props) => {
   const history = useHistory();
-  const { triggerTopAlert } = props;
+  const { triggerTopAlert, userType } = props;
   const [order, setOrder] = useState([]);
   const [orders, setOrders] = useState([]);
   const [autheticatedUserId, setAutheticatedUserId] = useState(null);
@@ -52,78 +53,43 @@ const AddOrder2 = (props) => {
   const [birNumber, setBirNumber] = useState(null);
   const token = Cookies.get("sessionToken");
   const [receiptNumber, setReceiptNumber] = useState(null);
-  const [dayCount, setDayCount] = useState(null);
   const [location, setLocation] = useState(null);
   const [vehicleType, setVehicleType] = useState(null);
   const [remarks, setRemarks] = useState(null);
-  const [orderList, setOrderList] = useState([]);
+  const [date, setDate] = useState(null);
 
-  const getOrderList = useQuery("OrderList", async () => {
+  useEffect(() => {
+    addNewProduct();
+  }, []);
+
+  const getLastSale = useQuery("LastSale", async () => {
     const query = `{
-        sales {
-          customerId {
-              _id
-              description
-            },
-          _id,
-          productId {
-            _id,
-            iceType,
-            weight,
-            scaleType,
-            cost
-          },
+        saleLast {
           receiptNumber,
-          dayCount,
-          birNumber,
-          drNumber,
-          createdAt
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {
-    if (getOrderList.isSuccess) {
+    if (getLastSale.isSuccess) {
       if (
-        !getOrderList.data.data?.errors &&
-        getOrderList.data.data?.data?.sales
+        !getLastSale.data.data?.errors &&
+        getLastSale.data.data?.data?.saleLast
       ) {
-        const sales = getOrderList.data.data?.data?.sales;
-        setOrderList(sales);
+        const lastSale = getLastSale.data.data?.data?.saleLast;
+        if (lastSale.length > 0) {
+          const receiptIncrement =
+           lastSale[0]?.receiptNumber + 1;
+          setReceiptNumber(receiptIncrement);
+        } else {
+          setReceiptNumber(1);
+        }
       }
     }
-  }, [getOrderList.data]);
+  }, [getLastSale.data]);
 
-  useEffect(() => {
-    if (order.length === 0) {
-      addNewProduct();
-    }
-    if (orderList.length > 0) {
-      const receiptIncrement =
-        orderList[orderList?.length - 1]?.receiptNumber + 1;
-      setReceiptNumber(receiptIncrement);
-    } else {
-      setReceiptNumber(1);
-    }
-    const startDay = moment().startOf("day").unix() * 1000;
-    const endDay = moment().endOf("day").unix() * 1000;
-    const orderListFilteredByCurrentDay = orderList.filter(
-      (res) =>
-        parseInt(res.createdAt) > parseInt(startDay) &&
-        parseInt(res.createdAt) < parseInt(endDay)
-    );
-    if (orderListFilteredByCurrentDay.length > 0) {
-      const receiptIncrement =
-        orderListFilteredByCurrentDay[orderListFilteredByCurrentDay?.length - 1]
-          ?.dayCount + 1;
-      setDayCount(receiptIncrement);
-    } else {
-      setDayCount(1);
-    }
-  }, [orderList]);
-
-  const createSales = useMutation((query) => axios.post(graphqlUrl, { query }));
+  const createSales = useMutation((query) => axios.post(GRAPHQL_ENDPOINT, { query }));
 
   const getAutheticatedUserId = useQuery("getAutheticatedUserId", async () => {
     const query = `{
@@ -131,7 +97,7 @@ const AddOrder2 = (props) => {
                 userId
             }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const getAutheticatedUserData = useQuery(
@@ -143,7 +109,7 @@ const AddOrder2 = (props) => {
                 lastName
             }
       }`;
-      return await axios.post(graphqlUrl, { query });
+      return await axios.post(GRAPHQL_ENDPOINT, { query });
     },
     {
       enabled: false,
@@ -157,7 +123,7 @@ const AddOrder2 = (props) => {
           description
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   const getProducts = useQuery("getProducts", async () => {
@@ -170,7 +136,7 @@ const AddOrder2 = (props) => {
           cost
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {
@@ -266,20 +232,7 @@ const AddOrder2 = (props) => {
           createSales.data.data?.data?.createSale?.receiptNumber;
         setSelectedCustomerId(null);
         setSelectedCustomerDescription(null);
-        const receiptIncrement =
-          orderList[orderList?.length - 1]?.receiptNumber;
-        setReceiptNumber(receiptIncrement);
-        const startDay = moment().startOf("day").unix() * 1000;
-        const endDay = moment().endOf("day").unix() * 1000;
-        const orderListFilteredByCurrentDay = orderList.filter(
-          (res) =>
-            parseInt(res.createdAt) > parseInt(startDay) &&
-            parseInt(res.createdAt) < parseInt(endDay)
-        );
-        const receiptIncrement2 =
-          orderListFilteredByCurrentDay[orderListFilteredByCurrentDay?.length - 1]
-            ?.dayCount;
-        setDayCount(receiptIncrement2);
+        setReceiptNumber(receiptNumber+1);
         setBirNumber("");
         setFoundCustomerId("");
         setDrNumber("");
@@ -287,12 +240,13 @@ const AddOrder2 = (props) => {
         setVehicleType(null);
         setRemarks("");
         setInputCustomerDescription("");
+        setDate("");
         const toUpdate = [];
         setOrder(toUpdate);
         setOrders(toUpdate);
-        createSales.reset();
-        window.open(`/receipt?receiptNumber=${receiptNumber}`, "_blank");
         triggerTopAlert(true, "Success creating orders", "success");
+        window.open(`/receipt?receiptNumber=${receiptNumber}`, "_blank");
+        createSales.reset();
       } else {
         triggerTopAlert(true, "Server error", "warning");
       }
@@ -341,6 +295,9 @@ const AddOrder2 = (props) => {
         (acc, curVal) => acc.concat(curVal),
         []
       );
+      const timeElapsed = Date.now();
+      const today = new Date(timeElapsed);
+      const dateNow = today.toISOString();
       const toInsert = flattenNewOrder
         .map((res) => {
           if (res.productId) {
@@ -353,8 +310,8 @@ const AddOrder2 = (props) => {
               location: location,
               vehicleType: vehicleType,
               remarks: remarks,
+              createdAt: date ? date : dateNow,
               receiptNumber,
-              dayCount,
             };
           }
         })
@@ -366,17 +323,16 @@ const AddOrder2 = (props) => {
                 customerId: "${res.customerId}", 
                 userId: "${res.userId}", 
                 receiptNumber: ${res.receiptNumber}, 
-                dayCount: ${res.dayCount}, 
                 productId: "${res.productId}", 
                 birNumber: ${res.birNumber},
                 location: "${res.location}",
                 drNumber: ${res.drNumber},
                 vehicleType: "${res.vehicleType}",
                 remarks: "${res.remarks}",
+                createdAt: "${res.createdAt}",
               ) 
               {
-                receiptNumber,
-                dayCount
+                receiptNumber
             }
           }
           `);
@@ -442,6 +398,17 @@ const AddOrder2 = (props) => {
                     )}
                   </h4>
                 </FormGroup>
+                {userType === "Admin" ? (
+                  <>
+                    <ControlLabel>Date Created</ControlLabel>
+                    <DatePicker
+                      block
+                      onChange={(e) => setDate(e)}
+                      value={date}
+                    />
+                    <br />
+                  </>
+                ) : null}
                 <FormGroup>
                   <ControlLabel>
                     Customer<span style={{ color: "red" }}>*</span>
@@ -546,7 +513,7 @@ const AddOrder2 = (props) => {
                       style={{ marginRight: 10 }}
                       disabled={createSales.isLoading}
                     >
-                      Create
+                      {!createSales.isLoading ? "Create" : <Loader inverse />}
                     </Button>
                   </ButtonToolbar>
                 </FormGroup>
@@ -564,12 +531,12 @@ const AddOrder2 = (props) => {
                 }
                 orders={orders ? orders : updateProduct}
                 birNumber={birNumber ? birNumber : "---"}
-                dayCount={dayCount ? dayCount : "---"}
                 location={location ? location : "---"}
                 vehicleType={vehicleType ? vehicleType : "---"}
                 drNumber={drNumber ? drNumber : "---"}
                 receiptNumber={receiptNumber ? receiptNumber : "---"}
                 remarks={remarks ? remarks : "---"}
+                dateCreated={date}
               />
             </Panel>
           </Col>
@@ -579,6 +546,8 @@ const AddOrder2 = (props) => {
   );
 };
 
-const mapStateToProps = (global) => ({});
+const mapStateToProps = (global) => ({
+  userType: global.loggedInUser.userType
+});
 
 export default connect(mapStateToProps, { triggerTopAlert })(AddOrder2);

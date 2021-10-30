@@ -9,7 +9,7 @@ import {
   Button,
   Row,
 } from "rsuite";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 import { useMutation } from "react-query";
 import axios from "axios";
 import { connect } from "react-redux";
@@ -24,9 +24,9 @@ const StaffForm = (props) => {
   const [lastName, setLastName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const staff = "Staff";
-  const createStaff = useMutation((query) => axios.post(graphqlUrl, { query }));
+  const createStaff = useMutation((query) => axios.post(GRAPHQL_ENDPOINT, { query }));
 
-  const updateStaff = useMutation((query) => axios.post(graphqlUrl, { query }));
+  const updateStaff = useMutation((query) => axios.post(GRAPHQL_ENDPOINT, { query }));
 
   const create = () => {
     if (username && password && firstName && lastName && confirmPassword) {

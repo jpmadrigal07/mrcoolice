@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "react-query";
 import { triggerTopAlert } from "../../actions/topAlertActions";
 import axios from "axios";
 import { connect } from "react-redux";
-import { graphqlUrl } from "../../services/constants";
+import { GRAPHQL_ENDPOINT } from "../../services/constants";
 
 const ExpenseList = (props) => {
   const { userId, triggerTopAlert, userType } = props;
@@ -23,7 +23,7 @@ const ExpenseList = (props) => {
             cost
         }
       }`;
-    return await axios.post(graphqlUrl, { query });
+    return await axios.post(GRAPHQL_ENDPOINT, { query });
   });
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const ExpenseList = (props) => {
   
 
   const deleteExpense = useMutation((query) =>
-    axios.post(graphqlUrl, { query })
+    axios.post(GRAPHQL_ENDPOINT, { query })
   );
 
   const remove = (id) => {
