@@ -19,7 +19,7 @@ function Receipt(props) {
   const [orders, setOrders] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
   const { search } = useLocation();
-  const forValues = ["Cashier", "Guard", "Customer", "Production"];
+  const forValues = ["Cashier", "Guard", "Customer"];
   const receiptNumber = search ? search.replace("?receiptNumber=", "") : "";
   const [birNumber, setBirNumber] = useState("---");
   const [drNumber, setDrNumber] = useState("---");
